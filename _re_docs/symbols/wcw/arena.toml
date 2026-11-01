@@ -1,0 +1,81 @@
+# Ring, ropes and arena scenery.
+# Notes: _re_docs/individual_games/wcw_world_tour/arena.md
+
+[[func]]
+addr = 0x80091100
+name = "arena_build"
+proto = "void arena_build(s16 wrestler_count, s16 arena)"
+desc = "Builds the ring (meshes 995-999), the per-side corner posts and pads (1011-1014), barrier (985) and floor (1000) rotated for the 4 sides, with the textures of arena 0-3; with exactly 2 wrestlers also floor piece 991. Then arena_crowd_build."
+status = "confirmed"
+
+[[func]]
+addr = 0x800917B0
+name = "arena_crowd_build"
+desc = "Builds the crowd / entrance scenery of the arena twice with two palette sets (0x800E6384 / 0x800E6394, probably crowd animation frames) and places 5 instances; a 3-piece list instead of 11-17 pieces when more than 2 wrestlers are in the match."
+status = "likely"
+
+[[func]]
+addr = 0x80008774
+name = "scenery_object"
+proto = "void *scenery_object(void *parts, u16 *meshes, u16 *palettes, s16 count)"
+desc = "Loads count mesh parts with their palette (palette file p, texture p + 1) and returns one display list drawing them all (G_VTX + part DLs)."
+status = "confirmed"
+
+[[func]]
+addr = 0x80010B18
+name = "ropes_build"
+desc = "For each ring side: resets its rope deflections (ring_rope_push 11), places a rope node 230 units from the centre rotated to that side and builds the rope (rope_build_side)."
+status = "likely"
+
+[[func]]
+addr = 0x8000FD88
+name = "rope_build_side"
+proto = "void rope_build_side(s16 side)"
+desc = "Allocates a side's 84 rope vertices and 6 bone nodes spaced 74 units apart along the side (from -187), then generates the vertices (sub_8000F8A4)."
+status = "likely"
+
+[[data]]
+addr = 0x800EB814
+name = "g_arena"
+type = "s16"
+desc = "Arena index: 0 WCW, 1 nWo, 2 Dead or Alive, 3 Independent Union (from the apron banners). Picks the ring texture sets and the crowd / entrance meshes."
+status = "likely"
+
+[[func]]
+addr = 0x8000F790
+name = "rope_vertices_init"
+desc = "Fills a side's 84 rope vertices: 7 stations from x = -224 every 74, 3 ropes, 4 cross-section vertices each; s along the rope with a 0-7 random jitter, t 16/31, grey shades 100/0/50/50."
+status = "confirmed"
+
+[[func]]
+addr = 0x8000F8A4
+name = "rope_shape"
+proto = "void rope_shape(void *vtx, s16 side)"
+desc = "Sets each rope vertex's y and z: rope height (140/175/210) plus the cross-section offset (+-3) plus the rope's deflection weighted by a tent that is 1 at the push position and 0 at +-224."
+status = "confirmed"
+
+[[func]]
+addr = 0x8000FBF0
+name = "rope_dl"
+desc = "Builds the per-segment rope display list: 4 triangles per rope linking two stations (two crossed ribbons)."
+status = "confirmed"
+
+[[func]]
+addr = 0x80010C6C
+name = "ropes_tick"
+desc = "Per frame: steps every rope's deflection toward its target; at the end of a swing flips the target to -60% (-70% outward for kind 7) over 6 frames (13 for kind 7) until it is below 0.1."
+status = "likely"
+
+[[data]]
+addr = 0x80058600
+name = "g_rope_state"
+type = "u8[4][3][40]"
+desc = "Rope deflection records per side and rope: kind, frames left, position along the side, current and target offsets (vertical, outward) and per-frame steps."
+status = "likely"
+
+[[data]]
+addr = 0x80032B9C
+name = "g_rope_heights"
+type = "u8[3]"
+desc = "Rope heights above the floor: 140, 175, 210 (mat at 90)."
+status = "confirmed"

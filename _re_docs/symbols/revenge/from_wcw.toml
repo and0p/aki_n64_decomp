@@ -1,0 +1,1719 @@
+# Revenge functions named from World Tour by tools/sym/match_calls.py (2026-11-01):
+# call-graph neighbours of already matched functions, scored by shared constants, size, callee
+# shapes and agreement of paired callers / callees. Score >= 1.0 -> likely, else guess.
+
+[[func]]
+addr = 0x800004B8
+name = "idle_thread"
+desc = "Matches World Tour idle_thread (0x800004AC), call-graph score 1.10."
+status = "likely"
+
+[[func]]
+addr = 0x80000854
+name = "heap_alloc"
+desc = "Matches World Tour heap_alloc (0x800007F4), call-graph score 1.42."
+status = "likely"
+
+[[func]]
+addr = 0x80000958
+name = "heap_free"
+desc = "Matches World Tour heap_free (0x800008FC), call-graph score 1.83."
+status = "likely"
+
+[[func]]
+addr = 0x800014D8
+name = "node_init"
+desc = "Matches World Tour node_init (0x80001730), call-graph score 1.98."
+status = "likely"
+
+[[func]]
+addr = 0x80001544
+name = "draw_list_add_unique"
+desc = "Matches World Tour draw_list_add_unique (0x800017AC), call-graph score 2.08."
+status = "likely"
+
+[[func]]
+addr = 0x800015AC
+name = "node_attach_display"
+desc = "Matches World Tour node_attach_display (0x80001808), call-graph score 2.07."
+status = "likely"
+
+[[func]]
+addr = 0x8001B550
+name = "mtx_mul4"
+desc = "Matches World Tour mtx_mul4 (0x80002004), call-graph score 1.40."
+status = "likely"
+
+[[func]]
+addr = 0x8002BBCC
+name = "node_tree_update"
+desc = "Matches World Tour node_tree_update (0x80002274), call-graph score 1.06."
+status = "likely"
+
+[[func]]
+addr = 0x80004580
+name = "file_load"
+desc = "Matches World Tour file_load (0x80004DDC), call-graph score 1.37."
+status = "likely"
+
+[[func]]
+addr = 0x80003E78
+name = "pads_read"
+desc = "Matches World Tour pads_read (0x8000544C), call-graph score 1.32."
+status = "likely"
+
+[[func]]
+addr = 0x800046F0
+name = "mesh_build_tris"
+desc = "Matches World Tour mesh_build_tris (0x80005AE0), call-graph score 1.22."
+status = "likely"
+
+[[func]]
+addr = 0x8000486C
+name = "mesh_build_vtx"
+desc = "Matches World Tour mesh_build_vtx (0x80005C14), call-graph score 2.09."
+status = "likely"
+
+[[func]]
+addr = 0x8000498C
+name = "mesh_load"
+desc = "Matches World Tour mesh_load (0x80005D20), call-graph score 1.19."
+status = "likely"
+
+[[func]]
+addr = 0x80004F80
+name = "texture_load_bind"
+desc = "Matches World Tour texture_load_bind (0x80006540), call-graph score 1.09."
+status = "likely"
+
+[[func]]
+addr = 0x80005304
+name = "camera_set_view"
+desc = "Matches World Tour camera_set_view (0x80006860), call-graph score 1.35."
+status = "likely"
+
+[[func]]
+addr = 0x8002AA28
+name = "tex_pal_load"
+desc = "Matches World Tour tex_pal_load (0x80007AC0), call-graph score 0.95."
+status = "guess"
+
+[[func]]
+addr = 0x80006814
+name = "hud_box_build"
+desc = "Matches World Tour hud_box_build (0x80007B58), call-graph score 1.62."
+status = "likely"
+
+[[func]]
+addr = 0x80006B84
+name = "fade_quad_build"
+desc = "Matches World Tour fade_quad_build (0x800080EC), call-graph score 2.10."
+status = "likely"
+
+[[func]]
+addr = 0x80006D14
+name = "node_free_buffers"
+desc = "Matches World Tour node_free_buffers (0x800082D0), call-graph score 2.05."
+status = "likely"
+
+[[func]]
+addr = 0x80006D64
+name = "node_free"
+desc = "Matches World Tour node_free (0x80008324), call-graph score 2.33."
+status = "likely"
+
+[[func]]
+addr = 0x80006E2C
+name = "ptr_pair_free"
+desc = "Matches World Tour ptr_pair_free (0x800083D0), call-graph score 1.40."
+status = "likely"
+
+[[func]]
+addr = 0x80007818
+name = "node_bind_model"
+desc = "Matches World Tour node_bind_model (0x800089D4), call-graph score 1.07."
+status = "likely"
+
+[[func]]
+addr = 0x80007874
+name = "node_bind_model_ex"
+desc = "Matches World Tour node_bind_model_ex (0x80008A30), call-graph score 1.89."
+status = "likely"
+
+[[func]]
+addr = 0x80007E14
+name = "mtx_rotate_y"
+desc = "Matches World Tour mtx_rotate_y (0x80008D54), call-graph score 2.07."
+status = "likely"
+
+[[func]]
+addr = 0x800086A4
+name = "anim_player_set"
+desc = "Matches World Tour anim_player_set (0x800097EC), call-graph score 1.14."
+status = "likely"
+
+[[func]]
+addr = 0x80008810
+name = "models_init"
+desc = "Matches World Tour models_init (0x8000992C), call-graph score 1.39."
+status = "likely"
+
+[[func]]
+addr = 0x80008CE8
+name = "model_animate"
+desc = "Matches World Tour model_animate (0x80009D00), call-graph score 1.15."
+status = "likely"
+
+[[func]]
+addr = 0x80009B84
+name = "model_build_skin"
+desc = "Matches World Tour model_build_skin (0x8000A5C4), call-graph score 1.90."
+status = "likely"
+
+[[func]]
+addr = 0x80009D98
+name = "model_blend_prev"
+desc = "Matches World Tour model_blend_prev (0x8000A7F0), call-graph score 0.99."
+status = "guess"
+
+[[func]]
+addr = 0x8000A310
+name = "model_decode_frame"
+desc = "Matches World Tour model_decode_frame (0x8000ABA0), call-graph score 1.08."
+status = "likely"
+
+[[func]]
+addr = 0x80009784
+name = "model_decode_frame_interp"
+desc = "Matches World Tour model_decode_frame_interp (0x8000AC80), call-graph score 0.90."
+status = "guess"
+
+[[func]]
+addr = 0x8000AA70
+name = "anim_decode_joint"
+desc = "Matches World Tour anim_decode_joint (0x8000AF78), call-graph score 2.07."
+status = "likely"
+
+[[func]]
+addr = 0x8000AD00
+name = "anim_frame_events"
+desc = "Matches World Tour anim_frame_events (0x8000B1B0), call-graph score 1.37."
+status = "likely"
+
+[[func]]
+addr = 0x8000BDD0
+name = "model_build_nodes"
+desc = "Matches World Tour model_build_nodes (0x8000BB8C), call-graph score 1.30."
+status = "likely"
+
+[[func]]
+addr = 0x8000C1B8
+name = "model_load_textures"
+desc = "Matches World Tour model_load_textures (0x8000BF70), call-graph score 1.00."
+status = "likely"
+
+[[func]]
+addr = 0x8000C474
+name = "tex_paint_mask"
+desc = "Matches World Tour tex_paint_mask (0x8000C260), call-graph score 1.31."
+status = "likely"
+
+[[func]]
+addr = 0x8000C784
+name = "blood_apply"
+desc = "Matches World Tour blood_apply (0x8000C6A0), call-graph score 1.14."
+status = "likely"
+
+[[func]]
+addr = 0x8000C91C
+name = "model_load"
+desc = "Matches World Tour model_load (0x8000C854), call-graph score 1.27."
+status = "likely"
+
+[[func]]
+addr = 0x8000CD18
+name = "wrestler_render_update"
+desc = "Matches World Tour wrestler_render_update (0x8000CB24), call-graph score 1.99."
+status = "likely"
+
+[[func]]
+addr = 0x8000E4FC
+name = "wrestler_voice_sound"
+desc = "Matches World Tour wrestler_voice_sound (0x8000E1B8), call-graph score 1.30."
+status = "likely"
+
+[[func]]
+addr = 0x8000F710
+name = "rope_shape"
+desc = "Matches World Tour rope_shape (0x8000F8A4), call-graph score 1.37."
+status = "likely"
+
+[[func]]
+addr = 0x80010200
+name = "ring_rope_push"
+desc = "Matches World Tour ring_rope_push (0x800103B0), call-graph score 1.25."
+status = "likely"
+
+[[func]]
+addr = 0x80010D2C
+name = "ropes_build"
+desc = "Matches World Tour ropes_build (0x80010B18), call-graph score 1.98."
+status = "likely"
+
+[[func]]
+addr = 0x80010E6C
+name = "ropes_tick"
+desc = "Matches World Tour ropes_tick (0x80010C6C), call-graph score 1.17."
+status = "likely"
+
+[[func]]
+addr = 0x8001C580
+name = "rng_main"
+desc = "Matches World Tour rng_main (0x80011BF0), call-graph score 1.20."
+status = "likely"
+
+[[func]]
+addr = 0x8001A480
+name = "sqrtf"
+desc = "Matches World Tour sqrtf (0x80013BF0), call-graph score 1.20."
+status = "likely"
+
+[[func]]
+addr = 0x8001CE80
+name = "virt_to_phys"
+desc = "Matches World Tour virt_to_phys (0x80013C00), call-graph score 1.04."
+status = "likely"
+
+[[func]]
+addr = 0x8001B7D0
+name = "mtx_perspective"
+desc = "Matches World Tour mtx_perspective (0x8001BD90), call-graph score 1.62."
+status = "likely"
+
+[[func]]
+addr = 0x8001BF50
+name = "sinf"
+desc = "Matches World Tour sinf (0x8001C970), call-graph score 2.09."
+status = "likely"
+
+[[func]]
+addr = 0x8001A830
+name = "cosf"
+desc = "Matches World Tour cosf (0x8001CB30), call-graph score 2.09."
+status = "likely"
+
+[[func]]
+addr = 0x80090030
+name = "match_run"
+desc = "Matches World Tour match_run (0x8009007C), call-graph score 1.72."
+status = "likely"
+
+[[func]]
+addr = 0x8000EDC4
+name = "arena_objects_init"
+desc = "Matches World Tour arena_objects_init (0x800916B4), call-graph score 1.00."
+status = "likely"
+
+[[func]]
+addr = 0x8000EDE0
+name = "arena_free"
+desc = "Matches World Tour arena_free (0x800916D4), call-graph score 1.15."
+status = "likely"
+
+[[func]]
+addr = 0x80012CD0
+name = "weapons_draw"
+desc = "Matches World Tour weapons_draw (0x800921D0), call-graph score 1.30."
+status = "likely"
+
+[[func]]
+addr = 0x80004B34
+name = "hud_node_init"
+desc = "Matches World Tour hud_node_init (0x800925E0), call-graph score 0.94."
+status = "guess"
+
+[[func]]
+addr = 0x800905A4
+name = "hud_node_build"
+desc = "Matches World Tour hud_node_build (0x800927EC), call-graph score 1.76."
+status = "likely"
+
+[[func]]
+addr = 0x8009075C
+name = "node_set_xy"
+desc = "Matches World Tour node_set_xy (0x80092AA0), call-graph score 2.08."
+status = "likely"
+
+[[func]]
+addr = 0x800907A0
+name = "hud_text"
+desc = "Matches World Tour hud_text (0x80092AE4), call-graph score 1.69."
+status = "likely"
+
+[[func]]
+addr = 0x80090A38
+name = "hud_panel_1"
+desc = "Matches World Tour hud_panel_1 (0x80092D4C), call-graph score 1.82."
+status = "likely"
+
+[[func]]
+addr = 0x80091108
+name = "hud_panel_3"
+desc = "Matches World Tour hud_panel_3 (0x800935E8), call-graph score 1.75."
+status = "likely"
+
+[[func]]
+addr = 0x80091748
+name = "hud_panel_4"
+desc = "Matches World Tour hud_panel_4 (0x800944F8), call-graph score 1.86."
+status = "likely"
+
+[[func]]
+addr = 0x80091CB4
+name = "hud_bars_draw"
+desc = "Matches World Tour hud_bars_draw (0x80094B78), call-graph score 1.78."
+status = "likely"
+
+[[func]]
+addr = 0x80091DF4
+name = "hud_draw_bars"
+desc = "Matches World Tour hud_draw_bars (0x80094CAC), call-graph score 1.24."
+status = "likely"
+
+[[func]]
+addr = 0x80011BB4
+name = "hud_init"
+desc = "Matches World Tour hud_init (0x800952EC), call-graph score 1.13."
+status = "likely"
+
+[[func]]
+addr = 0x80094424
+name = "hud_free_nodes"
+desc = "Matches World Tour hud_free_nodes (0x80095B80), call-graph score 1.06."
+status = "likely"
+
+[[func]]
+addr = 0x800948B4
+name = "hud_layout"
+desc = "Matches World Tour hud_layout (0x80095F20), call-graph score 1.25."
+status = "likely"
+
+[[func]]
+addr = 0x80096018
+name = "hud_count_hide"
+desc = "Matches World Tour hud_count_hide (0x800974C8), call-graph score 1.76."
+status = "likely"
+
+[[func]]
+addr = 0x8009608C
+name = "hud_count_show"
+desc = "Matches World Tour hud_count_show (0x80097530), call-graph score 1.38."
+status = "likely"
+
+[[func]]
+addr = 0x8009678C
+name = "hud_countout_show"
+desc = "Matches World Tour hud_countout_show (0x80097BF4), call-graph score 1.27."
+status = "likely"
+
+[[func]]
+addr = 0x80096854
+name = "hud_countout_number"
+desc = "Matches World Tour hud_countout_number (0x80097CB0), call-graph score 1.16."
+status = "likely"
+
+[[func]]
+addr = 0x80096E34
+name = "hud_message"
+desc = "Matches World Tour hud_message (0x80098360), call-graph score 1.71."
+status = "likely"
+
+[[func]]
+addr = 0x800986DC
+name = "hud_text_dl"
+desc = "Matches World Tour hud_text_dl (0x80098B84), call-graph score 1.44."
+status = "likely"
+
+[[func]]
+addr = 0x80097BE0
+name = "results_page_text"
+desc = "Matches World Tour results_page_text (0x800994C0), call-graph score 1.03."
+status = "likely"
+
+[[func]]
+addr = 0x8002AAFC
+name = "hud_buffers_free"
+desc = "Matches World Tour hud_buffers_free (0x800998EC), call-graph score 1.22."
+status = "likely"
+
+[[func]]
+addr = 0x8002AD34
+name = "results_name_text"
+desc = "Matches World Tour results_name_text (0x80099A50), call-graph score 0.90."
+status = "guess"
+
+[[func]]
+addr = 0x80097EF4
+name = "results_screen"
+desc = "Matches World Tour results_screen (0x80099D40), call-graph score 1.16."
+status = "likely"
+
+[[func]]
+addr = 0x800982AC
+name = "results_screen_build"
+desc = "Matches World Tour results_screen_build (0x8009A108), call-graph score 1.77."
+status = "likely"
+
+[[func]]
+addr = 0x800984C8
+name = "hud_free_all"
+desc = "Matches World Tour hud_free_all (0x8009A290), call-graph score 1.07."
+status = "likely"
+
+[[func]]
+addr = 0x80099628
+name = "pause_menu"
+desc = "Matches World Tour pause_menu (0x8009A900), call-graph score 1.78."
+status = "likely"
+
+[[func]]
+addr = 0x800998EC
+name = "match_hud_free"
+desc = "Matches World Tour match_hud_free (0x8009AD78), call-graph score 1.21."
+status = "likely"
+
+[[func]]
+addr = 0x80099968
+name = "pause_menu_update"
+desc = "Matches World Tour pause_menu_update (0x8009AE40), call-graph score 1.27."
+status = "likely"
+
+[[func]]
+addr = 0x80099F70
+name = "match_setup"
+desc = "Matches World Tour match_setup (0x8009B310), call-graph score 1.43."
+status = "likely"
+
+[[func]]
+addr = 0x8009A374
+name = "match_draw"
+desc = "Matches World Tour match_draw (0x8009B6A8), call-graph score 1.09."
+status = "likely"
+
+[[func]]
+addr = 0x8009A5F4
+name = "match_free"
+desc = "Matches World Tour match_free (0x8009B988), call-graph score 1.00."
+status = "likely"
+
+[[func]]
+addr = 0x8009A69C
+name = "camera_floor_snap"
+desc = "Matches World Tour camera_floor_snap (0x8009BA34), call-graph score 1.73."
+status = "likely"
+
+[[func]]
+addr = 0x8000D324
+name = "shadow_nodes_update"
+desc = "Matches World Tour shadow_nodes_update (0x8009BB00), call-graph score 1.54."
+status = "likely"
+
+[[func]]
+addr = 0x8000D424
+name = "shadow_node_place"
+desc = "Matches World Tour shadow_node_place (0x8009BBC8), call-graph score 1.43."
+status = "likely"
+
+[[func]]
+addr = 0x8009B2EC
+name = "camera_frame_all"
+desc = "Matches World Tour camera_frame_all (0x8009C308), call-graph score 1.60."
+status = "likely"
+
+[[func]]
+addr = 0x8009D7A0
+name = "fade_in_step"
+desc = "Matches World Tour fade_in_step (0x8009DD58), call-graph score 2.02."
+status = "likely"
+
+[[func]]
+addr = 0x8009D844
+name = "fade_out_step"
+desc = "Matches World Tour fade_out_step (0x8009DDF0), call-graph score 2.03."
+status = "likely"
+
+[[func]]
+addr = 0x800DA850
+name = "clock_tick"
+desc = "Matches World Tour clock_tick (0x8009DE70), call-graph score 2.08."
+status = "likely"
+
+[[func]]
+addr = 0x800B68A0
+name = "move_apply_hit"
+desc = "Matches World Tour move_apply_hit (0x8009DF20), call-graph score 1.47."
+status = "likely"
+
+[[func]]
+addr = 0x800B6DEC
+name = "recover_difficulty"
+desc = "Matches World Tour recover_difficulty (0x8009E6C4), call-graph score 1.56."
+status = "likely"
+
+[[func]]
+addr = 0x800B71F8
+name = "chance_roll"
+desc = "Matches World Tour chance_roll (0x8009EBF0), call-graph score 1.62."
+status = "likely"
+
+[[func]]
+addr = 0x800D3550
+name = "abs_i"
+desc = "Matches World Tour abs_i (0x8009F650), call-graph score 1.00."
+status = "likely"
+
+[[func]]
+addr = 0x800D3564
+name = "absf"
+desc = "Matches World Tour absf (0x8009F680), call-graph score 1.17."
+status = "likely"
+
+[[func]]
+addr = 0x800D36B4
+name = "vec3_sub"
+desc = "Matches World Tour vec3_sub (0x8009F93C), call-graph score 1.03."
+status = "likely"
+
+[[func]]
+addr = 0x800D37C0
+name = "vec_from_angle"
+desc = "Matches World Tour vec_from_angle (0x8009FA94), call-graph score 0.91."
+status = "guess"
+
+[[func]]
+addr = 0x800D3838
+name = "vec_xz_step"
+desc = "Matches World Tour vec_xz_step (0x8009FB1C), call-graph score 0.99."
+status = "guess"
+
+[[func]]
+addr = 0x800C4610
+name = "relative_facing"
+desc = "Matches World Tour relative_facing (0x8009FEEC), call-graph score 1.00."
+status = "likely"
+
+[[func]]
+addr = 0x800D3E40
+name = "point_at_offset"
+desc = "Matches World Tour point_at_offset (0x800A000C), call-graph score 1.34."
+status = "likely"
+
+[[func]]
+addr = 0x800D3EEC
+name = "lying_body_dist"
+desc = "Matches World Tour lying_body_dist (0x800A0100), call-graph score 1.00."
+status = "likely"
+
+[[func]]
+addr = 0x800D4088
+name = "rng_seed_match"
+desc = "Matches World Tour rng_seed_match (0x800A02D4), call-graph score 1.37."
+status = "likely"
+
+[[func]]
+addr = 0x800D4148
+name = "rand_pool_next"
+desc = "Matches World Tour rand_pool_next (0x800A039C), call-graph score 1.89."
+status = "likely"
+
+[[func]]
+addr = 0x800BF1E0
+name = "wrestler_region_condition"
+desc = "Matches World Tour wrestler_region_condition (0x800A04F0), call-graph score 1.26."
+status = "likely"
+
+[[func]]
+addr = 0x800BF548
+name = "health_regen"
+desc = "Matches World Tour health_regen (0x800A06F8), call-graph score 1.02."
+status = "likely"
+
+[[func]]
+addr = 0x800BF700
+name = "wrestler_spirit_tick"
+desc = "Matches World Tour wrestler_spirit_tick (0x800A08D4), call-graph score 1.31."
+status = "likely"
+
+[[func]]
+addr = 0x800BFB20
+name = "hud_spirit_value"
+desc = "Matches World Tour hud_spirit_value (0x800A0C9C), call-graph score 1.30."
+status = "likely"
+
+[[func]]
+addr = 0x800D427C
+name = "wrestler_set_anim"
+desc = "Matches World Tour wrestler_set_anim (0x800A0E48), call-graph score 0.98."
+status = "guess"
+
+[[func]]
+addr = 0x800D43DC
+name = "wrestlers_ground_contact"
+desc = "Matches World Tour wrestlers_ground_contact (0x800A1070), call-graph score 1.33."
+status = "likely"
+
+[[func]]
+addr = 0x800D4604
+name = "wrestler_floor_height"
+desc = "Matches World Tour wrestler_floor_height (0x800A13A4), call-graph score 1.46."
+status = "likely"
+
+[[func]]
+addr = 0x800D4B10
+name = "wrestler_apply_anim_location"
+desc = "Matches World Tour wrestler_apply_anim_location (0x800A1D00), call-graph score 1.17."
+status = "likely"
+
+[[func]]
+addr = 0x800D4CC4
+name = "pose_is_lying"
+desc = "Matches World Tour pose_is_lying (0x800A1E30), call-graph score 1.36."
+status = "likely"
+
+[[func]]
+addr = 0x800D4D44
+name = "wrestler_base_anim"
+desc = "Matches World Tour wrestler_base_anim (0x800A1EEC), call-graph score 0.93."
+status = "guess"
+
+[[func]]
+addr = 0x800D6360
+name = "wrestler_translate"
+desc = "Matches World Tour wrestler_translate (0x800A2490), call-graph score 1.11."
+status = "likely"
+
+[[func]]
+addr = 0x800D63F0
+name = "walk_speed"
+desc = "Matches World Tour walk_speed (0x800A2574), call-graph score 1.01."
+status = "likely"
+
+[[func]]
+addr = 0x800D6658
+name = "walk_step"
+desc = "Matches World Tour walk_step (0x800A2964), call-graph score 1.05."
+status = "likely"
+
+[[func]]
+addr = 0x800D6E78
+name = "carry_walk"
+desc = "Matches World Tour carry_walk (0x800A30F8), call-graph score 1.59."
+status = "likely"
+
+[[func]]
+addr = 0x800D7128
+name = "ground_approach_plan"
+desc = "Matches World Tour ground_approach_plan (0x800A3390), call-graph score 1.25."
+status = "likely"
+
+[[func]]
+addr = 0x800D732C
+name = "ground_approach_step"
+desc = "Matches World Tour ground_approach_step (0x800A365C), call-graph score 0.97."
+status = "guess"
+
+[[func]]
+addr = 0x800D746C
+name = "side_point"
+desc = "Matches World Tour side_point (0x800A37F8), call-graph score 2.03."
+status = "likely"
+
+[[func]]
+addr = 0x800D7690
+name = "mash_count"
+desc = "Matches World Tour mash_count (0x800A3B40), call-graph score 1.22."
+status = "likely"
+
+[[func]]
+addr = 0x800D7A2C
+name = "dpad_to_side"
+desc = "Matches World Tour dpad_to_side (0x800A3FA4), call-graph score 2.03."
+status = "likely"
+
+[[func]]
+addr = 0x800D7A68
+name = "dpad_dir8"
+desc = "Matches World Tour dpad_dir8 (0x800A4010), call-graph score 2.05."
+status = "likely"
+
+[[func]]
+addr = 0x800D7B08
+name = "dpad_diagonal_quadrant"
+desc = "Matches World Tour dpad_diagonal_quadrant (0x800A40EC), call-graph score 2.04."
+status = "likely"
+
+[[func]]
+addr = 0x800D26A0
+name = "wrestler_translate_pushed"
+desc = "Matches World Tour wrestler_translate_pushed (0x800A45A0), call-graph score 1.12."
+status = "likely"
+
+[[func]]
+addr = 0x800D2ACC
+name = "wrestler_translate_bounded"
+desc = "Matches World Tour wrestler_translate_bounded (0x800A4638), call-graph score 1.78."
+status = "likely"
+
+[[func]]
+addr = 0x800D2B64
+name = "keep_in_bounds_self"
+desc = "Matches World Tour keep_in_bounds_self (0x800A46F0), call-graph score 1.39."
+status = "likely"
+
+[[func]]
+addr = 0x800D2C68
+name = "keep_in_bounds_pair_c"
+desc = "Matches World Tour keep_in_bounds_pair_c (0x800A4924), call-graph score 1.03."
+status = "likely"
+
+[[func]]
+addr = 0x800D2CAC
+name = "keep_in_bounds"
+desc = "Matches World Tour keep_in_bounds (0x800A4994), call-graph score 1.35."
+status = "likely"
+
+[[func]]
+addr = 0x800A6BE0
+name = "wrestler_set_state"
+desc = "Matches World Tour wrestler_set_state (0x800A54B0), call-graph score 1.27."
+status = "likely"
+
+[[func]]
+addr = 0x800A712C
+name = "wrestler_dist_angle"
+desc = "Matches World Tour wrestler_dist_angle (0x800A5658), call-graph score 0.97."
+status = "guess"
+
+[[func]]
+addr = 0x800A7240
+name = "wrestler_turn_toward"
+desc = "Matches World Tour wrestler_turn_toward (0x800A56E0), call-graph score 1.19."
+status = "likely"
+
+[[func]]
+addr = 0x800A72FC
+name = "wrestler_slide_to"
+desc = "Matches World Tour wrestler_slide_to (0x800A57D8), call-graph score 0.94."
+status = "guess"
+
+[[func]]
+addr = 0x800A7328
+name = "wrestler_move_pos_to_pelvis"
+desc = "Matches World Tour wrestler_move_pos_to_pelvis (0x800A581C), call-graph score 1.21."
+status = "likely"
+
+[[func]]
+addr = 0x800A76FC
+name = "dpad_to_side_any"
+desc = "Matches World Tour dpad_to_side_any (0x800A5C08), call-graph score 1.66."
+status = "likely"
+
+[[func]]
+addr = 0x800A7828
+name = "taunt_stir_opponent"
+desc = "Matches World Tour taunt_stir_opponent (0x800A5DEC), call-graph score 0.97."
+status = "guess"
+
+[[func]]
+addr = 0x800A7968
+name = "rope_rebound_slide"
+desc = "Matches World Tour rope_rebound_slide (0x800A5F00), call-graph score 1.38."
+status = "likely"
+
+[[func]]
+addr = 0x800A7C40
+name = "wrestler_set_move"
+desc = "Matches World Tour wrestler_set_move (0x800A63F8), call-graph score 1.43."
+status = "likely"
+
+[[func]]
+addr = 0x800A7D64
+name = "move_record_unpack"
+desc = "Matches World Tour move_record_unpack (0x800A6514), call-graph score 1.69."
+status = "likely"
+
+[[func]]
+addr = 0x800B8278
+name = "camera_interest"
+desc = "Matches World Tour camera_interest (0x800A7AD0), call-graph score 1.26."
+status = "likely"
+
+[[func]]
+addr = 0x8009DD60
+name = "state_01_stand"
+desc = "Matches World Tour state_01_stand (0x800A7EE4), call-graph score 1.28."
+status = "likely"
+
+[[func]]
+addr = 0x8009E624
+name = "state_03_run"
+desc = "Matches World Tour state_03_run (0x800A888C), call-graph score 0.91."
+status = "guess"
+
+[[func]]
+addr = 0x8009F73C
+name = "state_07_running_attack"
+desc = "Matches World Tour state_07_running_attack (0x800A9858), call-graph score 1.08."
+status = "likely"
+
+[[func]]
+addr = 0x800D23B4
+name = "state_19"
+desc = "Matches World Tour state_19 (0x800AAFC0), call-graph score 0.96."
+status = "guess"
+
+[[func]]
+addr = 0x800A156C
+name = "state_1D_strike"
+desc = "Matches World Tour state_1D_strike (0x800AB170), call-graph score 1.10."
+status = "likely"
+
+[[func]]
+addr = 0x800A164C
+name = "state_25_tko_check"
+desc = "Matches World Tour state_25_tko_check (0x800AB260), call-graph score 0.97."
+status = "guess"
+
+[[func]]
+addr = 0x800A2050
+name = "state_28_down"
+desc = "Matches World Tour state_28_down (0x800ABEB4), call-graph score 0.96."
+status = "guess"
+
+[[func]]
+addr = 0x800A2DDC
+name = "state_34_ground_grapple_def"
+desc = "Matches World Tour state_34_ground_grapple_def (0x800ACEA4), call-graph score 1.00."
+status = "likely"
+
+[[func]]
+addr = 0x800A2DF8
+name = "state_35_hold_attacker"
+desc = "Matches World Tour state_35_hold_attacker (0x800ACECC), call-graph score 0.98."
+status = "guess"
+
+[[func]]
+addr = 0x800A2E14
+name = "state_36_hold_defender"
+desc = "Matches World Tour state_36_hold_defender (0x800ACEF4), call-graph score 1.04."
+status = "likely"
+
+[[func]]
+addr = 0x800A2E68
+name = "state_39_block"
+desc = "Matches World Tour state_39_block (0x800ACF6C), call-graph score 1.20."
+status = "likely"
+
+[[func]]
+addr = 0x800A30FC
+name = "state_3A_block_hit"
+desc = "Matches World Tour state_3A_block_hit (0x800AD2EC), call-graph score 1.17."
+status = "likely"
+
+[[func]]
+addr = 0x800A3380
+name = "state_3C_get_up"
+desc = "Matches World Tour state_3C_get_up (0x800AD6FC), call-graph score 1.07."
+status = "likely"
+
+[[func]]
+addr = 0x800A37E0
+name = "state_46_move_walk_attacker"
+desc = "Matches World Tour state_46_move_walk_attacker (0x800ADC88), call-graph score 1.10."
+status = "likely"
+
+[[func]]
+addr = 0x800A3818
+name = "state_48_catch_runner"
+desc = "Matches World Tour state_48_catch_runner (0x800ADCD8), call-graph score 1.15."
+status = "likely"
+
+[[func]]
+addr = 0x800A3970
+name = "state_49_caught_runner"
+desc = "Matches World Tour state_49_caught_runner (0x800ADEA8), call-graph score 1.92."
+status = "likely"
+
+[[func]]
+addr = 0x800A3EF0
+name = "state_50_dive_knockdown"
+desc = "Matches World Tour state_50_dive_knockdown (0x800AE640), call-graph score 0.98."
+status = "guess"
+
+[[func]]
+addr = 0x800A4F80
+name = "state_5D_dive"
+desc = "Matches World Tour state_5D_dive (0x800AEE20), call-graph score 1.09."
+status = "likely"
+
+[[func]]
+addr = 0x800A4FB8
+name = "state_63_roll_out"
+desc = "Matches World Tour state_63_roll_out (0x800AEE70), call-graph score 1.03."
+status = "likely"
+
+[[func]]
+addr = 0x800A572C
+name = "state_6A"
+desc = "Matches World Tour state_6A (0x800AF95C), call-graph score 1.10."
+status = "likely"
+
+[[func]]
+addr = 0x800B7CF4
+name = "match_tick"
+desc = "Matches World Tour match_tick (0x800B099C), call-graph score 1.40."
+status = "likely"
+
+[[func]]
+addr = 0x800B8C94
+name = "match_abort_draw"
+desc = "Matches World Tour match_abort_draw (0x800B2158), call-graph score 1.41."
+status = "likely"
+
+[[func]]
+addr = 0x800B8D04
+name = "ref_count_reset"
+desc = "Matches World Tour ref_count_reset (0x800B21D0), call-graph score 0.92."
+status = "guess"
+
+[[func]]
+addr = 0x800B8D8C
+name = "referee_count_tick"
+desc = "Matches World Tour referee_count_tick (0x800B2238), call-graph score 1.19."
+status = "likely"
+
+[[func]]
+addr = 0x800B9148
+name = "countout_reset"
+desc = "Matches World Tour countout_reset (0x800B2628), call-graph score 1.05."
+status = "likely"
+
+[[func]]
+addr = 0x800B9194
+name = "countout_tick"
+desc = "Matches World Tour countout_tick (0x800B2680), call-graph score 1.40."
+status = "likely"
+
+[[func]]
+addr = 0x800B955C
+name = "match_check_finish_flags"
+desc = "Matches World Tour match_check_finish_flags (0x800B29A0), call-graph score 1.00."
+status = "likely"
+
+[[func]]
+addr = 0x800BBA00
+name = "wrestlers_update_all"
+desc = "Matches World Tour wrestlers_update_all (0x800B4178), call-graph score 1.07."
+status = "likely"
+
+[[func]]
+addr = 0x800BBFD8
+name = "wrestler_tick"
+desc = "Matches World Tour wrestler_tick (0x800B47D4), call-graph score 1.39."
+status = "likely"
+
+[[func]]
+addr = 0x800BC69C
+name = "input_remap"
+desc = "Matches World Tour input_remap (0x800B4C38), call-graph score 1.80."
+status = "likely"
+
+[[func]]
+addr = 0x800BC7C8
+name = "match_tick_stub"
+desc = "Matches World Tour match_tick_stub (0x800B4DC8), call-graph score 1.20."
+status = "likely"
+
+[[func]]
+addr = 0x800AA9A0
+name = "ai_vs_floor"
+desc = "Matches World Tour ai_vs_floor (0x800B6010), call-graph score 1.21."
+status = "likely"
+
+[[func]]
+addr = 0x800AABA0
+name = "ai_vs_apron_to_floor"
+desc = "Matches World Tour ai_vs_apron_to_floor (0x800B6238), call-graph score 1.40."
+status = "likely"
+
+[[func]]
+addr = 0x800AB2B4
+name = "ai_check_target_tag"
+desc = "Matches World Tour ai_check_target_tag (0x800B67A0), call-graph score 1.28."
+status = "likely"
+
+[[func]]
+addr = 0x800ABD50
+name = "ai_vs_cornered"
+desc = "Matches World Tour ai_vs_cornered (0x800B7090), call-graph score 1.29."
+status = "likely"
+
+[[func]]
+addr = 0x800ABE20
+name = "ai_vs_turnbuckle"
+desc = "Matches World Tour ai_vs_turnbuckle (0x800B71A0), call-graph score 1.33."
+status = "likely"
+
+[[func]]
+addr = 0x800B4690
+name = "run_start"
+desc = "Matches World Tour run_start (0x800B7430), call-graph score 1.00."
+status = "likely"
+
+[[func]]
+addr = 0x800B4C60
+name = "run_step"
+desc = "Matches World Tour run_step (0x800B7A60), call-graph score 1.21."
+status = "likely"
+
+[[func]]
+addr = 0x800B5340
+name = "run_collide"
+desc = "Matches World Tour run_collide (0x800B8214), call-graph score 1.16."
+status = "likely"
+
+[[func]]
+addr = 0x800B5730
+name = "run_inputs"
+desc = "Matches World Tour run_inputs (0x800B87DC), call-graph score 0.96."
+status = "guess"
+
+[[func]]
+addr = 0x800B5F24
+name = "whip_run_inputs"
+desc = "Matches World Tour whip_run_inputs (0x800B9058), call-graph score 1.28."
+status = "likely"
+
+[[func]]
+addr = 0x800B60C8
+name = "corner_run_step"
+desc = "Matches World Tour corner_run_step (0x800B926C), call-graph score 0.93."
+status = "guess"
+
+[[func]]
+addr = 0x800B6114
+name = "run_step_corner"
+desc = "Matches World Tour run_step_corner (0x800B92D4), call-graph score 1.11."
+status = "likely"
+
+[[func]]
+addr = 0x800DE9C0
+name = "input_apron_moves"
+desc = "Matches World Tour input_apron_moves (0x800B93F0), call-graph score 1.17."
+status = "likely"
+
+[[func]]
+addr = 0x800DECAC
+name = "apron_walk"
+desc = "Matches World Tour apron_walk (0x800B9664), call-graph score 0.90."
+status = "guess"
+
+[[func]]
+addr = 0x800DA5E8
+name = "apron_walk_dpad"
+desc = "Matches World Tour apron_walk_dpad (0x800B9954), call-graph score 0.93."
+status = "guess"
+
+[[func]]
+addr = 0x800DEF84
+name = "input_cup_ropes"
+desc = "Matches World Tour input_cup_ropes (0x800B9A94), call-graph score 1.39."
+status = "likely"
+
+[[func]]
+addr = 0x800DF3E4
+name = "input_strike"
+desc = "Matches World Tour input_strike (0x800BA448), call-graph score 1.29."
+status = "likely"
+
+[[func]]
+addr = 0x800E0420
+name = "ground_grapple_try"
+desc = "Matches World Tour ground_grapple_try (0x800BAA0C), call-graph score 1.18."
+status = "likely"
+
+[[func]]
+addr = 0x800E022C
+name = "input_l"
+desc = "Matches World Tour input_l (0x800BAC04), call-graph score 1.29."
+status = "likely"
+
+[[func]]
+addr = 0x800DF99C
+name = "input_cup_opponent"
+desc = "Matches World Tour input_cup_opponent (0x800BADA4), call-graph score 1.07."
+status = "likely"
+
+[[func]]
+addr = 0x800E0D60
+name = "state_3C_get_up_body"
+desc = "Matches World Tour state_3C_get_up_body (0x800BB7D8), call-graph score 1.15."
+status = "likely"
+
+[[func]]
+addr = 0x800E13F8
+name = "get_up_anim"
+desc = "Matches World Tour get_up_anim (0x800BBFC4), call-graph score 1.17."
+status = "likely"
+
+[[func]]
+addr = 0x800E1560
+name = "stance_turn_anim"
+desc = "Matches World Tour stance_turn_anim (0x800BC1B8), call-graph score 1.35."
+status = "likely"
+
+[[func]]
+addr = 0x800DACE4
+name = "dive_aim"
+desc = "Matches World Tour dive_aim (0x800BC888), call-graph score 1.56."
+status = "likely"
+
+[[func]]
+addr = 0x800DB348
+name = "dive_aim_step"
+desc = "Matches World Tour dive_aim_step (0x800BD244), call-graph score 1.57."
+status = "likely"
+
+[[func]]
+addr = 0x800DB4FC
+name = "apron_move_hit"
+desc = "Matches World Tour apron_move_hit (0x800BD508), call-graph score 0.95."
+status = "guess"
+
+[[func]]
+addr = 0x800DB874
+name = "dive_land_hit"
+desc = "Matches World Tour dive_land_hit (0x800BD810), call-graph score 1.02."
+status = "likely"
+
+[[func]]
+addr = 0x800DBB80
+name = "state_09_turnbuckle_body"
+desc = "Matches World Tour state_09_turnbuckle_body (0x800BDC60), call-graph score 1.43."
+status = "likely"
+
+[[func]]
+addr = 0x800DDAC8
+name = "state_5D_body"
+desc = "Matches World Tour state_5D_body (0x800BFD00), call-graph score 1.07."
+status = "likely"
+
+[[func]]
+addr = 0x800C2634
+name = "ropes_ahead"
+desc = "Matches World Tour ropes_ahead (0x800C0E10), call-graph score 1.39."
+status = "likely"
+
+[[func]]
+addr = 0x800C09C0
+name = "state_56_apron_recover_body"
+desc = "Matches World Tour state_56_apron_recover_body (0x800C1030), call-graph score 1.42."
+status = "likely"
+
+[[func]]
+addr = 0x800C129C
+name = "state_55_ropes_b_body"
+desc = "Matches World Tour state_55_ropes_b_body (0x800C1A68), call-graph score 1.28."
+status = "likely"
+
+[[func]]
+addr = 0x800CD990
+name = "grapple_anim_attacker"
+desc = "Matches World Tour grapple_anim_attacker (0x800C3C6C), call-graph score 1.53."
+status = "likely"
+
+[[func]]
+addr = 0x800CDC04
+name = "grapple_anim_defender"
+desc = "Matches World Tour grapple_anim_defender (0x800C421C), call-graph score 1.54."
+status = "likely"
+
+[[func]]
+addr = 0x800CDF40
+name = "grapple_timeout"
+desc = "Matches World Tour grapple_timeout (0x800C46EC), call-graph score 1.37."
+status = "likely"
+
+[[func]]
+addr = 0x800CE124
+name = "double_team_place"
+desc = "Matches World Tour double_team_place (0x800C4964), call-graph score 1.16."
+status = "likely"
+
+[[func]]
+addr = 0x800CE2C8
+name = "double_team_slide"
+desc = "Matches World Tour double_team_slide (0x800C4BC4), call-graph score 0.98."
+status = "guess"
+
+[[func]]
+addr = 0x800CE748
+name = "grapple_contact"
+desc = "Matches World Tour grapple_contact (0x800C5210), call-graph score 0.98."
+status = "guess"
+
+[[func]]
+addr = 0x800CEC10
+name = "state_3D_grapple_attempt_body"
+desc = "Matches World Tour state_3D_grapple_attempt_body (0x800C56DC), call-graph score 1.58."
+status = "likely"
+
+[[func]]
+addr = 0x800CF1B8
+name = "grapple_reach_anim"
+desc = "Matches World Tour grapple_reach_anim (0x800C5C7C), call-graph score 1.24."
+status = "likely"
+
+[[func]]
+addr = 0x800AD2C4
+name = "strike_combo_finish"
+desc = "Strike combo step (state 0x4B): SPECIAL ready -> slot 58; A+B -> 60; A (+Up/Down) ends it with strong grapple slot 18/23/28; B (+Up/Down/Left/Right) the next hit from slot 33/38/43/48/53, +2 on the last hit. Call-graph matching had named it grapple_check_reversal."
+status = "likely"
+
+[[func]]
+addr = 0x800D0700
+name = "grapple_defender_input"
+desc = "Matches World Tour grapple_defender_input (0x800C78B0), call-graph score 1.62."
+status = "likely"
+
+[[func]]
+addr = 0x800D1014
+name = "state_46_move_walk_attacker_body"
+desc = "Matches World Tour state_46_move_walk_attacker_body (0x800C83F4), call-graph score 0.92."
+status = "guess"
+
+[[func]]
+addr = 0x800D1B5C
+name = "move_walk_target"
+desc = "Matches World Tour move_walk_target (0x800C9110), call-graph score 0.92."
+status = "guess"
+
+[[func]]
+addr = 0x800C2CDC
+name = "strike_hit_test"
+desc = "Matches World Tour strike_hit_test (0x800C98B8), call-graph score 0.98."
+status = "guess"
+
+[[func]]
+addr = 0x800C357C
+name = "strike_targets"
+desc = "Matches World Tour strike_targets (0x800CA318), call-graph score 1.12."
+status = "likely"
+
+[[func]]
+addr = 0x800C38FC
+name = "run_collide_check"
+desc = "Matches World Tour run_collide_check (0x800CA83C), call-graph score 1.03."
+status = "likely"
+
+[[func]]
+addr = 0x800C49B4
+name = "hits_taken_decay"
+desc = "Matches World Tour hits_taken_decay (0x800CC14C), call-graph score 1.23."
+status = "likely"
+
+[[func]]
+addr = 0x800C4C60
+name = "state_07_running_attack_body"
+desc = "Matches World Tour state_07_running_attack_body (0x800CC6D8), call-graph score 1.02."
+status = "likely"
+
+[[func]]
+addr = 0x800C5440
+name = "state_1D_strike_body"
+desc = "Matches World Tour state_1D_strike_body (0x800CCE78), call-graph score 0.94."
+status = "guess"
+
+[[func]]
+addr = 0x800C5FBC
+name = "ai_learn_strike_reach"
+desc = "Matches World Tour ai_learn_strike_reach (0x800CD894), call-graph score 0.97."
+status = "guess"
+
+[[func]]
+addr = 0x800C9AC0
+name = "cover_side_pick"
+desc = "Matches World Tour cover_side_pick (0x800CEDD0), call-graph score 1.24."
+status = "likely"
+
+[[func]]
+addr = 0x800C9B5C
+name = "state_2F_cover_attacker_body"
+desc = "Matches World Tour state_2F_cover_attacker_body (0x800CEEB8), call-graph score 1.51."
+status = "likely"
+
+[[func]]
+addr = 0x800CA758
+name = "state_32_pin_defender_body"
+desc = "Matches World Tour state_32_pin_defender_body (0x800CFE44), call-graph score 1.67."
+status = "likely"
+
+[[func]]
+addr = 0x800CB054
+name = "state_33_body"
+desc = "Matches World Tour state_33_body (0x800D09BC), call-graph score 1.71."
+status = "likely"
+
+[[func]]
+addr = 0x800CB878
+name = "state_34_body"
+desc = "Matches World Tour state_34_body (0x800D1588), call-graph score 1.11."
+status = "likely"
+
+[[func]]
+addr = 0x800CBC4C
+name = "ground_grapple_move"
+desc = "Matches World Tour ground_grapple_move (0x800D1B80), call-graph score 0.99."
+status = "guess"
+
+[[func]]
+addr = 0x800CBD5C
+name = "ground_grapple_defend"
+desc = "Matches World Tour ground_grapple_defend (0x800D1CE8), call-graph score 1.60."
+status = "likely"
+
+[[func]]
+addr = 0x800CBE28
+name = "state_35_hold_attacker_body"
+desc = "Matches World Tour state_35_hold_attacker_body (0x800D1DF0), call-graph score 1.18."
+status = "likely"
+
+[[func]]
+addr = 0x800CC158
+name = "state_36_hold_defender_body"
+desc = "Matches World Tour state_36_hold_defender_body (0x800D2338), call-graph score 1.15."
+status = "likely"
+
+[[func]]
+addr = 0x800BCA10
+name = "state_0A_whip_attacker_body"
+desc = "Matches World Tour state_0A_whip_attacker_body (0x800D3560), call-graph score 1.54."
+status = "likely"
+
+[[func]]
+addr = 0x800BD45C
+name = "state_0B_whip_runner_body"
+desc = "Matches World Tour state_0B_whip_runner_body (0x800D4514), call-graph score 1.47."
+status = "likely"
+
+[[func]]
+addr = 0x800BD980
+name = "whip_attacker_input"
+desc = "Matches World Tour whip_attacker_input (0x800D4D4C), call-graph score 1.41."
+status = "likely"
+
+[[func]]
+addr = 0x800BE450
+name = "whip_place_runner"
+desc = "Matches World Tour whip_place_runner (0x800D5A58), call-graph score 0.97."
+status = "guess"
+
+[[func]]
+addr = 0x800BE4E0
+name = "state_0C_whip_ctx_attacker_body"
+desc = "Matches World Tour state_0C_whip_ctx_attacker_body (0x800D5AF0), call-graph score 1.52."
+status = "likely"
+
+[[func]]
+addr = 0x800BE908
+name = "state_0D_whip_ctx_runner_body"
+desc = "Matches World Tour state_0D_whip_ctx_runner_body (0x800D60BC), call-graph score 1.83."
+status = "likely"
+
+[[func]]
+addr = 0x800BEB14
+name = "whip_ctx_steer"
+desc = "Matches World Tour whip_ctx_steer (0x800D6418), call-graph score 1.27."
+status = "likely"
+
+[[func]]
+addr = 0x800BED3C
+name = "whip_ctx_targets"
+desc = "Matches World Tour whip_ctx_targets (0x800D6760), call-graph score 1.03."
+status = "likely"
+
+[[func]]
+addr = 0x800BF018
+name = "whip_ctx_dpad"
+desc = "Matches World Tour whip_ctx_dpad (0x800D6BD8), call-graph score 1.28."
+status = "likely"
+
+[[func]]
+addr = 0x800BF150
+name = "whip_push_check"
+desc = "Matches World Tour whip_push_check (0x800D6DC4), call-graph score 1.33."
+status = "likely"
+
+[[func]]
+addr = 0x800D7E80
+name = "pair_scripted_place"
+desc = "Matches World Tour pair_scripted_place (0x800D6EA0), call-graph score 1.09."
+status = "likely"
+
+[[func]]
+addr = 0x800E1AD8
+name = "weapons_reset"
+desc = "Matches World Tour weapons_reset (0x800D7DC0), call-graph score 1.03."
+status = "likely"
+
+[[func]]
+addr = 0x800D49A0
+name = "weapons_tick"
+desc = "Matches World Tour weapons_tick (0x800D7EEC), call-graph score 1.09."
+status = "likely"
+
+[[func]]
+addr = 0x800E2230
+name = "weapon_tip_point"
+desc = "Matches World Tour weapon_tip_point (0x800D8210), call-graph score 1.11."
+status = "likely"
+
+[[func]]
+addr = 0x800E2400
+name = "input_crowd_weapon"
+desc = "Matches World Tour input_crowd_weapon (0x800D84A4), call-graph score 1.57."
+status = "likely"
+
+[[func]]
+addr = 0x800E27B4
+name = "state_6F_crowd_weapon_body"
+desc = "Matches World Tour state_6F_crowd_weapon_body (0x800D85A8), call-graph score 1.56."
+status = "likely"
+
+[[func]]
+addr = 0x800AD218
+name = "strike_combo_input"
+desc = "Matches World Tour strike_combo_input (0x800D9C10), call-graph score 0.91."
+status = "guess"
+
+[[func]]
+addr = 0x800AD454
+name = "strike_combo_counter"
+desc = "Matches World Tour strike_combo_counter (0x800D9F68), call-graph score 1.32."
+status = "likely"
+
+[[func]]
+addr = 0x800AD574
+name = "strike_combo_reversal"
+desc = "Matches World Tour strike_combo_reversal (0x800DA118), call-graph score 1.58."
+status = "likely"
+
+[[func]]
+addr = 0x800AD6D0
+name = "strike_combo_meter"
+desc = "Matches World Tour strike_combo_meter (0x800DA300), call-graph score 1.39."
+status = "likely"
+
+[[func]]
+addr = 0x800C78F0
+name = "state_2D_pickup_attacker_body"
+desc = "Matches World Tour state_2D_pickup_attacker_body (0x800DA440), call-graph score 1.55."
+status = "likely"
+
+[[func]]
+addr = 0x800C8188
+name = "state_2B_body"
+desc = "Matches World Tour state_2B_body (0x800DAF50), call-graph score 1.15."
+status = "likely"
+
+[[func]]
+addr = 0x800C86C8
+name = "state_64_hold_for_partner_body"
+desc = "Matches World Tour state_64_hold_for_partner_body (0x800DB5B0), call-graph score 1.44."
+status = "likely"
+
+[[func]]
+addr = 0x800C8D84
+name = "hold_for_partner_walk"
+desc = "Matches World Tour hold_for_partner_walk (0x800DC0B4), call-graph score 1.59."
+status = "likely"
+
+[[func]]
+addr = 0x800C9014
+name = "state_66_carry_attacker_body"
+desc = "Matches World Tour state_66_carry_attacker_body (0x800DC4E0), call-graph score 1.53."
+status = "likely"
+
+[[func]]
+addr = 0x800C94CC
+name = "state_67_carry_carried_body"
+desc = "Matches World Tour state_67_carry_carried_body (0x800DCB80), call-graph score 1.30."
+status = "likely"
+
+[[func]]
+addr = 0x800D8DF0
+name = "wrestler_may_act"
+desc = "Matches World Tour wrestler_may_act (0x800DD200), call-graph score 1.45."
+status = "likely"
+
+[[func]]
+addr = 0x800D8F44
+name = "illegal_should_leave"
+desc = "Matches World Tour illegal_should_leave (0x800DD368), call-graph score 1.10."
+status = "likely"
+
+[[func]]
+addr = 0x800D91C0
+name = "tag_time_tick"
+desc = "Matches World Tour tag_time_tick (0x800DD6C4), call-graph score 1.75."
+status = "likely"
+
+[[func]]
+addr = 0x800D9270
+name = "ai_wants_tag_out"
+desc = "Matches World Tour ai_wants_tag_out (0x800DD7B8), call-graph score 1.24."
+status = "likely"
+
+[[func]]
+addr = 0x800D9944
+name = "tag_try"
+desc = "Matches World Tour tag_try (0x800DDF9C), call-graph score 1.40."
+status = "likely"
+
+[[func]]
+addr = 0x800D9E1C
+name = "tag_exchange"
+desc = "Matches World Tour tag_exchange (0x800DE564), call-graph score 0.96."
+status = "guess"
+
+[[func]]
+addr = 0x800DA3D8
+name = "tag_in"
+desc = "Matches World Tour tag_in (0x800DEC6C), call-graph score 1.07."
+status = "likely"
+
+[[func]]
+addr = 0x800ADA38
+name = "ai_pick_mode"
+desc = "Matches World Tour ai_pick_mode (0x800DF298), call-graph score 1.08."
+status = "likely"
+
+[[func]]
+addr = 0x800ADE4C
+name = "ai_perceive"
+desc = "Matches World Tour ai_perceive (0x800DF360), call-graph score 1.02."
+status = "likely"
+
+[[func]]
+addr = 0x800AEBF0
+name = "ai_run_direction"
+desc = "Matches World Tour ai_run_direction (0x800E0710), call-graph score 0.99."
+status = "guess"
+
+[[func]]
+addr = 0x800B1634
+name = "ai_block_delay"
+desc = "Matches World Tour ai_block_delay (0x800E3608), call-graph score 1.13."
+status = "likely"
+
+[[func]]
+addr = 0x8000B248
+name = "rope_release"
+desc = "Matches World Tour rope_release (0x8000B7CC), call-graph score 1.07."
+status = "likely"
+
+[[func]]
+addr = 0x80010060
+name = "rope_attach"
+desc = "Matches World Tour rope_attach (0x800101F0), call-graph score 1.04."
+status = "likely"
+
+[[func]]
+addr = 0x80096210
+name = "hud_draw_panels"
+desc = "Matches World Tour hud_draw_panels (0x800976E8), call-graph score 1.01."
+status = "likely"
+
+[[func]]
+addr = 0x800D9DD4
+name = "xz_within"
+desc = "Matches World Tour xz_within (0x8009FE04), call-graph score 0.96."
+status = "guess"
+
+[[func]]
+addr = 0x800D7984
+name = "recover_tick_ground"
+desc = "Matches World Tour recover_tick_ground (0x800A3EFC), call-graph score 1.18."
+status = "likely"
+
+[[func]]
+addr = 0x800A7418
+name = "wrestler_dist_list"
+desc = "Matches World Tour wrestler_dist_list (0x800A5860), call-graph score 1.00."
+status = "likely"
+
+[[func]]
+addr = 0x800A4F9C
+name = "state_62_return_to_ring"
+desc = "Matches World Tour state_62_return_to_ring (0x800AEE48), call-graph score 1.02."
+status = "likely"
+
+[[func]]
+addr = 0x800A5EA8
+name = "state_70_to_apron"
+desc = "Matches World Tour state_70_to_apron (0x800B0238), call-graph score 1.10."
+status = "likely"
+
+[[func]]
+addr = 0x800B8484
+name = "match_end"
+desc = "Matches World Tour match_end (0x800B12FC), call-graph score 1.47."
+status = "likely"
+
+[[func]]
+addr = 0x800BAC30
+name = "match_init_wrestlers"
+desc = "Matches World Tour match_init_wrestlers (0x800B3400), call-graph score 1.19."
+status = "likely"
+
+[[func]]
+addr = 0x800AB560
+name = "ai_vs_grappler"
+desc = "Matches World Tour ai_vs_grappler (0x800B6968), call-graph score 1.05."
+status = "likely"
+
+[[func]]
+addr = 0x800DFC8C
+name = "strike_across_ropes"
+desc = "Matches World Tour strike_across_ropes (0x800BA694), call-graph score 1.13."
+status = "likely"
+
+[[func]]
+addr = 0x800E07DC
+name = "corner_free"
+desc = "Matches World Tour corner_free (0x800BB194), call-graph score 0.90."
+status = "guess"
+
+[[func]]
+addr = 0x800E08C8
+name = "apron_recover_place"
+desc = "Matches World Tour apron_recover_place (0x800BB2A8), call-graph score 1.39."
+status = "likely"
+
+[[func]]
+addr = 0x800DB72C
+name = "dive_counter"
+desc = "Matches World Tour dive_counter (0x800BD684), call-graph score 1.28."
+status = "likely"
+
+[[func]]
+addr = 0x800C16BC
+name = "state_62_body"
+desc = "Matches World Tour state_62_body (0x800C20E8), call-graph score 1.04."
+status = "likely"
+
+[[func]]
+addr = 0x800C1DCC
+name = "state_70_body"
+desc = "Matches World Tour state_70_body (0x800C23D0), call-graph score 0.97."
+status = "guess"

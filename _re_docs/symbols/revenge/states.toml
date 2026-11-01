@@ -1,0 +1,152 @@
+# Revenge state handlers matched to World Tour (only the confident ones).
+# Alignment: _re_docs/individual_games/wcw_revenge/README.md
+
+[[func]]
+addr = 0x8009E55C
+name = "state_02"
+desc = "Handler for Revenge state 0x02; matches World Tour state 0x02 (state_02) by shared animations and constants and its place in the table."
+status = "likely"
+
+[[func]]
+addr = 0x8009EDBC
+name = "state_04"
+desc = "Handler for Revenge state 0x04; matches World Tour state 0x04 (state_04) by shared animations and constants and its place in the table."
+status = "likely"
+
+[[func]]
+addr = 0x8009F80C
+name = "state_0A_turnbuckle"
+desc = "Handler for Revenge state 0x0A; matches World Tour state 0x09 (state_09_turnbuckle) by shared animations and constants and its place in the table."
+status = "likely"
+
+[[func]]
+addr = 0x8009F828
+name = "state_0B_whip_attacker"
+desc = "Handler for Revenge state 0x0B; matches World Tour state 0x0A (state_0A_whip_attacker) by shared animations and constants and its place in the table."
+status = "likely"
+
+[[func]]
+addr = 0x8009F844
+name = "state_0C_whip_runner"
+desc = "Handler for Revenge state 0x0C; matches World Tour state 0x0B (state_0B_whip_runner) by shared animations and constants and its place in the table."
+status = "likely"
+
+[[func]]
+addr = 0x8009FCBC
+name = "state_14_corner_slump"
+desc = "Handler for Revenge state 0x14; matches World Tour state 0x13 (state_13_corner_slump) by shared animations and constants and its place in the table."
+status = "likely"
+
+[[func]]
+addr = 0x800A15DC
+name = "state_22"
+desc = "Handler for Revenge state 0x22; matches World Tour state 0x21 (state_21) by shared animations and constants and its place in the table."
+status = "likely"
+
+[[func]]
+addr = 0x800A1630
+name = "state_28"
+desc = "Handler for Revenge state 0x28; matches World Tour state 0x24 (state_24) by shared animations and constants and its place in the table."
+status = "likely"
+
+[[func]]
+addr = 0x800A1D34
+name = "state_2B_recover"
+desc = "Handler for Revenge state 0x2B; matches World Tour state 0x27 (state_27_recover) by shared animations and constants and its place in the table."
+status = "likely"
+
+[[func]]
+addr = 0x800A26AC
+name = "state_2D_dazed"
+desc = "Handler for Revenge state 0x2D; matches World Tour state 0x29 (state_29_dazed) by shared animations and constants and its place in the table."
+status = "likely"
+
+[[func]]
+addr = 0x800A2CE0
+name = "state_32_pickup_attacker"
+desc = "Handler for Revenge state 0x32; matches World Tour state 0x2D (state_2D_pickup_attacker) by shared animations and constants and its place in the table."
+status = "likely"
+
+[[func]]
+addr = 0x800A2D50
+name = "state_36_cover_attacker"
+desc = "Handler for Revenge state 0x36; matches World Tour state 0x2F (state_2F_cover_attacker) by shared animations and constants and its place in the table."
+status = "likely"
+
+[[func]]
+addr = 0x800A2DC0
+name = "state_3A"
+desc = "Handler for Revenge state 0x3A; matches World Tour state 0x33 (state_33) by shared animations and constants and its place in the table."
+status = "likely"
+
+[[func]]
+addr = 0x800A339C
+name = "state_44_grapple_attempt"
+desc = "Handler for Revenge state 0x44; matches World Tour state 0x3D (state_3D_grapple_attempt) by shared animations and constants and its place in the table."
+status = "likely"
+
+[[func]]
+addr = 0x800A33F0
+name = "state_47"
+desc = "Handler for Revenge state 0x47; matches World Tour state 0x40 (state_40) by shared animations and constants and its place in the table."
+status = "likely"
+
+[[func]]
+addr = 0x800A340C
+name = "state_48"
+desc = "Handler for Revenge state 0x48; matches World Tour state 0x41 (state_41) by shared animations and constants and its place in the table."
+status = "likely"
+
+[[func]]
+addr = 0x800A4E84
+name = "state_61_ropes_b"
+desc = "Handler for Revenge state 0x61; matches World Tour state 0x55 (state_55_ropes_b) by shared animations and constants and its place in the table."
+status = "likely"
+
+[[func]]
+addr = 0x800A4EA0
+name = "state_62_apron_recover"
+desc = "Handler for Revenge state 0x62; matches World Tour state 0x56 (state_56_apron_recover) by shared animations and constants and its place in the table."
+status = "likely"
+
+[[func]]
+addr = 0x800A525C
+name = "state_72_hold_for_partner"
+desc = "Handler for Revenge state 0x72; matches World Tour state 0x64 (state_64_hold_for_partner) by shared animations and constants and its place in the table."
+status = "likely"
+
+[[func]]
+addr = 0x800A5278
+name = "state_73_held_for_partner"
+desc = "Handler for Revenge state 0x73; matches World Tour state 0x65 (state_65_held_for_partner) by shared animations and constants and its place in the table."
+status = "likely"
+
+[[func]]
+addr = 0x800A5294
+name = "state_74_carry_attacker"
+desc = "Handler for Revenge state 0x74; matches World Tour state 0x66 (state_66_carry_attacker) by shared animations and constants and its place in the table."
+status = "likely"
+
+[[func]]
+addr = 0x800A52B0
+name = "state_75_carry_carried"
+desc = "Handler for Revenge state 0x75; matches World Tour state 0x67 (state_67_carry_carried) by shared animations and constants and its place in the table."
+status = "likely"
+
+[[func]]
+addr = 0x800A5A40
+name = "state_7A"
+desc = "Handler for Revenge state 0x7A; matches World Tour state 0x6C (state_6C) by shared animations and constants and its place in the table."
+status = "likely"
+
+[[func]]
+addr = 0x800A5E8C
+name = "state_7D_crowd_weapon"
+desc = "Handler for Revenge state 0x7D; matches World Tour state 0x6F (state_6F_crowd_weapon) by shared animations and constants and its place in the table."
+status = "likely"
+
+[[func]]
+addr = 0x800A5EFC
+name = "state_81"
+desc = "Handler for Revenge state 0x81; matches World Tour state 0x73 (state_73) by shared animations and constants and its place in the table."
+status = "likely"

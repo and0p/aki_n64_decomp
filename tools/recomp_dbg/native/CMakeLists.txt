@@ -1,0 +1,10 @@
+cmake_minimum_required(VERSION 3.16)
+project(aki_debug CXX)
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded")  # static CRT: no extra DLLs next to the mod
+add_library(aki_debug SHARED aki_debug.cpp)
+target_link_libraries(aki_debug PRIVATE ws2_32)
+option(AKI_GAME_REVENGE "Build for WCW/nWo Revenge instead of World Tour" OFF)
+if(AKI_GAME_REVENGE)
+  target_compile_definitions(aki_debug PRIVATE AKI_GAME_REVENGE=1)
+endif()

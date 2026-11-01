@@ -1,0 +1,72 @@
+# Asset archive, loading and decompression (main segment).
+# Notes: _re_docs/file_formats/asset_archive.md
+
+[[func]]
+addr = 0x80004D24
+name = "file_lookup"
+proto = "void file_lookup(struct FileInfo *info, u16 file)"
+desc = "Fills info with ROM start/end, unpacked size and packed length of archive file 1..5498."
+status = "confirmed"
+notes = "Hangs (infinite loop) on file 0 or >= 5499. Offsets are relative to ROM 0x39490; bit 0 of the offset entry marks LZSS."
+
+[[func]]
+addr = 0x80004DDC
+name = "file_load"
+proto = "void file_load(struct FileInfo *info, u16 file, void *dest)"
+desc = "Loads an archive file to dest, decompressing through a temporary heap buffer when packed."
+status = "confirmed"
+
+[[func]]
+addr = 0x80004E8C
+name = "lzss_decompress"
+proto = "void lzss_decompress(u8 *src, u8 *dest)"
+desc = "Okumura-style LZSS: u32 size header, LSB-first flag bytes, 4 KB zero-filled window starting at 0xFEE."
+status = "confirmed"
+
+[[func]]
+addr = 0x80007AC0
+name = "tex_pal_load"
+proto = "void tex_pal_load(void *obj, s16 tex_file, s16 pal_file)"
+desc = "Loads a texture file and its palette file into heap buffers owned by obj."
+status = "likely"
+
+[[func]]
+addr = 0x8000977C
+name = "anim_table_load"
+proto = "void anim_table_load(void)"
+desc = "Loads file 618 (32 bytes of metadata per animation) and stores the pointer in g_anim_meta."
+status = "confirmed"
+
+[[func]]
+addr = 0x800097EC
+name = "anim_player_set"
+proto = "void anim_player_set(void *player, s16 anim_id)"
+desc = "Starts animation anim_id (= archive file number, >= 2901) on an animation player, copying its metadata."
+status = "confirmed"
+
+[[data]]
+addr = 0x80047900
+name = "g_file_offsets"
+type = "u32 *"
+desc = "Archive offset table in RAM (copy of ROM 0x7C1A78); bit 0 = compressed."
+status = "confirmed"
+
+[[data]]
+addr = 0x80047904
+name = "g_file_sizes"
+type = "u32 *"
+desc = "Unpacked size of every archive file."
+status = "confirmed"
+
+[[data]]
+addr = 0x80047E18
+name = "g_anim_headers"
+type = "u32 *"
+desc = "Header word of every animation file (bits 0-15 frame count, 16-25 yaw change / 4, 26-30 pose class), indexed by anim id - 2901. Filled by anim_headers_load."
+status = "confirmed"
+
+[[data]]
+addr = 0x80047E1C
+name = "g_anim_meta"
+desc = "Pointer to file 618 contents: 32 bytes per animation, indexed by anim_id - 2901."
+status = "confirmed"

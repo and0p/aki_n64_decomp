@@ -1,0 +1,818 @@
+# Bulk naming pass over the Revenge match overlay (2026-11-01), from pseudocode only.
+# Short helpers and wrappers; move entries to a subsystem file when they are studied.
+
+[[func]]
+addr = 0x800D3590
+name = "angle_wrap"
+desc = "Sign-extends a 12-bit angle (4096 = full turn)."
+status = "confirmed"
+
+[[func]]
+addr = 0x800D35B0
+name = "angle_add"
+desc = "Adds two 12-bit angles, wrapped to -2048..2047."
+status = "confirmed"
+
+[[func]]
+addr = 0x800D35D4
+name = "angle_to_float"
+desc = "Converts a 12-bit angle to radians (or degrees) by a double constant."
+status = "likely"
+
+[[func]]
+addr = 0x800D35F4
+name = "float_to_angle"
+desc = "Inverse of angle_to_float."
+status = "likely"
+
+[[func]]
+addr = 0x800D3638
+name = "angle_dir8"
+desc = "Octant 0-7 of an angle ((a + 256) / 512, wrapped)."
+status = "confirmed"
+
+[[func]]
+addr = 0x800D3614
+name = "angle_dir8_back"
+desc = "angle_dir8 of the angle turned half a turn."
+status = "likely"
+
+[[func]]
+addr = 0x800D371C
+name = "vec2_len"
+desc = "sqrt(x*x + z*z)."
+status = "confirmed"
+
+[[func]]
+addr = 0x800BF228
+name = "wrestler_add_region_condition"
+desc = "Adds to a body-region condition (+0x34C[region]), floored at 0; called by move_apply_hit. World Tour has it at +0x33C."
+status = "confirmed"
+
+[[func]]
+addr = 0x800BF2FC
+name = "wrestler_health_eff"
+desc = "Health used by recovery code: health_max (+0x12) while SPECIAL (flags_lo +0x24 & 0x80000), else health (+0x10). Same rule as World Tour with fields moved."
+status = "confirmed"
+
+[[func]]
+addr = 0x800B3AD8
+name = "ai_reflex_mash_rate"
+desc = "Reflex press factor by perceived health: 0.45 (>= 129), 0.55 (65-128), 0.65 (below 65); shared by reflex modes 17, 18 and 37 (World Tour had separate factors: 0.45/0.5/0.6 for pins and holds, 0.78/0.54 for whips)."
+status = "confirmed"
+
+[[func]]
+addr = 0x800AD958
+name = "ai_set_mode"
+desc = "Sets the AI mode (block +2), clears its step (+4), stamps the opponent state (+46), clears low bits of +92."
+status = "likely"
+
+[[func]]
+addr = 0x800AD9E8
+name = "ai_set_mode_if_new"
+desc = "ai_set_mode only when the mode differs."
+status = "likely"
+
+[[func]]
+addr = 0x800AD98C
+name = "ai_set_mode_attached"
+desc = "ai_set_mode plus flags_lo 0x10000000 on the AI wrestler."
+status = "guess"
+
+[[func]]
+addr = 0x800D5438
+name = "wrestler_move_anim"
+desc = "Animation id for part a2 of the current move: move set table at 0x8007C5B8 (1536 bytes per set) + 4363."
+status = "likely"
+
+[[func]]
+addr = 0x800D4AD0
+name = "wrestler_apply_anim_frame"
+desc = "Per-frame animation side effects: facing += the animation yaw delta, pose class to +0x42."
+status = "likely"
+
+[[func]]
+addr = 0x800CDEE4
+name = "grapple_struggle_frames"
+desc = "Frames of the grapple struggle window: 30 against a REVERSING opponent, else 60, 90 with grapple ctx STRONG, 60 with 0x300."
+status = "likely"
+
+[[func]]
+addr = 0x800D4270
+name = "wrestler_anim_clear"
+desc = "Sets the animation id (+8) to -1."
+status = "guess"
+
+[[func]]
+addr = 0x80090000
+name = "match_main"
+desc = "Loops match_run while 0x800F99B0 (restart flag) is set."
+status = "likely"
+
+[[func]]
+addr = 0x800A7D1C
+name = "wrestler_set_move_from"
+desc = "Selects move slot a2 of the wrestler move set (+902) and unpacks its record (move_record_unpack, 24-byte table at 0x8007BD78) into +908."
+status = "confirmed"
+
+[[func]]
+addr = 0x800D7894
+name = "recover_tick"
+desc = "recover_count (+0x18) -= 1, once more when mash_count counts a press."
+status = "confirmed"
+
+[[func]]
+addr = 0x800D78F4
+name = "recover_tick_clamped"
+desc = "As recover_tick, but with a3 set the count stops at 0 instead of going negative. New in Revenge."
+status = "confirmed"
+
+[[func]]
+addr = 0x800BF338
+name = "wrestler_add_health"
+desc = "Adds to health (+0x10), capped at health_max (+0x12); at 0 with rule 0x100 handles the knock-out case. Call-graph matching had called it dive_pick (wrong)."
+status = "confirmed"
+
+[[func]]
+addr = 0x800D4198
+name = "chance_check"
+desc = "True when the next random-pool value is at most the chance (as World Tour 0x800A0410); the decompiler drops the compare. Called by the AI and the state code with a 0-999 chance."
+status = "likely"
+
+[[func]]
+addr = 0x800ADF40
+name = "ai_weighted_pick"
+desc = "Walks a (threshold, value) table ended by -1 until the threshold reaches a random-pool value; call-graph matching had called it chance_check (wrong)."
+status = "guess"
+
+[[func]]
+addr = 0x800D3684
+name = "angle_diff"
+desc = "Shortest signed difference of two 12-bit angles."
+status = "confirmed"
+
+[[func]]
+addr = 0x800DA8B4
+name = "clock_set"
+desc = "Sets a MatchClock to minutes, seconds and 0 ticks."
+status = "confirmed"
+
+[[func]]
+addr = 0x800D633C
+name = "match_hud_hidden"
+desc = "True while bit 2 of the match flags 0x800FABD8 is set (HUD and clock skip drawing)."
+status = "guess"
+
+[[func]]
+addr = 0x800D548C
+name = "match_flags_clear"
+desc = "Clears the match flags 0x800FABD8 and 0x800F97D2."
+status = "guess"
+
+[[func]]
+addr = 0x800D43B4
+name = "wrestler_restart_anim"
+desc = "Sets the animation id to -1 and calls wrestler_set_anim, so the same animation restarts."
+status = "confirmed"
+
+[[func]]
+addr = 0x800D25D0
+name = "wrestler_slide"
+desc = "sub_800D2758(w, a2, 0, -1): the plain form of the per-frame slide / movement step used by most states."
+status = "guess"
+
+[[func]]
+addr = 0x800D2600
+name = "wrestler_slide_with"
+desc = "sub_800D2758 with an extra partner argument (carry and hold-for-partner walks)."
+status = "guess"
+
+[[func]]
+addr = 0x800D2BAC
+name = "keep_in_bounds_pair"
+desc = "keep_in_bounds(w, opp, 0, factor)."
+status = "confirmed"
+
+[[func]]
+addr = 0x800D2BEC
+name = "pair_follow"
+desc = "keep_in_bounds with all arguments passed through."
+status = "likely"
+
+[[func]]
+addr = 0x800D2C2C
+name = "keep_in_bounds_masked"
+desc = "keep_in_bounds wrapper used by double_team_slide."
+status = "likely"
+
+[[func]]
+addr = 0x800D36E8
+name = "vec_xz_angle"
+desc = "Angle of an x/z vector (atan2, 0x80003A3C)."
+status = "confirmed"
+
+[[func]]
+addr = 0x800A77F0
+name = "ring_zone_of"
+desc = "Zone of a wrestler position (wraps vec_xz_angle)."
+status = "guess"
+
+[[func]]
+addr = 0x800D6610
+name = "aim_at_side_point"
+desc = "Faces the wrestler toward the side point a2 of the table at 0x800E3BF0."
+status = "likely"
+
+[[func]]
+addr = 0x800D4028
+name = "hermite_weights"
+desc = "Cubic blend weights for a parameter t (used by ground_approach_step)."
+status = "likely"
+
+[[func]]
+addr = 0x800CE6E4
+name = "scripted_slide_step"
+desc = "For the first 6 frames of the state moves by the slide vector (+828) and turns by +840, then faces a2."
+status = "likely"
+
+[[func]]
+addr = 0x800D8D74
+name = "pair_slide_step"
+desc = "Moves the wrestler (and the partner a2) by the slide vector while the state timer runs down, turning by +840."
+status = "likely"
+
+[[func]]
+addr = 0x800A837C
+name = "move_use_count"
+desc = "Counts uses of the current move: increments the per-wrestler 87-slot table at 0x8007F0E4 (8 bytes each) unless slot 87."
+status = "likely"
+
+[[func]]
+addr = 0x800A8D14
+name = "reversal_slot"
+desc = "Picks a reversal move slot from a 2-bit-per-move table (400 bytes per wrestler at 0x80064AE0) for the current move."
+status = "guess"
+
+[[func]]
+addr = 0x800E0780
+name = "spirit_reset_special"
+desc = "With 0x2000 in a2, ends SPECIAL (flags_lo 0x80000) and sets spirit back to 50."
+status = "guess"
+
+[[func]]
+addr = 0x800BF26C
+name = "wrestler_attach_timer_tick"
+desc = "Clears flags_lo 0x10000000 and runs a per-slot countdown (0x800EB4B8) that sets it again."
+status = "guess"
+
+[[func]]
+addr = 0x800C2B20
+name = "damage_popups_init"
+desc = "Resets eight 64-byte records per slot at 0x800FABE8 (150.0, 15, 0)."
+status = "guess"
+
+[[func]]
+addr = 0x800A6C48
+name = "wrestler_set_state_now"
+desc = "wrestler_set_state plus RERUN (flags +0x24 |= 0x10000000), so the new state runs in the same frame (World Tour 0x1000000)."
+status = "confirmed"
+
+[[func]]
+addr = 0x800A6CDC
+name = "wrestler_set_state_free"
+desc = "wrestler_set_state and unlink: clears GRAPPLE_LEAD (+0x24 & 0x40000000) and the link bytes +866/+867."
+status = "confirmed"
+
+[[func]]
+addr = 0x800A6D80
+name = "wrestler_set_state_free_now"
+desc = "wrestler_set_state_free plus RERUN."
+status = "confirmed"
+
+[[func]]
+addr = 0x800A6E44
+name = "pair_set_state"
+desc = "Sets two wrestlers to states a2 / a4 at once (both unlinked), as a grapple or pair start."
+status = "confirmed"
+
+[[func]]
+addr = 0x800C41F0
+name = "strike_counter_start"
+desc = "From the strike landing: picks the counter pair by the caught-strike record (+0x3A): 0x5A/0x5B, 0x5D/0x5E or 0x58/0x59 (also 0x79/0x7A on the apron), with sound 300."
+status = "likely"
+
+[[func]]
+addr = 0x800CD3F8
+name = "grapple_start_pair"
+desc = "Starts the grapple pair from grapple context (+0x2C): 0x72/0x73, 0x45/0x46 in the ring, or 0x8B/0x8C between the apron and the ring."
+status = "likely"
+
+[[func]]
+addr = 0x800CCE50
+name = "grapple_attempt_resolve"
+desc = "From state_3D_grapple_attempt_body: sets the grapple context bits and calls grapple_start_pair (or pairs 0x7B/0x7C)."
+status = "guess"
+
+[[func]]
+addr = 0x800E0590
+name = "input_flip_opponent"
+desc = "C-Left next to a downed opponent: pair 0x30/0x31 (flip over)."
+status = "likely"
+
+[[func]]
+addr = 0x800C0004
+name = "entrants_enter_check"
+desc = "From match_tick: match type 0x100 with rule 0x200 tries a run-in into an empty slot (run_in_try); match type 0x400 (battle royal) puts any wrestler flagged lo 0x10 that stands or is down into state 0x8F, which brings the next entrant in."
+status = "confirmed"
+
+[[func]]
+addr = 0x800DF5C4
+name = "input_climb_turnbuckle"
+desc = "Matches World Tour input_climb_turnbuckle (call graph; calls can_climb_turnbuckle and the side check). With header trait 0x400000 and the opponent lying in the ring it starts state 0x66 instead: a trait-gated climb or springboard onto a downed opponent."
+status = "guess"
+
+[[func]]
+addr = 0x800E1920
+name = "weapon_give"
+desc = "Gives a wrestler a weapon: picks a free weapon object (sub_800E2A18), sets hi 0x10000 (holding) and a random type 3-10 (fixed for roster 0x703), hi 0x20000 for some types. Called by the crowd-weapon state, the run-in and state 0x8D."
+status = "likely"
+
+[[func]]
+addr = 0x800E212C
+name = "weapon_flags_clear"
+desc = "Clears hi 0x30000 (the holding-weapon bits); called at the start of most input actions."
+status = "guess"
+
+[[func]]
+addr = 0x800D6350
+name = "match_flag_100"
+desc = "Returns bit 0x100 of the match flags 0x800FABD8 (read by match_draw)."
+status = "guess"
+
+[[func]]
+addr = 0x800BF254
+name = "slot_counter_clear"
+desc = "Clears a per-slot s16 at 0x800EB4B8."
+status = "guess"
+
+[[func]]
+addr = 0x80097BB4
+name = "hud_count_reset"
+desc = "Resets the HUD count display (0x800F99B4 off, 0x800F99B5 = 120)."
+status = "guess"
+
+[[func]]
+addr = 0x800A90FC
+name = "wrestler_byte_363"
+desc = "Returns byte +0x363 of wrestler slot a1 (camera framing)."
+status = "guess"
+
+[[func]]
+addr = 0x800A9488
+name = "turnbuckle_spirit_bonus"
+desc = "While the opponent is in state 0x2C/0x2D, adds header-like byte +0x36C of the wrestler to the opponent recover_count (+0x18)."
+status = "guess"
+
+[[func]]
+addr = 0x800DACB4
+name = "wrestler_anim_210"
+desc = "sub_800A94B4(w, 0, 210): checks or plays animation-list entry 210."
+status = "guess"
+
+[[func]]
+addr = 0x800D3650
+name = "ai_turn_toward_target"
+desc = "Turns the AI wrestler toward a point (wrestler_turn_toward on +16); used by many AI modes."
+status = "likely"
+
+[[func]]
+addr = 0x800E074C
+name = "input_tag"
+desc = "C-up (pressed bit 0x0008) from standing: tag_try."
+status = "likely"
+
+[[func]]
+addr = 0x800C2830
+name = "wrestler_may_leave_ring"
+desc = "True unless the wrestler is CPU/legal-flagged (lo & 3) and the rules 0x8007F0A0 & 0x404 forbid it."
+status = "guess"
+
+[[func]]
+addr = 0x800D65D0
+name = "side_input_check"
+desc = "Tests input bits against the per-side tables at 0x800E3F84 / 0x800E3F8C for the wrestler side (+0x3C): 1 toward, 2 away, 0 neither."
+status = "guess"
+
+[[func]]
+addr = 0x800E2768
+name = "move_hit_sound"
+desc = "Plays a hit sound (sub_8000C848) at the move animation frame +885 + 7 when +884 is set."
+status = "guess"
+
+[[func]]
+addr = 0x800BFC90
+name = "wrestler_is_special"
+desc = "True while the wrestler at slot a1 has flags lo 0x40000 (SPECIAL, read by the HUD)."
+status = "likely"
+
+[[func]]
+addr = 0x800C02E4
+name = "wrestler_special_tick"
+desc = "Clears lo 0x20 when health_max (+0x12) drops below 248."
+status = "guess"
+
+[[func]]
+addr = 0x800C7870
+name = "strike_special_hit_check"
+desc = "For state 0x1D: true when both are in the ring, the opponent byte +0x37 bit 0 is set and the distance is under 0x800E68D0 (leads to state 0x27)."
+status = "guess"
+
+[[func]]
+addr = 0x800A9348
+name = "down_count_allowed"
+desc = "Whether a downed wrestler may be counted / stay down: rules 0x8007E280 / 0x8007F0A0 bit 0x400 and lo 0x200 / 0x100."
+status = "guess"
+
+[[func]]
+addr = 0x800DF924
+name = "can_climb_turnbuckle"
+desc = "True with header trait 0x20000, when the opponent is in state 0x75, or while SPECIAL."
+status = "likely"
+
+[[func]]
+addr = 0x800AD730
+name = "hud_combo_hits_left"
+desc = "For the HUD: hits left of a strike combo when the wrestler has trait bit 0 and is in state 0x4B, else -1."
+status = "likely"
+
+[[func]]
+addr = 0x800D3744
+name = "vec_to_polar"
+desc = "Length and angle (atan2 x 4096/2pi) of an x/z vector."
+status = "likely"
+
+[[func]]
+addr = 0x800D3940
+name = "point_dist_angle"
+desc = "Distance and angle between two points (x/z)."
+status = "likely"
+
+[[func]]
+addr = 0x800A9208
+name = "dazed_turn_target"
+desc = "For C-up on a dazed opponent: facing to use, adjusted by +872 when the opponent animation is in the table at 0x800E3270."
+status = "guess"
+
+[[func]]
+addr = 0x800E06C0
+name = "input_grapple_attempt"
+desc = "From stand: starts the grapple attempt 0x44 (step 3, grapple ctx 0x200000) when sub_800A94B4(w, opp, 86) holds, else state 0x17."
+status = "guess"
+
+[[func]]
+addr = 0x800DA6DC
+name = "idle_check"
+desc = "Calls sub_800D96A0 when the wrestler is not on the floor, has no +0x358 bits 0x6000 and may not act."
+status = "guess"
+
+[[func]]
+addr = 0x800ABCD8
+name = "ai_decide_close"
+desc = "AI: with a skill chance and the opponent closer than 0x800E4E40 picks from the mode table at 0x800E3618, else mode 39 / 33."
+status = "guess"
+
+[[func]]
+addr = 0x800ABC40
+name = "ai_decide_mid"
+desc = "AI: by distance and a skill chance, mode 7 or 33, else picks from the mode table at 0x800E3600."
+status = "guess"
+
+[[func]]
+addr = 0x800B10B8
+name = "ai_counter_grapple_check"
+desc = "AI mode 28: a skill chance when the opponent is in state 0x44 (grapple attempt)."
+status = "guess"
+
+[[func]]
+addr = 0x800BF62C
+name = "wrestler_add_spirit"
+desc = "Adds to spirit (+0x14), capped at 100 (99 for CPU wrestlers? lo bit 1); reaching 100 sets SPECIAL (lo 0x40000); frozen while lo & 0xE0000."
+status = "confirmed"
+
+[[func]]
+addr = 0x800D3890
+name = "vec_xz_dist_angle"
+desc = "Distance and angle (x/z) from point a1 to a2, written to a3[0..1]."
+status = "likely"
+
+[[func]]
+addr = 0x800D39C4
+name = "vec_xy_dist_angle"
+desc = "Distance and angle in the x/y plane between two points."
+status = "likely"
+
+[[func]]
+addr = 0x800D3A74
+name = "vec_yz_dist_angle"
+desc = "Distance and angle in the y/z plane between two points."
+status = "likely"
+
+[[func]]
+addr = 0x800D3B24
+name = "point_in_reach"
+desc = "Distance and angle (x/z) between two points, compared against a radius; used by the run, strike and AI reach checks."
+status = "likely"
+
+[[func]]
+addr = 0x800D3BF8
+name = "point_in_reach_xy"
+desc = "The x/y-plane variant of point_in_reach."
+status = "guess"
+
+[[func]]
+addr = 0x800A7364
+name = "apron_line_pos"
+desc = "Places the wrestler reference point on the apron line (x = 265) for its side (+0x3C)."
+status = "guess"
+
+[[func]]
+addr = 0x800A7188
+name = "wrestler_to_recover"
+desc = "Applies the last animation frame and sets state 0x2B (recover) directly."
+status = "likely"
+
+[[func]]
+addr = 0x800A9290
+name = "anim_is_dazed_like"
+desc = "True when the wrestler animation is in the zero-ended list at 0x800E3270."
+status = "guess"
+
+[[func]]
+addr = 0x800B83CC
+name = "hud_health_value"
+desc = "HUD: wrestler_health_eff for slot a1 unless it is in state 0x3D."
+status = "guess"
+
+[[func]]
+addr = 0x800A93C0
+name = "match_is_decided"
+desc = "True when the match is over (0x800FADCF & 0x40) or a wrestler is in the run-in state 0x8F (used to stop inputs)."
+status = "likely"
+
+[[func]]
+addr = 0x800AB0E8
+name = "ai_maybe_climb_in"
+desc = "AI on the floor: with chance 200 x (6 - count-out left) (or 20) switches to mode 21 (climb in)."
+status = "guess"
+
+[[func]]
+addr = 0x800BA6A8
+name = "br_next_entrant"
+desc = "Battle royal (match type 0x400): gives slot a1 the next entrant from the list 0x8007FBC0 (index 0x800EB478 of 0x800EB474, remaining 0x800EB476) into +0x48 and returns 1; 0 when none are left."
+status = "confirmed"
+
+[[func]]
+addr = 0x800D4BFC
+name = "wrestler_location_update"
+desc = "Sets the location bits of flags lo (0x1C0) from byte +0x36E (1 ring, 2 floor, 3 apron?)."
+status = "guess"
+
+[[func]]
+addr = 0x800A9028
+name = "camera_state_class"
+desc = "Camera: framing class of a wrestler from its state (0x3E -> 2, 0x49 and others -> 1)."
+status = "guess"
+
+[[func]]
+addr = 0x800C4548
+name = "turn_toward_flag"
+desc = "Turns toward the opponent and sets lo 0x8000000 while the angle is over 1024."
+status = "guess"
+
+[[func]]
+addr = 0x800D2758
+name = "wrestler_move_step"
+desc = "The per-frame movement step behind wrestler_slide / wrestler_slide_with (speed, partner, turn)."
+status = "guess"
+
+[[func]]
+addr = 0x800D2638
+name = "wrestler_slide_turn"
+desc = "wrestler_move_step(w, speed, turn, -1)."
+status = "guess"
+
+[[func]]
+addr = 0x800D2670
+name = "wrestler_slide_b"
+desc = "wrestler_move_step(w, a2, 0, -1), used by state 0x70."
+status = "guess"
+
+[[func]]
+addr = 0x800E2090
+name = "weapon_take"
+desc = "Takes the weapon from wrestler a2: moves its object index (0x800F99A0) and hi 0x30000 to a1 (the weapon steal on a counter)."
+status = "likely"
+
+[[func]]
+addr = 0x800DEEE8
+name = "apron_walk_may_act"
+desc = "wrestler_may_act wrapper for apron_walk."
+status = "guess"
+
+[[func]]
+addr = 0x800C278C
+name = "ropes_step_through"
+desc = "Step through the ropes: turns by 768 or 3072 (side bit +0x3E) while moving (states 0x60, 0x55, 0x86)."
+status = "guess"
+
+[[func]]
+addr = 0x800D1EA8
+name = "move_walk_step"
+desc = "State 0x46 walk: walk speed (run with move flag +0x3AC & 1), toward the side point (flag 0x1000) or a corner direction, then translate."
+status = "likely"
+
+[[func]]
+addr = 0x8009786C
+name = "hud_count_show_n"
+desc = "Shows HUD count number a1 (referee / count-out display) when the HUD is on (0x800F9AA2)."
+status = "guess"
+
+[[func]]
+addr = 0x8009791C
+name = "hud_count_show_pin"
+desc = "HUD count display for pins and holds."
+status = "guess"
+
+[[func]]
+addr = 0x800979CC
+name = "hud_count_show_ref"
+desc = "HUD count display from referee_count_tick."
+status = "guess"
+
+[[func]]
+addr = 0x80097A74
+name = "hud_count_show_1"
+desc = "HUD count display, number 1."
+status = "guess"
+
+[[func]]
+addr = 0x80097B14
+name = "hud_count_show_6"
+desc = "HUD count display, number 6."
+status = "guess"
+
+[[func]]
+addr = 0x80096F64
+name = "hud_count_update"
+desc = "Updates the HUD count digit and colour."
+status = "guess"
+
+[[func]]
+addr = 0x800DA778
+name = "rope_break_target_state"
+desc = "For C-up at the ropes: checks whether the linked wrestler (+853) is in a pin/hold state (0x38, 0x3C, 0x3E, 0x72) for a rope break."
+status = "guess"
+
+[[func]]
+addr = 0x800D90E8
+name = "special_timer_tick"
+desc = "Counts frames while SPECIAL (hi 0x80000) in 0x800F9840[slot] against a per-mode limit (0x800E3FA8)."
+status = "guess"
+
+[[func]]
+addr = 0x800A9128
+name = "taunt_apron_pos"
+desc = "For the taunt state: with hi 0x8000000 sets the reference point on the apron line (x 265)."
+status = "guess"
+
+[[func]]
+addr = 0x800C778C
+name = "strike_reaction_anim"
+desc = "Picks a hit-reaction animation (4169-4174) from the hit flags (+0x30) and the header strike style (+0x1E)."
+status = "guess"
+
+[[func]]
+addr = 0x800A3E54
+name = "state_54_chain_received"
+desc = "Chain-move receiver state handler (World Tour 0x4D): follows the attacker and runs the move aftermath."
+status = "likely"
+
+[[func]]
+addr = 0x800942F0
+name = "hud_draw_all"
+desc = "Draws the match HUD (panels, bars) from match_draw; hides it while match_hud_hidden."
+status = "likely"
+
+[[func]]
+addr = 0x800C01A8
+name = "run_in_try"
+desc = "Run-in into empty slot a1 (roster -1) when the side mask 0x800FADD0 allows and the opposite wrestler stands or is down: takes the roster word from 0x800FACEA[slot] and enters state 0x8F."
+status = "likely"
+
+[[func]]
+addr = 0x800CD6C4
+name = "grapple_double_team_check"
+desc = "From grapple_attempt_resolve: when a partner (+851) is next to the grapple (state 0x46 with ctx 0x400) starts a double-team grapple."
+status = "guess"
+
+[[func]]
+addr = 0x800CD80C
+name = "double_team_grapple_start"
+desc = "Sets the left/right double-team context bits (0x4000 / 0x8000) by facing and puts the attacker in state 0x76."
+status = "guess"
+
+[[func]]
+addr = 0x800AC0B4
+name = "ai_decide_hurt"
+desc = "AI when its health is under 40: retreat or rest decisions (uses the hits-taken counter 0x800FAF50 and the clock)."
+status = "guess"
+
+[[func]]
+addr = 0x800AC208
+name = "ai_pick_favourite"
+desc = "AI: with a skill chance picks one of the wrestler favourite move slots (header +0x24 / +0x26), the second more when health is under 65."
+status = "likely"
+
+[[func]]
+addr = 0x800AB780
+name = "ai_decide_grapple_or_finish"
+desc = "AI decision: mode 34 when SPECIAL or high spirit (chance), else the favourite move (ai_pick_favourite) or other picks."
+status = "guess"
+
+[[func]]
+addr = 0x800B7BC4
+name = "match_load_movesets"
+desc = "Loads each slots three move-set files: header (base), 279 move records (base + 1) and animation lists (base + 2)."
+status = "confirmed"
+
+[[func]]
+addr = 0x800B93B0
+name = "match_clock_tick"
+desc = "Ticks the match clock (0x800FAF84) and 0x800F9B58 at 30 a second, shows it, and ends the match by time limit (match_end 0x4000)."
+status = "likely"
+
+[[func]]
+addr = 0x800D5B74
+name = "match_decide"
+desc = "Records the match result (winner/loser bytes 0x800F97D0/1), sets match flags 0x100 (0x900 for a pinfall 0x2000)."
+status = "guess"
+
+[[func]]
+addr = 0x800D33C4
+name = "bounds_margin_for"
+desc = "Returns a distance (56.6, 73.5, 99.0, ...) for a size class a3; used by run, walk and move-walk bounds."
+status = "guess"
+
+[[func]]
+addr = 0x800D93DC
+name = "illegal_man_check"
+desc = "In tag rules (0x8007E280 0x200): checks whether a wrestler who is not the legal man should leave the ring."
+status = "guess"
+
+[[func]]
+addr = 0x800D9568
+name = "illegal_man_leave"
+desc = "Makes an illegal wrestler head back to the apron (tag rules)."
+status = "guess"
+
+[[func]]
+addr = 0x800D9814
+name = "apron_side_ok"
+desc = "Tag rules: whether the wrestler is on its own team side of the apron."
+status = "guess"
+
+[[func]]
+addr = 0x800D96A0
+name = "may_stay_inside"
+desc = "Tag rules: whether a wrestler may stay in the ring (rules 0x200 / 0x40 and +0x358 bits)."
+status = "guess"
+
+[[func]]
+addr = 0x80098560
+name = "results_page_draw"
+desc = "Draws the end-of-match results page."
+status = "guess"
+
+[[func]]
+addr = 0x800A97A0
+name = "ai_state_init"
+desc = "Initialises a slot AI block (0x800F9B88 + 96 x slot) from the CPU level 0x8007E2A8."
+status = "guess"
+
+[[func]]
+addr = 0x800DF214
+name = "input_leapfrog"
+desc = "From stand / taunt with C-down pressed: d-pad direction; facing a runner within 512 starts state 0x89 (hop over / leapfrog the runner)."
+status = "guess"
+
+[[func]]
+addr = 0x800B9730
+name = "match_record_fall"
+desc = "Records a fall (World Tour match_record_result): result word 0x8007E848, winners lo 0x4000, losers lo 0x8000; each loser gets the next battle-royal entrant (br_next_entrant, then lo 0x10) or, with none left, loses LEGAL (lo 0x200)."
+status = "confirmed"
+
+[[func]]
+addr = 0x800B9D60
+name = "result_stats_record"
+desc = "Adds a fall to the per-wrestler win/loss tallies at 0x8007E850 (24 bytes each) by result kind (pin 0x2000, submission 0x1000, TKO 0x8000, count-out 0x10000)."
+status = "likely"

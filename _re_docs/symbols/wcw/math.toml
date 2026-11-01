@@ -1,0 +1,29 @@
+# Small math helpers (ovl_b). Angles are 12-bit: 0x1000 = one turn.
+
+[[func]]
+addr = 0x8009F650
+name = "abs_i"
+proto = "s32 abs_i(s32 x)"
+desc = "Absolute value."
+status = "confirmed"
+
+[[func]]
+addr = 0x8009F6C4
+name = "angle_wrap"
+proto = "s32 angle_wrap(s16 a)"
+desc = "Wraps an angle to -0x800..0x7FF (low 12 bits, sign-extended)."
+status = "confirmed"
+
+[[func]]
+addr = 0x8009F6FC
+name = "angle_add"
+proto = "s32 angle_add(s16 a, s16 b)"
+desc = "angle_wrap(a + b)."
+status = "confirmed"
+
+[[func]]
+addr = 0x8009F8A8
+name = "angle_diff"
+proto = "s32 angle_diff(s32 a, s32 b)"
+desc = "Shortest signed difference a - b, folded into -0x800..0x800."
+status = "confirmed"

@@ -1,0 +1,55 @@
+# WCW/nWo Revenge (US): match overlay (ovl_b, 0x80090000) and main.
+# Notes: _re_docs/individual_games/wcw_revenge/README.md
+# types.h is a copy of World Tour's; check each struct against Revenge before relying on it.
+
+[[func]]
+addr = 0x800D4204
+name = "rng_match"
+desc = "Linear congruential generator s = s * 0x5D588B65 + inc, as World Tour's rng_match (0x800A0468): found by the multiplier (its first instruction)."
+status = "likely"
+
+[[func]]
+addr = 0x8009D8D0
+name = "wrestler_update"
+desc = "Per-wrestler tick as in World Tour (0x800A7C80): sets the g_cur_* pointers (stride 944), clears per-tick flags, calls g_state_handlers[state] (+0x0A)."
+status = "likely"
+
+[[func]]
+addr = 0x800A9924
+name = "ai_think"
+desc = "CPU decision as in World Tour (0x800B5780): calls g_ai_modes[mode] (AI block +2) through the table at 0x800E2FF0 + 412 * 4."
+status = "likely"
+
+[[data]]
+addr = 0x800F9D10
+name = "g_wrestlers"
+desc = "Wrestler array: 4 x 944 bytes (World Tour: 928 at 0x800F07F0). flags at +0x20 / +0x24 (WT +0x18 / +0x1C); linked indices around +0x351..+0x355 (WT +0x341..+0x344)."
+status = "likely"
+
+[[data]]
+addr = 0x800E2FF0
+name = "g_state_handlers"
+type = "u32[146]"
+desc = "Action-state handlers indexed by Wrestler.state: 146 entries (World Tour: 120)."
+status = "confirmed"
+
+[[data]]
+addr = 0x800E3660
+name = "g_ai_modes"
+type = "u32[62]"
+desc = "AI mode handlers: 62 entries (World Tour: 48)."
+status = "likely"
+
+[[data]]
+addr = 0x800EB408
+name = "g_cur_wrestler"
+type = "u32"
+desc = "Wrestler being updated (set by wrestler_update)."
+status = "likely"
+
+[[data]]
+addr = 0x800FABD0
+name = "g_ai_cur_block"
+type = "u32"
+desc = "The AI block of the wrestler being decided (World Tour 0x800F1868)."
+status = "likely"

@@ -1,0 +1,106 @@
+# Tag team, in/out of the ring, turnbuckle (ovl_b).
+# Notes: _re_docs/individual_games/wcw_world_tour/tag_team.md, outside_ring.md
+
+[[func]]
+addr = 0x800DDF9C
+name = "tag_try"
+proto = "void tag_try(struct Wrestler *w)"
+desc = "C-up: tags when the legal man (in the ring) and the partner (on the apron at its own corner, or reaching / on the turnbuckle) are in the same ring zone and within reach; calls tag_exchange."
+status = "likely"
+
+[[func]]
+addr = 0x800DD970
+name = "apron_enter_try"
+proto = "s32 apron_enter_try(struct Wrestler *w)"
+desc = "Apron partner pressing C-up: climb in (0x55) if wrestler_may_act (a save targets the opponent pinning/holding the partner), else reach for the tag (0x73) at its own corner."
+status = "likely"
+
+[[func]]
+addr = 0x800DE564
+name = "tag_exchange"
+proto = "void tag_exchange(struct Wrestler *a, struct Wrestler *b, s16 from_top)"
+desc = "Legal man -> state 0x72 (tag out), partner -> 0x71 (tag in); from_top starts both at step 2 (in off the top rope)."
+status = "confirmed"
+
+[[func]]
+addr = 0x800DEC6C
+name = "tag_in"
+proto = "void tag_in(struct Wrestler *w)"
+desc = "Makes w LEGAL and the partner not, moves the human control to w, stores health at tag-in (0x800F1D30) and resets time in (0x800F1D38), retargets the opponents."
+status = "confirmed"
+
+[[func]]
+addr = 0x800DDE78
+name = "on_own_corner"
+proto = "s32 on_own_corner(struct Wrestler *w)"
+desc = "On the apron at its team's corner: x and z negative for team A, positive for TEAM_B."
+status = "confirmed"
+
+[[func]]
+addr = 0x800DD6C4
+name = "tag_time_tick"
+proto = "void tag_time_tick(struct Wrestler *w)"
+desc = "Tag with tagging required: counts the legal man's frames in at 0x800F1D38[slot]."
+status = "confirmed"
+
+[[func]]
+addr = 0x800BC63C
+name = "dive_pick"
+proto = "s16 dive_pick(struct Wrestler *w, struct Wrestler *target)"
+desc = "Top-rope dive slot from the target: ring standing 166, lying 167 (face up across the line with header trait 0x2000000: 168, 169 if SPECIAL), apron or floor standing 170, floor lying 171, carried 181/182 (ring/floor), else 0."
+status = "confirmed"
+
+[[func]]
+addr = 0x800BAA0C
+name = "ground_grapple_try"
+proto = "s32 ground_grapple_try(struct Wrestler *w, struct Wrestler *opp, f32 dist)"
+desc = "L next to a lying opponent (both in the ring or both on the floor, no header trait bit 1): states 0x33 / 0x34."
+status = "likely"
+
+[[data]]
+addr = 0x800F1D30
+name = "g_tag_in_health"
+type = "s16[4]"
+desc = "Health when this wrestler last tagged in (the AI tags out after losing 51+)."
+status = "confirmed"
+
+[[data]]
+addr = 0x800F1D38
+name = "g_tag_time_in"
+type = "s16[4]"
+desc = "Frames the legal man has been in since tagging in (the AI tags out after 2701)."
+status = "confirmed"
+
+[[data]]
+addr = 0x800F1C20
+name = "g_weapons"
+type = "u8[][32]"
+desc = "Weapon objects (32 bytes; +0 type 0-3, +2 holder); g_weapon_held at 0x800F1CA0[slot] indexes it."
+status = "likely"
+
+[[func]]
+addr = 0x800D8094
+name = "weapon_drop"
+proto = "void weapon_drop(struct Wrestler *w)"
+desc = "If holding a weapon: clears HOLDING_WEAPON/WEAPON_ALT, detaches the object at the hand (0x800EBD40) and marks it falling. Called at the start of most non-strike actions."
+status = "confirmed"
+
+[[func]]
+addr = 0x800D7EEC
+name = "weapons_tick"
+desc = "Per frame: falling weapon objects drop until below the floor, then their slot is freed."
+status = "likely"
+
+[[func]]
+addr = 0x800D8980
+name = "weapon_alloc"
+proto = "s8 weapon_alloc(void)"
+desc = "A free weapon slot, but only while more than (4 - wrestlers in the match) are free; else -1."
+status = "confirmed"
+
+[[func]]
+addr = 0x800BD684
+name = "dive_counter"
+proto = "s32 dive_counter(struct Wrestler *target, struct Wrestler *diver)"
+desc = "A standing target that started blocking within its header's counter window (or wins chance_roll 15 on the apron) catches the dive: state 0x39 step 3."
+status = "likely"

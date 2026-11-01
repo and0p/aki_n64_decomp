@@ -1,0 +1,1194 @@
+# Action-state handlers: g_state_handlers[Wrestler.state] (120 entries, 0x00-0x77).
+# Generated from the table, then edited by hand. Most entries are 0x28-byte wrappers
+# that call one body function; shared handlers list every state they serve.
+# Name format: state_XX_role (wrapper) and state_XX_role_body; plain state_XX = role unknown.
+
+[[func]]
+addr = 0x800B02D8
+name = "state_00_intro"
+proto = "void state_00_intro(void)"
+desc = "Match start: plays the wrestler slot 146 (entrance pose), waits for the bell (0x800F16C2 & 1), then stands (0x01) or, as the illegal tag partner (slots 1/3), goes to the apron (0x70); 0x74 is the other intro step."
+status = "confirmed"
+
+[[func]]
+addr = 0x800A7EE4
+name = "state_01_stand"
+proto = "void state_01_stand(void)"
+desc = "Main standing state under player/AI control: tries the input handlers in turn (strikes, grapple, run, climb...) and finally walks (sub_800BB134)."
+status = "confirmed"
+
+[[func]]
+addr = 0x800A86FC
+name = "state_02_apron_turn"
+proto = "void state_02_apron_turn(void)"
+desc = "Turning round at the end of the apron (3362/3363 by direction, then 3335 facing the next side), back to 0x01."
+status = "confirmed"
+
+[[func]]
+addr = 0x800A888C
+name = "state_03_run"
+proto = "void state_03_run(void)"
+desc = "Running (entered by C-down + direction via input_run); leads to running attacks (0x06, 0x07) and the dives/slingshots (0x57-0x5C)."
+status = "confirmed"
+
+[[func]]
+addr = 0x800A8F94
+name = "state_04"
+proto = "void state_04(void)"
+desc = "Rope rebound (2995 hit the ropes, 2996 come off them). A whipped runner (run_flags & 0x20) may counter on its first rebound: A/B/L/R in the first 3 frames plus chance_roll kind 3; A regains control (run_flags 0x100), B/L/R hooks the ropes and stops (2997, 3000). Counts rebounds in 0x800F06D8[slot]; a whipped runner stops after the second."
+status = "confirmed"
+
+[[func]]
+addr = 0x800A9580
+name = "state_05"
+proto = "void state_05(void)"
+desc = "Two running wrestlers collide (set on both by run_collide); also the runner when it bumps a blocking or cornered opponent."
+status = "confirmed"
+
+[[func]]
+addr = 0x800A9730
+name = "state_06"
+proto = "void state_06(void)"
+desc = "L or R while running: move slot 127 (probably the FAQ's somersault roll)."
+status = "confirmed"
+
+[[func]]
+addr = 0x800A9858
+name = "state_07_running_attack"
+proto = "void state_07_running_attack(void)"
+desc = "Starts running attacks: move slots 125 (Run+B), 126 (Run+L/R+B), 128 (corner Run+B). Snapshot 6: P1 in this state with slot 125 while running at P2 on the apron."
+status = "confirmed"
+
+[[func]]
+addr = 0x800A9880
+name = "state_08"
+proto = "void state_08(void)"
+desc = "State handler for state 0x08."
+status = "confirmed"
+
+[[func]]
+addr = 0x800A9940
+name = "state_09_turnbuckle"
+proto = "void state_09_turnbuckle(void)"
+desc = "On the turnbuckle (entered by C-down toward a corner via input_climb_turnbuckle, as in the FAQ); leads to the 0x5D-0x60 states and slot 149."
+status = "guess"
+
+[[func]]
+addr = 0x800A9968
+name = "state_0A_whip_attacker"
+proto = "void state_0A_whip_attacker(void)"
+desc = "Irish whip, whipping side (C-down in a grapple; grapple_choose_move sets 0x0A/0x0B)."
+status = "likely"
+
+[[func]]
+addr = 0x800A9990
+name = "state_0B_whip_runner"
+proto = "void state_0B_whip_runner(void)"
+desc = "Irish whip, whipped side: runs to the ropes; can lead to 0x0A or 0x03."
+status = "likely"
+
+[[func]]
+addr = 0x800A99B8
+name = "state_0C_whip_ctx_attacker"
+proto = "void state_0C_whip_ctx_attacker(void)"
+desc = "Irish whip from the DEF_ON_APRON / ATK_ON_APRON grapple contexts (attacker side; 0x0E shares the body)."
+status = "guess"
+
+[[func]]
+addr = 0x800A99E0
+name = "state_0D_whip_ctx_runner"
+proto = "void state_0D_whip_ctx_runner(void)"
+desc = "Irish whip from the DEF_ON_APRON / ATK_ON_APRON grapple contexts (whipped side; 0x0F shares the body)."
+status = "guess"
+
+[[func]]
+addr = 0x800A9A08
+name = "state_0E_whip_ctx_attacker"
+proto = "void state_0E_whip_ctx_attacker(void)"
+desc = "Same handler as 0x0C (whip context, attacker), a second entry."
+status = "confirmed"
+
+[[func]]
+addr = 0x800A9A30
+name = "state_0F_whip_ctx_runner"
+proto = "void state_0F_whip_ctx_runner(void)"
+desc = "Same handler as 0x0D (whip context, runner), a second entry."
+status = "confirmed"
+
+[[func]]
+addr = 0x800A9A58
+name = "state_10_crash"
+proto = "void state_10_crash(void)"
+desc = "States 0x10/0x11, a runner hitting the post or barrier: 3011; one A/B/L/R press rolls chance_roll 3 -> 3010 (generic move 16) else 3009 (move 15) and a lie-down of recover_difficulty kind 4."
+status = "confirmed"
+
+[[func]]
+addr = 0x800A9ED0
+name = "state_12_post_crash_floor"
+proto = "void state_12_post_crash_floor(void)"
+desc = "Running on the floor into a ring post (run_step): 3314 and generic move 10 damage, then neutral by pose."
+status = "confirmed"
+
+[[func]]
+addr = 0x800A9F84
+name = "state_13_corner_slump"
+proto = "void state_13_corner_slump(void)"
+desc = "Whipped into the corner: 3001/3002, generic move 13 damage, slumped 3003 for recover_difficulty kind 2 frames (mashing shortens, stick holds), then 3005."
+status = "confirmed"
+
+[[func]]
+addr = 0x800AA3F8
+name = "state_14"
+proto = "void state_14(void)"
+desc = "Whipped into the corner after pressing B/L/R on the way (run_flags 0x400): a counter in the corner."
+status = "confirmed"
+
+[[func]]
+addr = 0x800AA5EC
+name = "state_15"
+proto = "void state_15(void)"
+desc = "Whipped into the corner after pressing A on the way (run_flags 0x800): a counter in the corner."
+status = "confirmed"
+
+[[func]]
+addr = 0x800AA614
+name = "state_16_taunt"
+proto = "void state_16_taunt(void)"
+desc = "Taunt: entered from input_move when the analog stick is pressed (g_input_far); plays move slot 148 (153 on the apron)."
+status = "likely"
+
+[[func]]
+addr = 0x800AAAB8
+name = "state_17_special_pose"
+proto = "void state_17_special_pose(void)"
+desc = "SPECIAL activation pose: entered from 0x01 the first time SPECIAL is on (sets flags_lo 0x2000), 3421 (3422 on the apron), drops a weapon; can be cut short by run, R, strike, grapple, L or C-up."
+status = "confirmed"
+
+[[func]]
+addr = 0x800AAD54
+name = "state_18_trip_runner"
+proto = "void state_18_trip_runner(void)"
+desc = "L against a runner: move slot 145; if the runner passes close inside the move window, it goes to state 0x19 (tripped) and the wrestler gains the move spirit."
+status = "confirmed"
+
+[[func]]
+addr = 0x800AAFC0
+name = "state_19"
+proto = "void state_19(void)"
+desc = "Hurdle over a downed wrestler while running (2927); sets run_flags 0x20|0x40|0x80, ignores collisions with the hurdled wrestler (0x40), and near the ropes can carry on over them (state 0x56)."
+status = "confirmed"
+
+[[func]]
+addr = 0x800AB148
+name = "state_1A"
+proto = "void state_1A(void)"
+desc = "State handler for states 0x1A, 0x1B, 0x1C."
+status = "confirmed"
+
+[[func]]
+addr = 0x800AB170
+name = "state_1D_strike"
+proto = "void state_1D_strike(void)"
+desc = "Strike started with B: B held 8 frames -> 0x1E (0x22 with a weapon); else weapon 0x21, runner 0x1F, or tap slot 118 (+2 far, +1 Up). Calls strike_hit_test / strike_land with kind 1. See strikes.md."
+status = "likely"
+
+[[func]]
+addr = 0x800AB198
+name = "state_1E_strong_strike"
+proto = "void state_1E_strong_strike(void)"
+desc = "Strong (held) strike: slot 123 or 124 (strikes.md)."
+status = "confirmed"
+
+[[func]]
+addr = 0x800AB1C0
+name = "state_1F_strike_runner"
+proto = "void state_1F_strike_runner(void)"
+desc = "Strike at a running opponent (strikes.md)."
+status = "confirmed"
+
+[[func]]
+addr = 0x800AB1E8
+name = "state_20_getup_attack"
+proto = "void state_20_getup_attack(void)"
+desc = "Get-up attack: R held while getting up, then A or B (slot 157; strikes.md)."
+status = "confirmed"
+
+[[func]]
+addr = 0x800AB210
+name = "state_21_weapon_swing"
+proto = "void state_21_weapon_swing(void)"
+desc = "Weapon swing (states 0x21 / 0x22; strikes.md)."
+status = "confirmed"
+
+[[func]]
+addr = 0x800AE618
+name = "state_23_ground_attack"
+proto = "void state_23_ground_attack(void)"
+desc = "Attack on a downed opponent: move slots 154-156 (face-up B, face-down B, ...); also states 0x4E/0x4F."
+status = "likely"
+
+[[func]]
+addr = 0x800AB238
+name = "state_24_hit_reaction"
+proto = "void state_24_hit_reaction(void)"
+desc = "Hit reaction: flinch, stagger or knockdown by hit_info (strikes.md)."
+status = "confirmed"
+
+[[func]]
+addr = 0x800AB260
+name = "state_25_tko_check"
+proto = "void state_25_tko_check(void)"
+desc = "TKO stagger (entered from move_aftermath_check): 3314/3315/3318, then 3319/3320; saved (state25_flags 0x10) on the floor, when not legal, or by mashing + chance_roll(6) -> 3327/3328; else 3325/3326 and flags_lo 0x40 (TKO loss)."
+status = "confirmed"
+
+[[func]]
+addr = 0x800AB7EC
+name = "state_26"
+proto = "void state_26(void)"
+desc = "Starts bleeding: sets flags_lo BLEEDING and paints blood on the head, neck and chest textures (blood_apply); animations 3316/3317 or 3321/3322."
+status = "confirmed"
+
+[[func]]
+addr = 0x800ABA58
+name = "state_27_recover"
+proto = "void state_27_recover(void)"
+desc = "Returns to a neutral state chosen from the current animation's pose class (Wrestler +0x038): pose 0/4/5 -> 0x01 stand, 1 -> 0x3B, 2 -> 0x2A, 3 -> 0x29, 7-0x1C -> 0x3B/0x3C."
+status = "confirmed"
+
+[[func]]
+addr = 0x800ABEB4
+name = "state_28_down"
+proto = "void state_28_down(void)"
+desc = "Lying down: recover_count = recover_difficulty kind 0, flags_lo 0x10000 (lying), mashing shortens; at 0 gets up (0x3C) unless the stick is pushed or someone is diving at it. See knockdown.md."
+status = "confirmed"
+
+[[func]]
+addr = 0x800AC57C
+name = "state_29_dazed"
+proto = "void state_29_dazed(void)"
+desc = "Dazed on the feet (pose class 3): plays 3087 (3089 on the apron); A, R or L presses speed up recovery through recover_count (recover_tick), then 3088/3090 and back to neutral. Entered from state_27_recover, from grapple breaks (sub_800A7944) and when stunned by input_cup_opponent. An opponent walking straight into a dazed wrestler pushes it (walk_step)."
+status = "confirmed"
+
+[[func]]
+addr = 0x800ACBD8
+name = "state_2A_recover_bent"
+proto = "void state_2A_recover_bent(void)"
+desc = "Pose class 2 recovery: 3093 then 3094, then recover (knockdown.md)."
+status = "confirmed"
+
+[[func]]
+addr = 0x800ACD3C
+name = "state_2B_flip_over"
+proto = "void state_2B_flip_over(void)"
+desc = "Flipping a downed opponent over (C-up, input_cup_opponent)."
+status = "confirmed"
+
+[[func]]
+addr = 0x800ACD64
+name = "state_2C_flipped"
+proto = "void state_2C_flipped(void)"
+desc = "Being flipped over (pair of 0x2B)."
+status = "confirmed"
+
+[[func]]
+addr = 0x800ACD8C
+name = "state_2D_pickup_attacker"
+proto = "void state_2D_pickup_attacker(void)"
+desc = "R next to a downed opponent: picking them up (input_r; FAQ: R picks the opponent up). Pairs with 0x2E."
+status = "likely"
+
+[[func]]
+addr = 0x800ACDB4
+name = "state_2E_pickup_defender"
+proto = "void state_2E_pickup_defender(void)"
+desc = "Being picked up; can end in rear-grapple fallback slots 70/71."
+status = "likely"
+
+[[func]]
+addr = 0x800ACDDC
+name = "state_2F_cover_attacker"
+proto = "void state_2F_cover_attacker(void)"
+desc = "Going into a pin cover; leads to 0x31."
+status = "likely"
+
+[[func]]
+addr = 0x800ACE04
+name = "state_30_cover_defender"
+proto = "void state_30_cover_defender(void)"
+desc = "Being covered; leads to 0x32."
+status = "likely"
+
+[[func]]
+addr = 0x800ACE2C
+name = "state_31_pin_attacker"
+proto = "void state_31_pin_attacker(void)"
+desc = "Covering a downed opponent for a pinfall (also state 0x37). Exits via Wrestler._unk350 bits: 1 = released (R pressed, or the match was decided), 2 = kicked out, 4 = rope break, 8 = the opponent was eliminated (pin won), 0x10 = debug Z, 0x20 = ending. Each exit plays a different end animation (move parts 2/4/6). Snapshot 5: P2 pinning P1 at 05:59."
+status = "confirmed"
+
+[[func]]
+addr = 0x800ACE54
+name = "state_32_pin_defender"
+proto = "void state_32_pin_defender(void)"
+desc = "Being pinned (also state 0x38). Sets recover_count to the kick-out frames (recover_difficulty case 1; 30 and not counted on the floor, 5 with pins off) and flags_lo 0x400 (being counted); mashing lowers it; below 0 = kick-out. Rope break with rule 0x02. See match_end.md."
+status = "confirmed"
+
+[[func]]
+addr = 0x800ACE7C
+name = "state_33"
+proto = "void state_33(void)"
+desc = "Grappling a downed opponent: walks to a spot 130 units behind (near head) or 150 in front (near legs) of the opponent's pos along its facing, sign flipped when face down, then plays move slot 158/159 (head) or 162/163 (legs)."
+status = "confirmed"
+
+[[func]]
+addr = 0x800ACEA4
+name = "state_34_ground_grapple_def"
+proto = "void state_34_ground_grapple_def(void)"
+desc = "Ground grapple, defender (pair of 0x33); its input can turn it round (0x33/0x34 swap)."
+status = "confirmed"
+
+[[func]]
+addr = 0x800ACECC
+name = "state_35_hold_attacker"
+proto = "void state_35_hold_attacker(void)"
+desc = "Holding a submission/rest hold: gains spirit (+3 steps), R releases. Seen in snapshot 1 (rear hold on a seated opponent, slot 208)."
+status = "likely"
+
+[[func]]
+addr = 0x800ACEF4
+name = "state_36_hold_defender"
+proto = "void state_36_hold_defender(void)"
+desc = "In a hold: recover_count from recover_difficulty case 3, mashing lowers it, below 0 = escape; damage every 31 frames; give-up (flags_lo 0x20) with rule 0x10 when the target region is used up; power-out for trait 0x1000000. See match_end.md."
+status = "confirmed"
+
+[[func]]
+addr = 0x800ACF1C
+name = "state_37_move_pin"
+proto = "void state_37_move_pin(void)"
+desc = "Pin started by a move that ends in a cover (move flags 0x400, move_followup); same body as 0x31."
+status = "confirmed"
+
+[[func]]
+addr = 0x800ACF44
+name = "state_38_move_pinned"
+proto = "void state_38_move_pinned(void)"
+desc = "Being pinned after such a move; same body as 0x32."
+status = "confirmed"
+
+[[func]]
+addr = 0x800ACF6C
+name = "state_39_block"
+proto = "void state_39_block(void)"
+desc = "Blocking while R is held (flags_hi 0x400); state_timer counts frames since R went down, the block-counter window. Front hits go to 0x3A; back hits land. Returns to 0x01 6 frames after R is released. See strikes.md."
+status = "likely"
+
+[[func]]
+addr = 0x800AD2EC
+name = "state_3A_block_hit"
+proto = "void state_3A_block_hit(void)"
+desc = "A blocked strike: block-hit animation by height (base_anim 3-5 light, 6-8 heavy), chip damage from generic move 3, back to 0x39 with state_timer 100. Front hits are ignored meanwhile."
+status = "confirmed"
+
+[[func]]
+addr = 0x800AD6D4
+name = "state_3B_stance"
+proto = "void state_3B_stance(void)"
+desc = "Standing back up into the fighting stance after an action (pose class 1, or lying poses without flags_hi 0x80000); accepts A, L, C-down and the stick. Snapshot 3: P1 upright in this state after a ground attack."
+status = "likely"
+
+[[func]]
+addr = 0x800AD6FC
+name = "state_3C_get_up"
+proto = "void state_3C_get_up(void)"
+desc = "Getting up (get_up_anim): R held at the end kneels up to 150 frames (L 3055, stick taunt, A/B get-up attack 0x20); A or B held during it goes straight into a grapple (0x3D) or strike (0x1D). Gated by wrestler_may_act. See knockdown.md. Snapshot 3: P2 crouched halfway up, pose 7, anim 3045 frame 28."
+status = "confirmed"
+
+[[func]]
+addr = 0x800AD724
+name = "state_3D_grapple_attempt"
+proto = "void state_3D_grapple_attempt(void)"
+desc = "Grapple attempt after A (input_grapple); on success leads to the 0x48/0x49 or 0x6D/0x6E pairs."
+status = "likely"
+
+[[func]]
+addr = 0x800AD74C
+name = "state_3E_grapple"
+proto = "void state_3E_grapple(void)"
+desc = "State 0x3E wrapper: grapple lock-up, attacker (grapples.md)."
+status = "confirmed"
+
+[[func]]
+addr = 0x800AD774
+name = "state_3F_grappled"
+proto = "void state_3F_grappled(void)"
+desc = "State 0x3F wrapper: grapple lock-up, defender."
+status = "confirmed"
+
+[[func]]
+addr = 0x800AD79C
+name = "state_40_strength_test"
+proto = "void state_40_strength_test(void)"
+desc = "Test of strength, attacker (see state_40_body)."
+status = "confirmed"
+
+[[func]]
+addr = 0x800AD7C4
+name = "state_41_strength_test_def"
+proto = "void state_41_strength_test_def(void)"
+desc = "Test of strength, defender (see state_41_body)."
+status = "confirmed"
+
+[[func]]
+addr = 0x800ADC38
+name = "state_44_strike_combo"
+proto = "void state_44_strike_combo(void)"
+desc = "Strike combo from a strong front grapple (header trait bit 0): slots 187-189, 6 hits (9 with SPECIAL ready); A ends it with the combo move (0x4A)."
+status = "confirmed"
+
+[[func]]
+addr = 0x800ADC60
+name = "state_45_strike_combo_received"
+proto = "void state_45_strike_combo_received(void)"
+desc = "Receiver of the strike combo; can counter it (sub_800D9F68 / sub_800DA118, chance_roll kind 1)."
+status = "confirmed"
+
+[[func]]
+addr = 0x800ADC88
+name = "state_46_move_walk_attacker"
+proto = "void state_46_move_walk_attacker(void)"
+desc = "Grapple move that needs another place (move.flags & 0x3000, in the ring): the attacker walks the receiver there first (to the side's ropes with flags & 0x2000, run speed with & 0x20000), then plays the move. Was named move_fail."
+status = "likely"
+
+[[func]]
+addr = 0x800ADCB0
+name = "state_47_move_walk_defender"
+proto = "void state_47_move_walk_defender(void)"
+desc = "Defender side of a failed move; leads to 0x42 (counter)."
+status = "guess"
+
+[[func]]
+addr = 0x800ADCD8
+name = "state_48_catch_runner"
+proto = "void state_48_catch_runner(void)"
+desc = "Runner catch, attacker: plays slot - 4 (the throw from the catch slot), hit on the last frame, then move_followup."
+status = "confirmed"
+
+[[func]]
+addr = 0x800ADEA8
+name = "state_49_caught_runner"
+proto = "void state_49_caught_runner(void)"
+desc = "Runner catch, receiver."
+status = "confirmed"
+
+[[func]]
+addr = 0x800AE000
+name = "state_4A_combo_move"
+proto = "void state_4A_combo_move(void)"
+desc = "Attacker of the move that ends a strike combo (0x44), with the same mid-move reversal swap as 0x42."
+status = "confirmed"
+
+[[func]]
+addr = 0x800AE1FC
+name = "state_4B_combo_received"
+proto = "void state_4B_combo_received(void)"
+desc = "Receiver of the combo-ending move; swaps to 0x4A when the attacker is reversed."
+status = "confirmed"
+
+[[func]]
+addr = 0x800AE400
+name = "state_4C_chain_move"
+proto = "void state_4C_chain_move(void)"
+desc = "Chained second move (MoveParams.next_slot, from move_followup) and the test-of-strength winner move (slot 82), attacker; no reversal."
+status = "confirmed"
+
+[[func]]
+addr = 0x800AE524
+name = "state_4D_chain_received"
+proto = "void state_4D_chain_received(void)"
+desc = "Receiver of a chained move."
+status = "confirmed"
+
+[[func]]
+addr = 0x800AE640
+name = "state_50_dive_knockdown"
+proto = "void state_50_dive_knockdown(void)"
+desc = "Knocked down by a dive: 3184 (3185 face down), then down (0x28)."
+status = "confirmed"
+
+[[func]]
+addr = 0x800AE7E8
+name = "state_51_strike_counter"
+proto = "void state_51_strike_counter(void)"
+desc = "Blocker after a caught strike: plays slot 136-139 from its own move set (tap strikes; +1 if the counter roll won, +2 for far strikes) or 140-144 / 7 / 8 from the striker's (strong, running, slots 5/6), per state51_flags."
+status = "confirmed"
+
+[[func]]
+addr = 0x800AEB30
+name = "state_52_strike_countered"
+proto = "void state_52_strike_countered(void)"
+desc = "Striker whose strike was caught: plays the receiving part of the blocker's counter move, then move_aftermath_check."
+status = "confirmed"
+
+[[func]]
+addr = 0x800AEC90
+name = "state_53_evade"
+proto = "void state_53_evade(void)"
+desc = "L evade (sidestep): 2963 / 2964, back to recover."
+status = "confirmed"
+
+[[func]]
+addr = 0x800AECB8
+name = "state_54_ropes_a"
+proto = "void state_54_ropes_a(void)"
+desc = "Entered with C-up near the ropes (input_cup_ropes; FAQ: C-up climbs in/out of the ring)."
+status = "guess"
+
+[[func]]
+addr = 0x800AECE0
+name = "state_55_ropes_b"
+proto = "void state_55_ropes_b(void)"
+desc = "Second rope in/out state (input_cup_ropes)."
+status = "guess"
+
+[[func]]
+addr = 0x800AED08
+name = "state_56_apron_recover"
+proto = "void state_56_apron_recover(void)"
+desc = "Recovering on the apron after being thrown out (anims 3038-3042; the animation's location and pose class are 3). Snapshot 6: P2 getting up on the outer apron. Ends in state_27_recover."
+status = "likely"
+
+[[func]]
+addr = 0x800AED30
+name = "state_57_dive_outside"
+proto = "void state_57_dive_outside(void)"
+desc = "Running dives to the floor (A near the ropes with the opponent outside): move slots 173 (running to floor), 172 (running to post), 174 (one wrestler)."
+status = "likely"
+
+[[func]]
+addr = 0x800AED58
+name = "state_58"
+proto = "void state_58(void)"
+desc = "Rope move from inside the ring using the ropes (2998, 2999), move slot 175 (23 wrestlers); not yet matched to an FAQ input."
+status = "confirmed"
+
+[[func]]
+addr = 0x800AED80
+name = "state_59"
+proto = "void state_59(void)"
+desc = "Apron to floor: move slot 176 (FAQ: elbowdrop and similar), from the apron toward the floor."
+status = "confirmed"
+
+[[func]]
+addr = 0x800AEDA8
+name = "state_5A"
+proto = "void state_5A(void)"
+desc = "Apron move for wrestlers with header trait 0x20000 (19 of 43): move slot 177; probably the FAQ's springboard to the floor (guess)."
+status = "confirmed"
+
+[[func]]
+addr = 0x800AEDD0
+name = "state_5B"
+proto = "void state_5B(void)"
+desc = "Slingshot from the apron: move slot 178 (to the floor) or 179 (into the ring, guess)."
+status = "confirmed"
+
+[[func]]
+addr = 0x800AEDF8
+name = "state_5C"
+proto = "void state_5C(void)"
+desc = "Running at a corner with A for wrestlers with header trait 0x80000 (12 of 43): move slot 180. What it looks like is not checked."
+status = "confirmed"
+
+[[func]]
+addr = 0x800AEE20
+name = "state_5D_dive"
+proto = "void state_5D_dive(void)"
+desc = "Top-rope dives, states 0x5D-0x61 (outside_ring.md)."
+status = "confirmed"
+
+[[func]]
+addr = 0x800AEE48
+name = "state_62_return_to_ring"
+proto = "void state_62_return_to_ring(void)"
+desc = "Walking back to the ring from the floor and climbing in (0x55): after the match is decided, or with rule 0x04."
+status = "confirmed"
+
+[[func]]
+addr = 0x800AEE70
+name = "state_63_roll_out"
+proto = "void state_63_roll_out(void)"
+desc = "Rolling out of the ring: gets up (3043/3049, 3182/3183) and goes out through the ropes (0x54)."
+status = "confirmed"
+
+[[func]]
+addr = 0x800AF230
+name = "state_64_hold_for_partner"
+proto = "void state_64_hold_for_partner(void)"
+desc = "Strong rear grapple + L: holds the opponent from behind so a partner can hit him (a player guide found by Andrew; matches the code: a start animation 3374/3394, a held loop 3376/3396 until R or the match ends, release 3378/3398/3400). Also entered when grabbing from behind on the apron (grapple_lock)."
+status = "guess"
+
+[[func]]
+addr = 0x800AF258
+name = "state_65_held_for_partner"
+proto = "void state_65_held_for_partner(void)"
+desc = "Rear grapple + L (defender side)."
+status = "guess"
+
+[[func]]
+addr = 0x800AF280
+name = "state_66_carry_attacker"
+proto = "void state_66_carry_attacker(void)"
+desc = "Rear grapple + R: carrying the opponent on the shoulders (FAQ); slot 114 is the follow-up."
+status = "likely"
+
+[[func]]
+addr = 0x800AF2A8
+name = "state_67_carry_carried"
+proto = "void state_67_carry_carried(void)"
+desc = "Being carried on the opponent's shoulders."
+status = "likely"
+
+[[func]]
+addr = 0x800AF2D0
+name = "state_68"
+proto = "void state_68(void)"
+desc = "Double-team move, leading attacker: move slot 107/108 (both in front, weak/strong), 109/110 (both behind) or 111 (one of each) from its own move set; plays part 0 or 1 by side, after a 10-frame slide into place (double_team_place). The leader is the one whose header traits bit 0 is set when only one has it."
+status = "confirmed"
+
+[[func]]
+addr = 0x800AF6B0
+name = "state_69"
+proto = "void state_69(void)"
+desc = "Double-team move, helping attacker: plays the other part (0/1) of the leader's move."
+status = "confirmed"
+
+[[func]]
+addr = 0x800AF95C
+name = "state_6A"
+proto = "void state_6A(void)"
+desc = "Double-team move, the wrestler receiving it: plays part 2 of the leader's move."
+status = "confirmed"
+
+[[func]]
+addr = 0x800AFB54
+name = "state_6B_apron_strike_caught"
+proto = "void state_6B_apron_strike_caught(void)"
+desc = "Strike caught from the floor (slot 131): scripted pull, blocker side (strikes.md)."
+status = "confirmed"
+
+[[func]]
+addr = 0x800AFD10
+name = "state_6C_apron_striker_pulled"
+proto = "void state_6C_apron_striker_pulled(void)"
+desc = "Strike caught from the floor, striker side."
+status = "confirmed"
+
+[[func]]
+addr = 0x800AFEFC
+name = "state_6D_turnbuckle_pull"
+proto = "void state_6D_turnbuckle_pull(void)"
+desc = "Pulling an opponent off the turnbuckle (grapple_connect): move slot 103 or 104."
+status = "confirmed"
+
+[[func]]
+addr = 0x800B0168
+name = "state_6E_turnbuckle_pulled"
+proto = "void state_6E_turnbuckle_pulled(void)"
+desc = "Being pulled off the turnbuckle (pair of 0x6D)."
+status = "confirmed"
+
+[[func]]
+addr = 0x800B0210
+name = "state_6F_crowd_weapon"
+proto = "void state_6F_crowd_weapon(void)"
+desc = "Reaching into the crowd (3244): chance_roll 10 gets a weapon object (type rand/250, 0-1 set WEAPON_ALT) and HOLDING_WEAPON; 3261/3262 take it, 3263 empty-handed; returns to 0x01."
+status = "confirmed"
+
+[[func]]
+addr = 0x800B0238
+name = "state_70_to_apron"
+proto = "void state_70_to_apron(void)"
+desc = "The illegal tag partner going back to the apron (0x54 / 0x55), or standing when allowed in."
+status = "confirmed"
+
+[[func]]
+addr = 0x800B0260
+name = "state_71_tag_in"
+proto = "void state_71_tag_in(void)"
+desc = "Tagging in (3346, then in through the ropes or off the top; tag_team.md)."
+status = "confirmed"
+
+[[func]]
+addr = 0x800B0288
+name = "state_72_tag_out"
+proto = "void state_72_tag_out(void)"
+desc = "Tagging out (3347, steps back; tag_team.md)."
+status = "confirmed"
+
+[[func]]
+addr = 0x800B02B0
+name = "state_73_tag_reach"
+proto = "void state_73_tag_reach(void)"
+desc = "Apron partner reaching for the tag (3366/3367, then the turnbuckle; tag_team.md)."
+status = "confirmed"
+
+[[func]]
+addr = 0x800B0300
+name = "state_74_intro_pose"
+proto = "void state_74_intro_pose(void)"
+desc = "Intro: plays slot 146 or 147, then the intro state 0x00."
+status = "confirmed"
+
+[[func]]
+addr = 0x800B0328
+name = "state_75_eliminated_leave"
+proto = "void state_75_eliminated_leave(void)"
+desc = "An eliminated wrestler in the ring leaves through the ropes (0x54)."
+status = "confirmed"
+
+[[func]]
+addr = 0x800B0350
+name = "state_76_eliminated_collapse"
+proto = "void state_76_eliminated_collapse(void)"
+desc = "Eliminated in an elimination tag match: staggers and collapses (3314, 3319, 3325)."
+status = "confirmed"
+
+[[func]]
+addr = 0x800B06A0
+name = "state_77_wait"
+proto = "void state_77_wait(void)"
+desc = "Waits for a button, then stands (0x01)."
+status = "confirmed"
+
+[[func]]
+addr = 0x800E57A0
+name = "state_00_body"
+proto = "void state_00_body(void)"
+desc = "Body of the handler for state 0x00 (called from its wrapper)."
+status = "confirmed"
+
+[[func]]
+addr = 0x800CC6D8
+name = "state_07_running_attack_body"
+proto = "void state_07_running_attack_body(void)"
+desc = "Body of state_07_running_attack."
+status = "confirmed"
+
+[[func]]
+addr = 0x800BDC60
+name = "state_09_turnbuckle_body"
+proto = "void state_09_turnbuckle_body(void)"
+desc = "Turnbuckle: climb (apron: anyone; ring: trait 0x4000 or SPECIAL, dive picked first, climb 3012 + per-dive header byte; others pose 3016 for +5 spirit), wait on top holding A/B/C-down up to 150 frames, dive on release, slot 149, R climbs down (outside_ring.md)."
+status = "confirmed"
+
+[[func]]
+addr = 0x800D3560
+name = "state_0A_whip_attacker_body"
+proto = "void state_0A_whip_attacker_body(void)"
+desc = "Irish whip, attacker: target among 8 directions (corners even, sides odd; d-pad or facing), heavyweight rules (trait 0x80), strong-grapple edge throws (whip_attacker_input), swing and release; a CAN_REVERSE runner reverses it (movement.md)."
+status = "confirmed"
+
+[[func]]
+addr = 0x800D4514
+name = "state_0B_whip_runner_body"
+proto = "void state_0B_whip_runner_body(void)"
+desc = "Body of state_0B_whip_runner."
+status = "likely"
+
+[[func]]
+addr = 0x800D5AF0
+name = "state_0C_whip_ctx_attacker_body"
+proto = "void state_0C_whip_ctx_attacker_body(void)"
+desc = "Body of state_0C_whip_ctx_attacker."
+status = "guess"
+
+[[func]]
+addr = 0x800D60BC
+name = "state_0D_whip_ctx_runner_body"
+proto = "void state_0D_whip_ctx_runner_body(void)"
+desc = "Body of state_0D_whip_ctx_runner."
+status = "guess"
+
+[[func]]
+addr = 0x800CC3A4
+name = "state_15_body"
+proto = "void state_15_body(void)"
+desc = "Body of the handler for state 0x15 (called from its wrapper)."
+status = "confirmed"
+
+[[func]]
+addr = 0x800CCB44
+name = "state_1A_body"
+proto = "void state_1A_body(void)"
+desc = "Body of the handler for states 0x1A, 0x1B, 0x1C (called from its wrapper)."
+status = "confirmed"
+
+[[func]]
+addr = 0x800CCE78
+name = "state_1D_strike_body"
+proto = "void state_1D_strike_body(void)"
+desc = "Body of state_1D_strike."
+status = "likely"
+
+[[func]]
+addr = 0x800CD3D4
+name = "state_1E_body"
+proto = "void state_1E_body(void)"
+desc = "Body of the handler for state 0x1E (called from its wrapper)."
+status = "confirmed"
+
+[[func]]
+addr = 0x800CD688
+name = "state_1F_body"
+proto = "void state_1F_body(void)"
+desc = "Body of the handler for state 0x1F (called from its wrapper)."
+status = "confirmed"
+
+[[func]]
+addr = 0x800CDBB0
+name = "state_20_body"
+proto = "void state_20_body(void)"
+desc = "Body of the handler for state 0x20 (called from its wrapper)."
+status = "confirmed"
+
+[[func]]
+addr = 0x800CE280
+name = "state_21_body"
+proto = "void state_21_body(void)"
+desc = "Body of the handler for states 0x21, 0x22 (called from its wrapper)."
+status = "confirmed"
+
+[[func]]
+addr = 0x800CDD70
+name = "state_23_ground_attack_body"
+proto = "void state_23_ground_attack_body(void)"
+desc = "Body of state_23_ground_attack."
+status = "likely"
+
+[[func]]
+addr = 0x800CE4FC
+name = "state_24_body"
+proto = "void state_24_body(void)"
+desc = "Body of the handler for state 0x24 (called from its wrapper)."
+status = "confirmed"
+
+[[func]]
+addr = 0x800DAF50
+name = "state_2B_body"
+proto = "void state_2B_body(void)"
+desc = "Body of the handler for state 0x2B (called from its wrapper)."
+status = "confirmed"
+
+[[func]]
+addr = 0x800DB46C
+name = "state_2C_body"
+proto = "void state_2C_body(void)"
+desc = "Body of the handler for state 0x2C (called from its wrapper)."
+status = "confirmed"
+
+[[func]]
+addr = 0x800DA440
+name = "state_2D_pickup_attacker_body"
+proto = "void state_2D_pickup_attacker_body(void)"
+desc = "Body of state_2D_pickup_attacker."
+status = "confirmed"
+
+[[func]]
+addr = 0x800DAAF0
+name = "state_2E_pickup_defender_body"
+proto = "void state_2E_pickup_defender_body(void)"
+desc = "Body of state_2E_pickup_defender."
+status = "confirmed"
+
+[[func]]
+addr = 0x800CEEB8
+name = "state_2F_cover_attacker_body"
+proto = "void state_2F_cover_attacker_body(void)"
+desc = "Body of state_2F_cover_attacker."
+status = "confirmed"
+
+[[func]]
+addr = 0x800CF584
+name = "state_30_cover_defender_body"
+proto = "void state_30_cover_defender_body(void)"
+desc = "Body of state_30_cover_defender."
+status = "likely"
+
+[[func]]
+addr = 0x800CF860
+name = "state_31_pin_attacker_body"
+proto = "void state_31_pin_attacker_body(void)"
+desc = "Body of state_31_pin_attacker."
+status = "confirmed"
+
+[[func]]
+addr = 0x800CFE44
+name = "state_32_pin_defender_body"
+proto = "void state_32_pin_defender_body(void)"
+desc = "Body of state_32_pin_defender."
+status = "confirmed"
+
+[[func]]
+addr = 0x800D09BC
+name = "state_33_body"
+proto = "void state_33_body(void)"
+desc = "Body of the handler for state 0x33 (called from its wrapper)."
+status = "confirmed"
+
+[[func]]
+addr = 0x800D1588
+name = "state_34_body"
+proto = "void state_34_body(void)"
+desc = "Body of the handler for state 0x34 (called from its wrapper)."
+status = "confirmed"
+
+[[func]]
+addr = 0x800D1DF0
+name = "state_35_hold_attacker_body"
+proto = "void state_35_hold_attacker_body(void)"
+desc = "Body of state_35_hold_attacker."
+status = "likely"
+
+[[func]]
+addr = 0x800D2338
+name = "state_36_hold_defender_body"
+proto = "void state_36_hold_defender_body(void)"
+desc = "Body of state_36_hold_defender."
+status = "confirmed"
+
+[[func]]
+addr = 0x800BB410
+name = "state_3B_stance_body"
+proto = "void state_3B_stance_body(void)"
+desc = "Body of state_3B_stance."
+status = "likely"
+
+[[func]]
+addr = 0x800BB7D8
+name = "state_3C_get_up_body"
+proto = "void state_3C_get_up_body(void)"
+desc = "Body of state_3C_get_up."
+status = "confirmed"
+
+[[func]]
+addr = 0x800C56DC
+name = "state_3D_grapple_attempt_body"
+proto = "void state_3D_grapple_attempt_body(void)"
+desc = "Body of state_3D_grapple_attempt."
+status = "confirmed"
+
+[[func]]
+addr = 0x800C5F84
+name = "state_3E_grapple_attacker"
+proto = "void state_3E_grapple_attacker(void)"
+desc = "Body of the handler for state 0x3E (called from its wrapper)."
+status = "confirmed"
+
+[[func]]
+addr = 0x800C6668
+name = "state_3F_grapple_defender"
+proto = "void state_3F_grapple_defender(void)"
+desc = "Body of the handler for state 0x3F (called from its wrapper)."
+status = "confirmed"
+
+[[func]]
+addr = 0x800C7A18
+name = "state_40_body"
+proto = "void state_40_body(void)"
+desc = "Test of strength: 10-frame lock, 30 frames of mashing (every press counts), a pushed-back phase for the lower-spirit wrestler unless it has header trait bit 0, then more presses wins: the winner plays its slot 82 as 0x4C/0x4D."
+status = "confirmed"
+
+[[func]]
+addr = 0x800C7F8C
+name = "state_41_body"
+proto = "void state_41_body(void)"
+desc = "Body of the handler for state 0x41 (called from its wrapper)."
+status = "confirmed"
+
+[[func]]
+addr = 0x800D8AB0
+name = "state_44_body"
+proto = "void state_44_body(void)"
+desc = "Body of the handler for state 0x44 (called from its wrapper)."
+status = "confirmed"
+
+[[func]]
+addr = 0x800D941C
+name = "state_45_body"
+proto = "void state_45_body(void)"
+desc = "Body of the handler for state 0x45 (called from its wrapper)."
+status = "confirmed"
+
+[[func]]
+addr = 0x800C83F4
+name = "state_46_move_walk_attacker_body"
+proto = "void state_46_move_walk_attacker_body(void)"
+desc = "Move needing another place: walks the receiver to the ropes (move flags 0x2000) or toward the corner (0x1000), at run speed with 0x20000; plays part 2 on arrival; reversible; times out into the follow-up slot (movement.md)."
+status = "confirmed"
+
+[[func]]
+addr = 0x800C8BC4
+name = "state_47_move_walk_defender_body"
+proto = "void state_47_move_walk_defender_body(void)"
+desc = "Body of state_47_move_walk_defender."
+status = "guess"
+
+[[func]]
+addr = 0x800BC2C4
+name = "state_53_body"
+proto = "void state_53_body(void)"
+desc = "Body of the handler for state 0x53 (called from its wrapper)."
+status = "confirmed"
+
+[[func]]
+addr = 0x800C14FC
+name = "state_54_ropes_a_body"
+proto = "void state_54_ropes_a_body(void)"
+desc = "Out through the ropes: ring -> apron (3021, or 3024 with traits 0x1400 and health_eff >= 128), on to the floor only while C-up is held (not rule 0x04) or when eliminated; apron -> floor 3345."
+status = "confirmed"
+
+[[func]]
+addr = 0x800C1A68
+name = "state_55_ropes_b_body"
+proto = "void state_55_ropes_b_body(void)"
+desc = "In through the ropes: floor -> apron (3027), into the ring while C-up is held and allowed to act; apron -> ring by entry trait 0x400/0x800/0x1000/0x2000 (3337/3338/3339/3343) when health_eff >= 128, else 3336."
+status = "confirmed"
+
+[[func]]
+addr = 0x800C1030
+name = "state_56_apron_recover_body"
+proto = "void state_56_apron_recover_body(void)"
+desc = "Body of state_56_apron_recover."
+status = "likely"
+
+[[func]]
+addr = 0x800BF81C
+name = "state_57_dive_outside_body"
+proto = "void state_57_dive_outside_body(void)"
+desc = "Body of state_57_dive_outside."
+status = "likely"
+
+[[func]]
+addr = 0x800BEB8C
+name = "state_58_body"
+proto = "void state_58_body(void)"
+desc = "Body of the handler for state 0x58 (called from its wrapper)."
+status = "confirmed"
+
+[[func]]
+addr = 0x800BEFE0
+name = "state_59_body"
+proto = "void state_59_body(void)"
+desc = "Body of the handler for state 0x59 (called from its wrapper)."
+status = "confirmed"
+
+[[func]]
+addr = 0x800BF268
+name = "state_5A_body"
+proto = "void state_5A_body(void)"
+desc = "Body of the handler for state 0x5A (called from its wrapper)."
+status = "confirmed"
+
+[[func]]
+addr = 0x800BF618
+name = "state_5B_body"
+proto = "void state_5B_body(void)"
+desc = "Body of the handler for state 0x5B (called from its wrapper)."
+status = "confirmed"
+
+[[func]]
+addr = 0x800BF43C
+name = "state_5C_body"
+proto = "void state_5C_body(void)"
+desc = "Body of the handler for state 0x5C (called from its wrapper)."
+status = "confirmed"
+
+[[func]]
+addr = 0x800BFD00
+name = "state_5D_body"
+proto = "void state_5D_body(void)"
+desc = "Body of the handler for states 0x5D, 0x5E, 0x5F, 0x60, 0x61 (called from its wrapper)."
+status = "confirmed"
+
+[[func]]
+addr = 0x800C20E8
+name = "state_62_body"
+proto = "void state_62_body(void)"
+desc = "Body of the handler for state 0x62 (called from its wrapper)."
+status = "confirmed"
+
+[[func]]
+addr = 0x800DB5B0
+name = "state_64_hold_for_partner_body"
+proto = "void state_64_hold_for_partner_body(void)"
+desc = "Body of state_64_hold_for_partner."
+status = "guess"
+
+[[func]]
+addr = 0x800DBA6C
+name = "state_65_held_for_partner_body"
+proto = "void state_65_held_for_partner_body(void)"
+desc = "Body of state_65_held_for_partner."
+status = "guess"
+
+[[func]]
+addr = 0x800DC4E0
+name = "state_66_carry_attacker_body"
+proto = "void state_66_carry_attacker_body(void)"
+desc = "Carry, carrier: lift by chance_roll 12 (3404, fail 3418 + generic move 37), carry_walk, R puts down (3408), a third-party strike drops both (3414/3416), a partner dive onto the carried (3410) (grapples.md)."
+status = "confirmed"
+
+[[func]]
+addr = 0x800DCB80
+name = "state_67_carry_carried_body"
+proto = "void state_67_carry_carried_body(void)"
+desc = "Carry, carried: mashes out (recover_difficulty kind 6); escapes with its own slot 114 as 0x4C/0x4D; falls with the carrier when struck; takes a partner dive (grapples.md)."
+status = "confirmed"
+
+[[func]]
+addr = 0x800D85A8
+name = "state_6F_crowd_weapon_body"
+proto = "void state_6F_crowd_weapon_body(void)"
+desc = "Body of state_6F_crowd_weapon."
+status = "guess"
+
+[[func]]
+addr = 0x800C23D0
+name = "state_70_body"
+proto = "void state_70_body(void)"
+desc = "Body of the handler for state 0x70 (called from its wrapper)."
+status = "confirmed"
+
+[[func]]
+addr = 0x800DE938
+name = "state_71_body"
+proto = "void state_71_body(void)"
+desc = "Body of the handler for state 0x71 (called from its wrapper)."
+status = "confirmed"
+
+[[func]]
+addr = 0x800DEB40
+name = "state_72_body"
+proto = "void state_72_body(void)"
+desc = "Body of the handler for state 0x72 (called from its wrapper)."
+status = "confirmed"
+
+[[func]]
+addr = 0x800DE680
+name = "state_73_body"
+proto = "void state_73_body(void)"
+desc = "Body of the handler for state 0x73 (called from its wrapper)."
+status = "confirmed"
+
+[[func]]
+addr = 0x800E5AB0
+name = "state_74_body"
+proto = "void state_74_body(void)"
+desc = "Body of the handler for state 0x74 (called from its wrapper)."
+status = "confirmed"
+
+[[func]]
+addr = 0x800C227C
+name = "state_75_body"
+proto = "void state_75_body(void)"
+desc = "Body of the handler for state 0x75 (called from its wrapper)."
+status = "confirmed"

@@ -1,0 +1,26 @@
+# Revenge arenas. Notes: _re_docs/individual_games/wcw_revenge/README.md (Arenas)
+
+[[func]]
+addr = 0x8000E920
+name = "arena_build"
+desc = "Builds arena 0-5 (Nitro, Souled Out, SuperBrawl, Bash at the Beach, Halloween Havoc, Starrcade): ring meshes and palettes from 0x80036C68, side pieces per ring side, corner pieces from 0x80036C50."
+status = "likely"
+
+[[func]]
+addr = 0x8000EF90
+name = "arena_crowd_build"
+desc = "Crowd, stage and entrance of the current arena (lists at 0x80036C68 [38+2a] / [50+2a] / [62+2a], count [34]), two palette sets; plus the shared stands from 0x80036750."
+status = "likely"
+
+[[func]]
+addr = 0x80007020
+name = "scenery_object"
+desc = "As World Tour's scenery_object: loads count mesh parts with palette p and texture p + 1 and returns one display list."
+status = "likely"
+
+[[data]]
+addr = 0x80036C68
+name = "g_arena_tables"
+type = "u16[]"
+desc = "Arena tables: [0-5] ring meshes, [6+2a] ring palette ptr, [18-20] side meshes, [22+2a] side palette ptr, [34] crowd counts (bytes), [38+2a] crowd meshes, [50+2a]/[62+2a] crowd palettes (two sets), [74-76] barrier fillers, [78-80] their palettes."
+status = "likely"

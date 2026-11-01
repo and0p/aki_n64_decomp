@@ -1,0 +1,375 @@
+# Revenge AI modes. 0-45 match World Tour mode for mode (same index); 46-61 are first readings.
+# Notes: _re_docs/individual_games/wcw_revenge/README.md
+
+[[func]]
+addr = 0x800AE1B8
+name = "ai_mode_0"
+desc = "AI mode 0; same mode as World Tour mode 0 (ai.md)."
+status = "likely"
+
+[[func]]
+addr = 0x800AE1D4
+name = "ai_mode_1_grapple"
+desc = "AI mode 1; same mode as World Tour mode 1 (ai.md)."
+status = "likely"
+
+[[func]]
+addr = 0x800AE37C
+name = "ai_mode_2"
+desc = "AI mode 2; same mode as World Tour mode 2 (ai.md)."
+status = "likely"
+
+[[func]]
+addr = 0x800AE46C
+name = "ai_mode_3_strike"
+desc = "AI mode 3; same mode as World Tour mode 3 (ai.md)."
+status = "likely"
+
+[[func]]
+addr = 0x800AE6B4
+name = "ai_mode_4_block_short"
+desc = "AI mode 4; same mode as World Tour mode 4 (ai.md)."
+status = "likely"
+
+[[func]]
+addr = 0x800AE75C
+name = "ai_mode_5_pin"
+desc = "AI mode 5; same mode as World Tour mode 5 (ai.md)."
+status = "likely"
+
+[[func]]
+addr = 0x800AE7C8
+name = "ai_mode_6_strong_strike"
+desc = "AI mode 6; same mode as World Tour mode 6 (ai.md)."
+status = "likely"
+
+[[func]]
+addr = 0x800AE8E8
+name = "ai_mode_7_running_attack"
+desc = "AI mode 7; same mode as World Tour mode 7 (ai.md)."
+status = "likely"
+
+[[func]]
+addr = 0x800AED24
+name = "ai_mode_8_whip"
+desc = "AI mode 8; same mode as World Tour mode 8 (ai.md)."
+status = "likely"
+
+[[func]]
+addr = 0x800AEEC8
+name = "ai_mode_9_meet_runner"
+desc = "AI mode 9; same mode as World Tour mode 9 (ai.md)."
+status = "likely"
+
+[[func]]
+addr = 0x800AF1B8
+name = "ai_mode_10_pick_up"
+desc = "AI mode 10; same mode as World Tour mode 10 (ai.md)."
+status = "likely"
+
+[[func]]
+addr = 0x800AF23C
+name = "ai_mode_11_evade"
+desc = "AI mode 11; same mode as World Tour mode 11 (ai.md)."
+status = "likely"
+
+[[func]]
+addr = 0x800AF3DC
+name = "ai_mode_12_ground_attack"
+desc = "AI mode 12; same mode as World Tour mode 12 (ai.md)."
+status = "likely"
+
+[[func]]
+addr = 0x800AF52C
+name = "ai_mode_13_ground_hold"
+desc = "AI mode 13; same mode as World Tour mode 13 (ai.md)."
+status = "likely"
+
+[[func]]
+addr = 0x800AF670
+name = "ai_mode_14_grapple_attacker"
+desc = "AI mode 14; same mode as World Tour mode 14 (ai.md)."
+status = "likely"
+
+[[func]]
+addr = 0x800AFDAC
+name = "ai_mode_15"
+desc = "AI mode 15; same mode as World Tour mode 15 (ai.md)."
+status = "likely"
+
+[[func]]
+addr = 0x800AFEC8
+name = "ai_mode_16_reflex_grappled"
+desc = "AI mode 16; same mode as World Tour mode 16 (ai.md)."
+status = "likely"
+
+[[func]]
+addr = 0x800AFFE0
+name = "ai_mode_17_reflex_whipped"
+desc = "AI mode 17; same mode as World Tour mode 17 (ai.md)."
+status = "likely"
+
+[[func]]
+addr = 0x800B0090
+name = "ai_mode_18_reflex_mash"
+desc = "AI mode 18; same mode as World Tour mode 18 (ai.md)."
+status = "likely"
+
+[[func]]
+addr = 0x800B015C
+name = "ai_mode_19_watch"
+desc = "AI mode 19; same mode as World Tour mode 19 (ai.md)."
+status = "likely"
+
+[[func]]
+addr = 0x800B0360
+name = "ai_mode_20"
+desc = "AI mode 20; same mode as World Tour mode 20 (ai.md)."
+status = "likely"
+
+[[func]]
+addr = 0x800B0518
+name = "ai_mode_21_climb_in"
+desc = "AI mode 21; same mode as World Tour mode 21 (ai.md)."
+status = "likely"
+
+[[func]]
+addr = 0x800B06F0
+name = "ai_mode_22_go_out"
+desc = "AI mode 22; same mode as World Tour mode 22 (ai.md)."
+status = "likely"
+
+[[func]]
+addr = 0x800B0830
+name = "ai_mode_23"
+desc = "AI mode 23; same mode as World Tour mode 23 (ai.md)."
+status = "likely"
+
+[[func]]
+addr = 0x800B09A4
+name = "ai_mode_24_taunt"
+desc = "AI mode 24; same mode as World Tour mode 24 (ai.md)."
+status = "likely"
+
+[[func]]
+addr = 0x800B09E8
+name = "ai_mode_25"
+desc = "AI mode 25; same mode as World Tour mode 25 (ai.md)."
+status = "likely"
+
+[[func]]
+addr = 0x800B0B74
+name = "ai_mode_26"
+desc = "AI mode 26; same mode as World Tour mode 26 (ai.md)."
+status = "likely"
+
+[[func]]
+addr = 0x800B0C90
+name = "ai_mode_27_circle"
+desc = "AI mode 27; same mode as World Tour mode 27 (ai.md)."
+status = "likely"
+
+[[func]]
+addr = 0x800B0FD4
+name = "ai_mode_28_counter_evade"
+desc = "AI mode 28; same mode as World Tour mode 28 (ai.md)."
+status = "likely"
+
+[[func]]
+addr = 0x800B113C
+name = "ai_mode_29_counter_grapple"
+desc = "AI mode 29; same mode as World Tour mode 29 (ai.md)."
+status = "likely"
+
+[[func]]
+addr = 0x800B1240
+name = "ai_mode_30"
+desc = "AI mode 30; same mode as World Tour mode 30 (ai.md)."
+status = "likely"
+
+[[func]]
+addr = 0x800B1440
+name = "ai_mode_31_block"
+desc = "AI mode 31; same mode as World Tour mode 31 (ai.md)."
+status = "likely"
+
+[[func]]
+addr = 0x800B1530
+name = "ai_mode_32_timed_block"
+desc = "AI mode 32; same mode as World Tour mode 32 (ai.md)."
+status = "likely"
+
+[[func]]
+addr = 0x800B16D0
+name = "ai_mode_33"
+desc = "AI mode 33; same mode as World Tour mode 33 (ai.md)."
+status = "likely"
+
+[[func]]
+addr = 0x800B18E0
+name = "ai_mode_34_taunt_hold"
+desc = "AI mode 34; same mode as World Tour mode 34 (ai.md)."
+status = "likely"
+
+[[func]]
+addr = 0x800B19AC
+name = "ai_mode_35"
+desc = "AI mode 35; same mode as World Tour mode 35 (ai.md)."
+status = "likely"
+
+[[func]]
+addr = 0x800B1BB8
+name = "ai_mode_36"
+desc = "AI mode 36; same mode as World Tour mode 36 (ai.md)."
+status = "likely"
+
+[[func]]
+addr = 0x800B1C3C
+name = "ai_mode_37_reflex_dazed"
+desc = "AI mode 37; same mode as World Tour mode 37 (ai.md)."
+status = "likely"
+
+[[func]]
+addr = 0x800B1E04
+name = "ai_mode_38_get_up"
+desc = "AI mode 38; same mode as World Tour mode 38 (ai.md)."
+status = "likely"
+
+[[func]]
+addr = 0x800B2354
+name = "ai_mode_39_wander"
+desc = "AI mode 39; same mode as World Tour mode 39 (ai.md)."
+status = "likely"
+
+[[func]]
+addr = 0x800B242C
+name = "ai_mode_40"
+desc = "AI mode 40; same mode as World Tour mode 40 (ai.md)."
+status = "likely"
+
+[[func]]
+addr = 0x800B25B4
+name = "ai_mode_41"
+desc = "AI mode 41; same mode as World Tour mode 41 (ai.md)."
+status = "likely"
+
+[[func]]
+addr = 0x800B2740
+name = "ai_mode_42"
+desc = "AI mode 42; same mode as World Tour mode 42 (ai.md)."
+status = "likely"
+
+[[func]]
+addr = 0x800B2934
+name = "ai_mode_43_strike_behind"
+desc = "AI mode 43; same mode as World Tour mode 43 (ai.md)."
+status = "likely"
+
+[[func]]
+addr = 0x800B2A78
+name = "ai_mode_44"
+desc = "AI mode 44; same mode as World Tour mode 44 (ai.md)."
+status = "likely"
+
+[[func]]
+addr = 0x800B2BDC
+name = "ai_mode_45_tag"
+desc = "AI mode 45; same mode as World Tour mode 45 (ai.md)."
+status = "likely"
+
+[[func]]
+addr = 0x800B2D9C
+name = "ai_mode_46"
+desc = "New: holds A while running (state 3), ends on state 4 / 99; probably World Tour mode 47 (run, then A: dive to the floor) adapted."
+status = "guess"
+
+[[func]]
+addr = 0x800B2F40
+name = "ai_mode_47"
+desc = "New: run (C-down toward a corner direction) when flags_lo 0x40 and a chance from +0x28; then climbs to the turnbuckle (state 10) and holds C-down."
+status = "guess"
+
+[[func]]
+addr = 0x800B31F0
+name = "ai_mode_48"
+desc = "New: like 47 with flags 0xC0 and C-up+C-down: climbing in from the apron or onto the turnbuckle (states 43, 134, 137-138)."
+status = "guess"
+
+[[func]]
+addr = 0x800B36A8
+name = "ai_mode_49"
+desc = "New mode 49 (not read)."
+status = "guess"
+
+[[func]]
+addr = 0x800B37F8
+name = "ai_mode_50"
+desc = "New: in the new state 0x5D, waits a per-wrestler delay (header byte 0x18 table at 0x800E377C) then presses A or B 50/50; entered for situation class 20."
+status = "guess"
+
+[[func]]
+addr = 0x800B3A08
+name = "ai_mode_51"
+desc = "New: in the new state 0x5E, holds A or B (50/50); entered for situation class 21."
+status = "guess"
+
+[[func]]
+addr = 0x800B3B24
+name = "ai_mode_52"
+desc = "New: holds Down while the wrestler is below a height (pos y +0x74)."
+status = "guess"
+
+[[func]]
+addr = 0x800B3B90
+name = "ai_mode_53"
+desc = "New: steers by comparing x and z separately (floor movement)."
+status = "guess"
+
+[[func]]
+addr = 0x800B3D5C
+name = "ai_mode_54"
+desc = "New (also mode 55): waits for state 48, presses C-right (2) by flags_lo 0x200000, then B."
+status = "guess"
+
+[[func]]
+addr = 0x800B3F24
+name = "ai_mode_56"
+desc = "New: circling like mode 27, using the pelvis joint (+0x6C)."
+status = "guess"
+
+[[func]]
+addr = 0x800B4264
+name = "ai_mode_57"
+desc = "New (also 58-60): waits for state 48 and hands over to mode 13 (ground hold) by flags_lo 0x200000."
+status = "guess"
+
+[[func]]
+addr = 0x800B44B8
+name = "ai_mode_61"
+desc = "New: standing close to the opponent, a skill roll gives the timed block (mode 32); else repositions."
+status = "guess"
+
+[[func]]
+addr = 0x800AD7B0
+name = "ai_situation"
+desc = "Situation class of a wrestler for the AI, as World Tour's (0x800DEEF0) with more classes (values up to 23)."
+status = "likely"
+
+[[func]]
+addr = 0x800ADB44
+name = "ai_update_perception"
+desc = "Noisy perceived values into the AI block, as World Tour's 0x800DF548."
+status = "likely"
+
+[[func]]
+addr = 0x800ADAE4
+name = "ai_ring_quarter"
+desc = "Ring quarter of a wrestler (World Tour sub_800DF4A8); stored for self (+0x1C) and opponent (+0x2A)."
+status = "likely"
+
+[[data]]
+addr = 0x800F9B88
+name = "g_ai_state"
+type = "u8[4][96]"
+desc = "Per-slot AI block, 96 bytes (World Tour 84): mode +2, step +4, held/pressed/stick +6/+8/+0xC, skill +0x12, self class +0x14, opponent class +0x22, distance and angle +0x38, corner distances +0x48, opponent state at mode start +0x2E, flags +0x5C."
+status = "likely"

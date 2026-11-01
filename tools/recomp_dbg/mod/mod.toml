@@ -1,0 +1,25 @@
+[manifest]
+id = "aki_debug"
+version = "0.1.0"
+display_name = "AKI debug server"
+short_description = "Developer tool: pause, frame step, RDRAM access and snapshots over 127.0.0.1."
+description = """
+Serves a small HTTP API on 127.0.0.1 (port 5664, or AKIDBG_PORT) for the aki project's reverse \
+engineering: pause, frame step, read and write RDRAM, memory breakpoints, pad overrides and \
+snapshots. It listens on 127.0.0.1 only."""
+authors = [ "aki" ]
+game_id = "GAME_ID_PLACEHOLDER"
+minimum_recomp_version = "0.1.0"
+dependencies = []
+optional_dependencies = []
+
+[[manifest.native_libraries]]
+name = "aki_debug"
+funcs = [ "akidbg_frame", "akidbg_paused", "akidbg_pads" ]
+
+[inputs]
+elf_path = "mod.elf"
+mod_filename = "aki_debug"
+func_reference_syms_file = "SYMS_PLACEHOLDER"
+data_reference_syms_files = []
+additional_files = []

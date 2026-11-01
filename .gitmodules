@@ -1,0 +1,15 @@
+[submodule "_recomps/WWFNoMercyRecomp"]
+	path = _recomps/WWFNoMercyRecomp
+	url = https://github.com/jessetbh/WWFNoMercyRecomp.git
+[submodule "_recomps/WWFWrestleMania2000Recomp"]
+	path = _recomps/WWFWrestleMania2000Recomp
+	url = https://github.com/jessetbh/WWFWrestleMania2000Recomp.git
+[submodule "_recomps/WCWvsNWOWorldTourRecomp"]
+	path = _recomps/WCWvsNWOWorldTourRecomp
+	url = https://github.com/jessetbh/WCWvsNWOWorldTourRecomp.git
+[submodule "_recomps/WCWnWoRevengeRecomp"]
+	path = _recomps/WCWnWoRevengeRecomp
+	url = https://github.com/jessetbh/WCWnWoRevengeRecomp.git
+[submodule "_recomps/VPW64Recomp"]
+	path = _recomps/VPW64Recomp
+	url = https://github.com/jessetbh/VPW64Recomp.git

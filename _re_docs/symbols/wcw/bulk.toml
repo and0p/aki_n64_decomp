@@ -1,0 +1,1652 @@
+# Bulk naming pass over the match overlay (2026-10-31), from pseudocode only.
+# Short helpers and wrappers; move entries to a subsystem file when they are studied.
+
+[[func]]
+addr = 0x80098ACC
+name = "crowd_cue_stub"
+desc = "Empty stub called with a cue number (bell 3/5/7/11, rope break, near fall); probably a removed crowd/announcer hook."
+status = "likely"
+
+[[func]]
+addr = 0x80098B74
+name = "hud_cue_stub"
+desc = "Empty stub called when the referee count is hidden and from holds."
+status = "likely"
+
+[[func]]
+addr = 0x800B4DC8
+name = "match_tick_stub"
+desc = "Empty stub called by match_tick."
+status = "likely"
+
+[[func]]
+addr = 0x80098354
+name = "switch_target_cue"
+desc = "Tiny HUD hook called by input_switch_target."
+status = "guess"
+
+[[func]]
+addr = 0x800A0E30
+name = "wrestler_anim_invalidate"
+desc = "Sets anim_id (+0x08) to -1 so the next wrestler_set_anim restarts the animation."
+status = "likely"
+
+[[func]]
+addr = 0x800916B4
+name = "arena_objects_init"
+desc = "Wrapper calling sub_80091A34 (arena object setup)."
+status = "guess"
+
+[[func]]
+addr = 0x80098B34
+name = "crowd_cue_a"
+desc = "Calls crowd_cue_stub; no callers."
+status = "guess"
+
+[[func]]
+addr = 0x80098B54
+name = "crowd_cue_b"
+desc = "Calls crowd_cue_stub; no callers."
+status = "guess"
+
+[[func]]
+addr = 0x800DF9E8
+name = "ai_mode_0"
+desc = "AI mode 0 handler: ai_decide."
+status = "confirmed"
+
+[[func]]
+addr = 0x80098AD4
+name = "cue_rope_break"
+desc = "Rope break: crowd cue, HUD message 0 (sub_80098360) and sound 70."
+status = "likely"
+
+[[func]]
+addr = 0x80098B04
+name = "cue_near_fall"
+desc = "Near fall (kick-out after 2.67 s): crowd cue, HUD message 1 and sound 76."
+status = "likely"
+
+[[func]]
+addr = 0x8009F7E8
+name = "angle_to_dir8"
+desc = "Angle (0x1000 per turn) to one of 8 directions: ((a + 0x1900) >> 9) & 7."
+status = "confirmed"
+
+[[func]]
+addr = 0x8009F680
+name = "absf"
+desc = "Absolute value of a float."
+status = "confirmed"
+
+[[func]]
+addr = 0x8009F73C
+name = "angle_to_radians"
+desc = "Angle units (0x1000 per turn) to radians."
+status = "likely"
+
+[[func]]
+addr = 0x800E2674
+name = "ai_mode_24"
+desc = "AI mode 24: pushes the stick for 80 frames (taunt), back to mode 0."
+status = "likely"
+
+[[func]]
+addr = 0x80092AA0
+name = "node_set_xy"
+desc = "Sets a scene node's two words at +24/+28 from a pair and rebuilds it (sub_80006540)."
+status = "guess"
+
+[[func]]
+addr = 0x8009F93C
+name = "vec3_sub"
+desc = "out = b - a for 3 floats."
+status = "confirmed"
+
+[[func]]
+addr = 0x800A581C
+name = "wrestler_move_pos_to_pelvis"
+desc = "Moves the wrestler's position to its pelvis joint (pos +0x3C, pelvis +0x5C) via wrestler_translate."
+status = "likely"
+
+[[func]]
+addr = 0x80099A04
+name = "results_text_draw"
+desc = "Results screen helper drawing a text block while the screen is up (word_800F01BA >= 0)."
+status = "guess"
+
+[[func]]
+addr = 0x8009BD88
+name = "camera_set"
+desc = "Sets the camera parameter block at 0x800F0520 (position, target, up)."
+status = "likely"
+
+[[func]]
+addr = 0x8009F9E0
+name = "vec2_len"
+desc = "sqrt(x*x + z*z)."
+status = "confirmed"
+
+[[func]]
+addr = 0x800A1024
+name = "wrestler_restart_anim"
+desc = "wrestler_anim_invalidate then wrestler_set_anim: plays an animation from the start even if it is the current one."
+status = "confirmed"
+
+[[func]]
+addr = 0x8009BAB0
+name = "camera_focus_joint"
+desc = "Camera focus point from a wrestler's model joint (g_model_joints +0xD0, x negated)."
+status = "likely"
+
+[[func]]
+addr = 0x8009BEBC
+name = "camera_ease"
+desc = "Moves a value a tenth of the way toward its target, snapping when close."
+status = "likely"
+
+[[func]]
+addr = 0x80099A50
+name = "results_name_text"
+desc = "Copies a slot's roster name (0x80061828) into a results text buffer."
+status = "likely"
+
+[[func]]
+addr = 0x800DF244
+name = "ai_set_mode_rerun"
+desc = "ai_set_mode plus RERUN on the AI wrestler, so the new mode runs in the same frame."
+status = "confirmed"
+
+[[func]]
+addr = 0x8009F780
+name = "radians_to_angle"
+desc = "Radians to angle units (0x1000 per turn)."
+status = "likely"
+
+[[func]]
+addr = 0x8009F988
+name = "vec_xz_angle"
+desc = "Angle of an x/z vector (atan2 through sub_80005208, then radians_to_angle)."
+status = "likely"
+
+[[func]]
+addr = 0x800A5600
+name = "wrestler_set_state_free_rerun"
+desc = "wrestler_set_state_free plus RERUN."
+status = "confirmed"
+
+[[func]]
+addr = 0x800B6238
+name = "ai_vs_apron_to_floor"
+desc = "ai_decide case: self on the apron, opponent on the floor: after the 4-way/tag target checks, mode 21."
+status = "likely"
+
+[[func]]
+addr = 0x800A3FA4
+name = "dpad_to_side"
+desc = "D-pad bits to a ring side: Up 0, Right 1, Down 2, Left 3, else -1."
+status = "confirmed"
+
+[[func]]
+addr = 0x8009A290
+name = "hud_free_all"
+desc = "Frees the HUD buffers at 0x800EFF80 and resets two HUD subsystems."
+status = "likely"
+
+[[func]]
+addr = 0x800E007C
+name = "ai_mode_5"
+desc = "AI mode 5: hold C-down while the opponent is lying (the pin), else back to mode 0."
+status = "confirmed"
+
+[[func]]
+addr = 0x800974C8
+name = "hud_count_hide"
+desc = "Hides the referee count display (sets the hide bit on two HUD objects)."
+status = "likely"
+
+[[func]]
+addr = 0x800996CC
+name = "intro_text_set"
+desc = "Selects an intro text page (state_74) and clears its three lines."
+status = "guess"
+
+[[func]]
+addr = 0x8009FA2C
+name = "vec_xz_polar"
+desc = "Length and angle of an x/z vector (vec_xz_dist_angle core)."
+status = "confirmed"
+
+[[func]]
+addr = 0x800B21D0
+name = "ref_count_reset"
+desc = "Resets the referee count (count 0, slot -1, hides the display, zeroes the slot's pin clock)."
+status = "confirmed"
+
+[[func]]
+addr = 0x800B926C
+name = "corner_run_step"
+desc = "State 0x5C step: run_step, and the corner dive action when the run ends."
+status = "likely"
+
+[[func]]
+addr = 0x800A40EC
+name = "dpad_diagonal_quadrant"
+desc = "Diagonal d-pad bits to a quadrant 0-3 (Up+Right 0, Down+Right 1, Down+Left 2, Up+Left 3), else -1."
+status = "confirmed"
+
+[[func]]
+addr = 0x800A4760
+name = "keep_in_bounds_pair"
+desc = "keep_in_bounds(w, other, 0, margin): keeps a linked pair inside the area."
+status = "confirmed"
+
+[[func]]
+addr = 0x800A5594
+name = "wrestler_set_state_free"
+desc = "wrestler_set_state and unlink: clears GRAPPLE_LEAD and linked_idx."
+status = "confirmed"
+
+[[func]]
+addr = 0x800D8028
+name = "weapons_update_models"
+desc = "Per frame: updates each weapon object's model (sub_80091DA8) from its holder and type."
+status = "likely"
+
+[[func]]
+addr = 0x800DD74C
+name = "tag_in_health_init"
+desc = "Match start: g_tag_in_health = each wrestler's health."
+status = "confirmed"
+
+[[func]]
+addr = 0x8009FB1C
+name = "vec_xz_step"
+desc = "(b - a) in x/z, divided by n frames: the per-frame slide toward a point."
+status = "confirmed"
+
+[[func]]
+addr = 0x800A3E8C
+name = "recover_tick_zero"
+desc = "recover_tick, then zeroes recover_count when the flag argument is set and it ran out."
+status = "likely"
+
+[[func]]
+addr = 0x800A47CC
+name = "keep_in_bounds_pair_b"
+desc = "Another keep_in_bounds(w, other, 0, margin) wrapper."
+status = "likely"
+
+[[func]]
+addr = 0x800A48B4
+name = "keep_in_bounds_masked"
+desc = "keep_in_bounds with an explicit joint mask."
+status = "likely"
+
+[[func]]
+addr = 0x800A4924
+name = "keep_in_bounds_pair_c"
+desc = "keep_in_bounds(w, other, 0, margin) wrapper used by ground grapples, covers, pick-ups and flips."
+status = "likely"
+
+[[func]]
+addr = 0x8009BF0C
+name = "wrap_float_period"
+desc = "Wraps a float into [0, period) (period at 0x800E6C40)."
+status = "likely"
+
+[[func]]
+addr = 0x8009FE78
+name = "vec_dist_wrapper"
+desc = "sub_8009FC64 wrapper (distance between two points)."
+status = "likely"
+
+[[func]]
+addr = 0x800B6428
+name = "ai_vs_floor_to_apron"
+desc = "ai_decide case: self on the floor, opponent on the apron: after the floor/target checks, table 0x800E76A4."
+status = "likely"
+
+[[func]]
+addr = 0x800B2158
+name = "match_abort_draw"
+desc = "Called from the pause menu: records a draw (0x100800) with no winners or losers and sets 0x800F16F6 (results not saved)."
+status = "likely"
+
+[[func]]
+addr = 0x800DA300
+name = "strike_combo_meter"
+desc = "State 0x44: sets the per-slot meter 0x800F1CB0 to 10 x the combo hits left (at least 30)."
+status = "guess"
+
+[[func]]
+addr = 0x80099018
+name = "hud_quad_reset"
+desc = "Resets a HUD sprite node and writes its fixed display-list header."
+status = "guess"
+
+[[func]]
+addr = 0x8009BA34
+name = "camera_floor_snap"
+desc = "Camera helper: sets a point's height to 90 (the mat) or 0 depending on whether it is over the ring, then positions a node."
+status = "guess"
+
+[[func]]
+addr = 0x800925E0
+name = "hud_node_init"
+desc = "HUD node setup (texture node, hidden)."
+status = "guess"
+
+[[func]]
+addr = 0x8009DDF0
+name = "fade_out_step"
+desc = "Screen fade step (counter 0x800F043A below 17 hides the fade quad)."
+status = "likely"
+
+[[func]]
+addr = 0x8009F828
+name = "vec_xz_dir8"
+desc = "Direction (0-7) from a to b in x/z (vec_xz_dist_angle, then angle_to_dir8)."
+status = "likely"
+
+[[func]]
+addr = 0x8009943C
+name = "hud_text_free"
+desc = "Frees the HUD text buffers at 0x800F00A0 (3 lines per page)."
+status = "likely"
+
+[[func]]
+addr = 0x800BD484
+name = "dive_crash"
+desc = "A dive that missed: generic move 35 damage to self, the move's dive_value as spirit when the landing pose is lying, then neutral by pose."
+status = "confirmed"
+
+[[func]]
+addr = 0x80091A34
+name = "arena_objects_swap"
+desc = "Rebuilds the 4 objects at 0x800E94EC with one of two display lists (alternating every call): animated arena objects."
+status = "guess"
+
+[[func]]
+addr = 0x80092660
+name = "hud_rect_dl"
+desc = "Builds a HUD rectangle display list (optional texture at +20)."
+status = "guess"
+
+[[func]]
+addr = 0x800A5658
+name = "wrestler_dist_angle"
+desc = "x/z distance and angle from one wrestler's pelvis to another's (g_opp_dist / g_opp_angle)."
+status = "confirmed"
+
+[[func]]
+addr = 0x80095AF4
+name = "hud_draw"
+desc = "Per-frame HUD draw: health/spirit bars (sub_80094CAC), counts, and the results page when shown."
+status = "likely"
+
+[[func]]
+addr = 0x800D9C10
+name = "strike_combo_input"
+desc = "State 0x44 input: none when the match is decided; the stick with SPECIAL ready sets grapple_ctx 0x80000; otherwise A or B (+ d-pad) continues the combo."
+status = "likely"
+
+[[func]]
+addr = 0x800E5330
+name = "ai_mode_46"
+desc = "AI mode 46 (whip runner): hands on to mode 8 when the wrestler is in state 0x0A."
+status = "confirmed"
+
+[[func]]
+addr = 0x80091D14
+name = "weapon_models_free"
+desc = "Frees the four weapon display lists (0x800EBB98 ... 0x800EBCC8)."
+status = "likely"
+
+[[func]]
+addr = 0x800B6FFC
+name = "ai_vs_class12"
+desc = "Opponent in situation class 12: approach (33) when far, else tables 0x800E7838 / 0x800E7850 by skill."
+status = "likely"
+
+[[func]]
+addr = 0x8009DD58
+name = "fade_in_step"
+desc = "Screen fade step: counter 0x800F043A up by 8 to 255."
+status = "likely"
+
+[[func]]
+addr = 0x800A45A0
+name = "wrestler_translate_pushed"
+desc = "Translates a wrestler, pushes it out of others (push_apart), then translates by the remainder."
+status = "likely"
+
+[[func]]
+addr = 0x800D5A58
+name = "whip_place_runner"
+desc = "Whip: places the runner at a point offset from the attacker along its facing (point_at_offset twice)."
+status = "likely"
+
+[[func]]
+addr = 0x80092A00
+name = "hud_text_node"
+desc = "HUD text node: builds and fills the node's display list (sub_8009290C)."
+status = "guess"
+
+[[func]]
+addr = 0x800B6388
+name = "ai_vs_floor_to_ring"
+desc = "ai_decide case: self on the floor, opponent in the ring: turnbuckle chase or table 0x800E768C."
+status = "likely"
+
+[[func]]
+addr = 0x800DF4A8
+name = "ai_ring_quarter"
+desc = "Ring quarter from the signs of pelvis x and z (0-3)."
+status = "confirmed"
+
+[[func]]
+addr = 0x800E25D4
+name = "ai_mode_23"
+desc = "AI mode 23: both on the floor: steer at the opponent and press A."
+status = "confirmed"
+
+[[func]]
+addr = 0x800A2830
+name = "dpad_vs_zone"
+desc = "Classifies d-pad bits against the wrestler's ring zone tables (0x800E6FD4 / 0x800E6FDC): 0 none, 1 first table, 2 second."
+status = "likely"
+
+[[func]]
+addr = 0x800DA380
+name = "strike_combo_hits_left"
+desc = "For the HUD: combo hits left (0x800F1CB8) of a wrestler in state 0x44 with header trait bit 0, else -1."
+status = "likely"
+
+[[func]]
+addr = 0x800A3EFC
+name = "recover_tick_ground"
+desc = "Ground grapple defender: recover_tick, plus 1 back with 75 % chance; zeroes it when the flag argument is set."
+status = "likely"
+
+[[func]]
+addr = 0x8009B988
+name = "match_free"
+desc = "End of match: frees models, weapon lists, scenery and buffers."
+status = "likely"
+
+[[func]]
+addr = 0x800A0220
+name = "hermite_weights"
+desc = "Cubic interpolation weights for a parameter t (used by the path follower sub_800A365C)."
+status = "likely"
+
+[[func]]
+addr = 0x800A1E30
+name = "pose_is_lying"
+desc = "True when the current animation's pose class (+0x35F) is one of the lying poses 7-0x1C."
+status = "confirmed"
+
+[[func]]
+addr = 0x800C515C
+name = "scripted_slide_step"
+desc = "Slides and turns a wrestler for 6 frames (slide_vel, turn_step), then sets its facing; used by the caught-strike pull (0x6B/0x6C)."
+status = "likely"
+
+[[func]]
+addr = 0x800E0E28
+name = "ai_mode_10"
+desc = "AI mode 10: R next to a downed opponent (pick-up, state 0x2D)."
+status = "confirmed"
+
+[[func]]
+addr = 0x800E3C64
+name = "ai_mode_36"
+desc = "AI mode 36: C-up next to a downed opponent (flip over, state 0x2B)."
+status = "confirmed"
+
+[[func]]
+addr = 0x80091ABC
+name = "crowd_lists_free"
+desc = "Frees the two crowd display lists (count from 0x800E6370 per arena, 3 in the 3-4 wrestler build)."
+status = "likely"
+
+[[func]]
+addr = 0x800A4638
+name = "wrestler_translate_bounded"
+desc = "Translates a wrestler, keeps it in bounds, then translates by the remainder."
+status = "likely"
+
+[[func]]
+addr = 0x800CC14C
+name = "hits_taken_decay"
+desc = "Per update (mode 1): counts down 0x800F1B90[slot] and clears hits_taken when it runs out; mode 0 restarts it at 60 frames. So hits in a row reset after 2 s without a hit."
+status = "likely"
+
+[[func]]
+addr = 0x80097040
+name = "hud_nodes_count"
+desc = "Counts and walks the HUD node lists."
+status = "guess"
+
+[[func]]
+addr = 0x80097BF4
+name = "hud_countout_show"
+desc = "Shows the ring-out count display (10 or 20 by the setting at 0x80061FE6)."
+status = "likely"
+
+[[func]]
+addr = 0x80098E40
+name = "hud_quad_dl"
+desc = "Writes a HUD quad display list."
+status = "guess"
+
+[[func]]
+addr = 0x8009AD78
+name = "match_hud_free"
+desc = "Frees the match HUD and text buffers."
+status = "likely"
+
+[[func]]
+addr = 0x8009BB00
+name = "shadow_nodes_update"
+desc = "Copies the model joint positions into the second (shadow) node set."
+status = "guess"
+
+[[func]]
+addr = 0x8009FC64
+name = "vec_xz_dist"
+desc = "Distance and angle between two points (x/z), optional copy of the result."
+status = "likely"
+
+[[func]]
+addr = 0x8009FD34
+name = "vec_yz_dist"
+desc = "Like vec_xz_dist on the y/z components."
+status = "likely"
+
+[[func]]
+addr = 0x800DD5E8
+name = "lying_timer"
+desc = "While flags_hi 0x10000 (lying), counts 0x800F1D40[slot]; after 211 frames sets flags_hi 0x20000, else clears it."
+status = "likely"
+
+[[func]]
+addr = 0x800D6DC4
+name = "whip_push_check"
+desc = "Whip states: push_apart against the others and returns the angle to whoever it bumped."
+status = "likely"
+
+[[func]]
+addr = 0x800E38C0
+name = "ai_mode_34"
+desc = "AI mode 34: stick for 80 frames while in the taunt state (0x16) and the opponent's state is unchanged (taunt)."
+status = "confirmed"
+
+[[func]]
+addr = 0x800916D4
+name = "arena_free"
+desc = "Frees the arena: scenery nodes (0x800E9938, word_800EB810 of them) and the per-arena display lists."
+status = "likely"
+
+[[func]]
+addr = 0x8009A2F0
+name = "results_page_draw"
+desc = "Draws the results page text (sub_800994C0, results_text_draw)."
+status = "guess"
+
+[[func]]
+addr = 0x800D7CD4
+name = "pair_slide_step"
+desc = "While state_timer > 0: translates the wrestler (and optionally its partner) by slide_vel (+0x32C), turns by turn_step, and counts down."
+status = "confirmed"
+
+[[func]]
+addr = 0x800E26AC
+name = "ai_mode_25"
+desc = "AI mode 25: steer at the opponent (on the floor by axis) until within reach, then mode 0."
+status = "confirmed"
+
+[[func]]
+addr = 0x8009BDD4
+name = "camera_update"
+desc = "Per-frame camera: chooses between the normal follow camera (sub_8009C308) and the close-up / replay camera (sub_8009D750) from flags in 0x800F054C."
+status = "likely"
+
+[[func]]
+addr = 0x800CEDD0
+name = "cover_side_pick"
+desc = "Pin cover / flip-over: which side of the lying wrestler to approach (0 front, 1/3 sides, 2 back by angle), adjusted for face down."
+status = "likely"
+
+[[func]]
+addr = 0x8009290C
+name = "hud_tint_text"
+desc = "Writes RGB-scaled colour values for HUD text (from a 5551 colour)."
+status = "guess"
+
+[[func]]
+addr = 0x800B6290
+name = "ai_vs_apron_to_ring"
+desc = "ai_decide case: self on the apron, opponent in the ring: climb in (mode 21) when allowed, else table 0x800E7674."
+status = "confirmed"
+
+[[func]]
+addr = 0x800DFF84
+name = "ai_mode_4"
+desc = "AI mode 4: hold R for 0-12 frames (a short block)."
+status = "confirmed"
+
+[[func]]
+addr = 0x800E2F68
+name = "ai_mode_29"
+desc = "AI mode 29: wait ai_counter_delay frames, then A (grapple first) via mode 1."
+status = "confirmed"
+
+[[func]]
+addr = 0x800926E8
+name = "hud_sprite_alloc"
+desc = "Allocates a HUD sprite node (two 64-byte and one 512-byte buffers)."
+status = "guess"
+
+[[func]]
+addr = 0x800C4BC4
+name = "double_team_slide"
+desc = "Double-team states 0x68/0x69: for 10 frames slides the pair into place, then keeps them in bounds."
+status = "likely"
+
+[[func]]
+addr = 0x800D1CE8
+name = "ground_grapple_defend"
+desc = "Ground grapple defender input: the first A/B/L/R press rolls chance_roll kind 0 (spirit); success sets ground_grapple_flags 8 (reversal); debug Z forces it."
+status = "confirmed"
+
+[[func]]
+addr = 0x800BC1B8
+name = "stance_turn_anim"
+desc = "Stance / get-up: picks the turn animation 3046-3047... from the previous animation (0x800F1970[slot]) to face the opponent."
+status = "likely"
+
+[[func]]
+addr = 0x800CBB88
+name = "hit_side_check"
+desc = "Sets BACK_HIT when the attacker is more than 90 deg off the receiver's facing (and flags_hi 0x20 for the side); used by strikes and dives."
+status = "confirmed"
+
+[[func]]
+addr = 0x800B92D4
+name = "run_step_corner"
+desc = "Run step that also slides the runner toward a corner point when close (flt_800E85F4)."
+status = "guess"
+
+[[func]]
+addr = 0x80098F04
+name = "hud_sprite_alloc_b"
+desc = "Allocates a second kind of HUD sprite node."
+status = "guess"
+
+[[func]]
+addr = 0x800A5DEC
+name = "taunt_stir_opponent"
+desc = "Taunting next to a lying opponent: 30 % chance it stirs (3052, 3053 face down) and goes to the down state step 4."
+status = "confirmed"
+
+[[func]]
+addr = 0x800BB194
+name = "corner_free"
+desc = "False when another wrestler is on that corner's turnbuckle (state 0x09) or slumped in it (0x13)."
+status = "likely"
+
+[[func]]
+addr = 0x800DFBC0
+name = "ai_mode_2"
+desc = "AI mode 2: hold A (grapple attempt), back to mode 1 when standing again."
+status = "confirmed"
+
+[[func]]
+addr = 0x800998EC
+name = "hud_buffers_free"
+desc = "Frees the HUD buffers at 0x800F0140-0x800F01A0."
+status = "likely"
+
+[[func]]
+addr = 0x800927EC
+name = "hud_node_build"
+desc = "HUD node setup."
+status = "guess"
+
+[[func]]
+addr = 0x800A0100
+name = "lying_body_dist"
+desc = "Distance from a point to a lying wrestler's body (an ellipse along its facing), used to decide whether a downed opponent is within reach."
+status = "likely"
+
+[[func]]
+addr = 0x800E122C
+name = "ai_mode_13"
+desc = "AI mode 13: hold A into a ground hold or submission (0x33/0x35); on the floor releases with R when the ring-out count is under 4."
+status = "confirmed"
+
+[[func]]
+addr = 0x800D7DC0
+name = "weapons_reset"
+desc = "Match start: clears the 4 weapon objects."
+status = "confirmed"
+
+[[func]]
+addr = 0x80094B78
+name = "hud_bars_draw"
+desc = "Draws the health and spirit bars."
+status = "likely"
+
+[[func]]
+addr = 0x800E2D4C
+name = "ai_mode_28"
+desc = "AI mode 28: wait ai_counter_delay frames, then L (evade)."
+status = "confirmed"
+
+[[func]]
+addr = 0x800E2498
+name = "ai_mode_22"
+desc = "AI mode 22: C-up toward the opponent: out through the ropes (state 0x54)."
+status = "confirmed"
+
+[[func]]
+addr = 0x800A7018
+name = "strike_damage"
+desc = "Strike damage by move slot (118-121 -> generic 33, 123/124 -> 34, ...), applied by strike_land."
+status = "likely"
+
+[[func]]
+addr = 0x800B9954
+name = "apron_walk_dpad"
+desc = "Apron walking: which d-pad direction walks along the apron for the wrestler's side (TEAM_B / zone)."
+status = "likely"
+
+[[func]]
+addr = 0x800E1B48
+name = "ai_mode_16"
+desc = "AI mode 16 (grappled): mash A/B/L/R with chance skill x h x 0.6."
+status = "confirmed"
+
+[[func]]
+addr = 0x800992F0
+name = "hud_names_init"
+desc = "Builds the name plates for the 4 slots (g_roster_slots)."
+status = "likely"
+
+[[func]]
+addr = 0x800DE418
+name = "tag_reach"
+desc = "Tag reach: within reach when the distance across the ring side is under 90 and along it under 80 (pelvis x/z, axes swapped for sides 1 and 3; doubles at 0x800E90E0 and an inline 80.0)."
+status = "likely"
+
+[[func]]
+addr = 0x800E19F4
+name = "ai_mode_15"
+desc = "AI mode 15: run (C-down) at an opponent slumped in the corner (0x13), then grapple (mode 2)."
+status = "confirmed"
+
+[[func]]
+addr = 0x800E34A8
+name = "ai_mode_32"
+desc = "AI mode 32: timed block: wait ai_block_delay frames, then R."
+status = "confirmed"
+
+[[func]]
+addr = 0x80098360
+name = "hud_message"
+desc = "Shows a HUD message (0 rope break, 1 near fall)."
+status = "likely"
+
+[[func]]
+addr = 0x800A5C08
+name = "dpad_to_side_any"
+desc = "Like dpad_to_side but also accepts diagonals (dpad_diagonal_quadrant)."
+status = "likely"
+
+[[func]]
+addr = 0x800A7AD0
+name = "camera_interest"
+desc = "Camera: how interesting a wrestler's state is (running attack 16, pins 2, moves ...), used to pick close-ups."
+status = "guess"
+
+[[func]]
+addr = 0x800DFA10
+name = "ai_mode_1"
+desc = "AI mode 1: grapple then follow up (ai.md)."
+status = "likely"
+
+[[func]]
+addr = 0x800E00E0
+name = "ai_mode_6"
+desc = "AI mode 6: strong strike (hold B, picks the faster by learned frame) (ai.md)."
+status = "likely"
+
+[[func]]
+addr = 0x800E02D4
+name = "ai_mode_7"
+desc = "AI mode 7: running attack (ai.md)."
+status = "likely"
+
+[[func]]
+addr = 0x800E08A8
+name = "ai_mode_8"
+desc = "AI mode 8: whip in a random direction (ai.md)."
+status = "likely"
+
+[[func]]
+addr = 0x800E0AA4
+name = "ai_mode_9"
+desc = "AI mode 9: meet a runner with a grapple (ai.md)."
+status = "likely"
+
+[[func]]
+addr = 0x800E0EDC
+name = "ai_mode_11"
+desc = "AI mode 11: hold L (evade) (ai.md)."
+status = "likely"
+
+[[func]]
+addr = 0x800E10A4
+name = "ai_mode_12"
+desc = "AI mode 12: ground attack or pick up (ai.md)."
+status = "likely"
+
+[[func]]
+addr = 0x800E1C8C
+name = "ai_mode_17"
+desc = "AI mode 17: reflex: whipped, A/B reversal (ai.md)."
+status = "likely"
+
+[[func]]
+addr = 0x800E1DF4
+name = "ai_mode_18"
+desc = "AI mode 18: reflex: mash out of pins, holds and knockdowns (ai.md)."
+status = "likely"
+
+[[func]]
+addr = 0x800E1F64
+name = "ai_mode_19"
+desc = "AI mode 19: stand and watch (ai.md)."
+status = "likely"
+
+[[func]]
+addr = 0x800E213C
+name = "ai_mode_20"
+desc = "AI mode 20: steer at the opponent briefly (ai.md)."
+status = "likely"
+
+[[func]]
+addr = 0x800E2324
+name = "ai_mode_21"
+desc = "AI mode 21: C-up toward the ring (climb in) (ai.md)."
+status = "likely"
+
+[[func]]
+addr = 0x800E2790
+name = "ai_mode_26"
+desc = "AI mode 26: run at the opponent and stop in reach (ai.md)."
+status = "likely"
+
+[[func]]
+addr = 0x800E2950
+name = "ai_mode_27"
+desc = "AI mode 27: circle the opponent (ai.md)."
+status = "likely"
+
+[[func]]
+addr = 0x800E3060
+name = "ai_mode_30"
+desc = "AI mode 30: run in a direction and stop (ai.md)."
+status = "likely"
+
+[[func]]
+addr = 0x800E3310
+name = "ai_mode_31"
+desc = "AI mode 31: block until the strike is over (ai.md)."
+status = "likely"
+
+[[func]]
+addr = 0x800E36EC
+name = "ai_mode_33"
+desc = "AI mode 33: walk to a downed opponent (ai.md)."
+status = "likely"
+
+[[func]]
+addr = 0x800E3998
+name = "ai_mode_35"
+desc = "AI mode 35: running corner attack (ai.md)."
+status = "likely"
+
+[[func]]
+addr = 0x800E3D18
+name = "ai_mode_37"
+desc = "AI mode 37: reflex: dazed, mash and pick a follow-up (ai.md)."
+status = "likely"
+
+[[func]]
+addr = 0x800E3F94
+name = "ai_mode_38"
+desc = "AI mode 38: out of a get-up (kneel, strike or evade) (ai.md)."
+status = "likely"
+
+[[func]]
+addr = 0x800E45B4
+name = "ai_mode_39"
+desc = "AI mode 39: wander in a random direction (ai.md)."
+status = "likely"
+
+[[func]]
+addr = 0x800E4758
+name = "ai_mode_40"
+desc = "AI mode 40: run to the opponent corner (follow a climber) (ai.md)."
+status = "likely"
+
+[[func]]
+addr = 0x800E4938
+name = "ai_mode_41"
+desc = "AI mode 41: walk to the corner and grapple a climber (ai.md)."
+status = "likely"
+
+[[func]]
+addr = 0x800E4B3C
+name = "ai_mode_42"
+desc = "AI mode 42: run to the corner and stop (ai.md)."
+status = "likely"
+
+[[func]]
+addr = 0x800E4DE0
+name = "ai_mode_43"
+desc = "AI mode 43: strike a runner within learned reach (ai.md)."
+status = "likely"
+
+[[func]]
+addr = 0x800E4F8C
+name = "ai_mode_44"
+desc = "AI mode 44: walk toward a point (ai.md)."
+status = "likely"
+
+[[func]]
+addr = 0x800E5154
+name = "ai_mode_45"
+desc = "AI mode 45: walk to the partner and tag (ai.md)."
+status = "likely"
+
+[[func]]
+addr = 0x800E53BC
+name = "ai_mode_47"
+desc = "AI mode 47: run and dive to the floor (ai.md)."
+status = "likely"
+
+[[func]]
+addr = 0x800BB2A8
+name = "apron_recover_place"
+desc = "Recover on the apron: snaps the wrestler to its pelvis position, facing the ring side of its zone."
+status = "likely"
+
+[[func]]
+addr = 0x800D1B80
+name = "ground_grapple_move"
+desc = "Ground grapple: picks slot 158/159 (head) or 162/163 (legs), 160/161 for the reversal, and starts the pair."
+status = "likely"
+
+[[func]]
+addr = 0x800B118C
+name = "match_alive_mask"
+desc = "Bit mask of the wrestlers still in and legal (bit per slot), plus 0x10 when any has flags_hi 0x800 (pinned or held)."
+status = "likely"
+
+[[func]]
+addr = 0x800CA83C
+name = "run_collide_check"
+desc = "Runner / diver against the other wrestlers: finds who is in the way (used by state 0x04, 0x57, 0x58)."
+status = "likely"
+
+[[func]]
+addr = 0x800BD508
+name = "apron_move_hit"
+desc = "Apron and floor dive states 0x57-0x5C: hit test by state (modes 5, 6, 10 ...) and applies the hit."
+status = "likely"
+
+[[func]]
+addr = 0x80095F20
+name = "hud_layout"
+desc = "Lays out the HUD slots for 1-4 wrestlers."
+status = "guess"
+
+[[func]]
+addr = 0x8009A108
+name = "results_screen_build"
+desc = "Builds the results screen nodes."
+status = "guess"
+
+[[func]]
+addr = 0x800A0C9C
+name = "hud_spirit_value"
+desc = "HUD value for a wrestler's spirit: 100 and the SPECIAL timer while SPECIAL, else spirit (at most 99)."
+status = "likely"
+
+[[func]]
+addr = 0x80091B80
+name = "arena_props_build"
+desc = "Builds the 4 extra arena objects from 0x800E6400 (meshes 1031-1046): two pairs of display lists; used by arena_objects_swap."
+status = "likely"
+
+[[func]]
+addr = 0x800E0710
+name = "ai_run_direction"
+desc = "AI: picks the d-pad direction for a run toward a ring side or corner near the opponent."
+status = "likely"
+
+[[func]]
+addr = 0x800A365C
+name = "ground_approach_step"
+desc = "Moves a wrestler along a cubic path (hermite_weights) toward the spot beside a lying opponent."
+status = "likely"
+
+[[func]]
+addr = 0x800CC204
+name = "strike_keep_in_bounds"
+desc = "Keeps strikers inside the area: tighter margin outside the strike's active window."
+status = "likely"
+
+[[func]]
+addr = 0x800B9E44
+name = "running_ground_attack_check"
+desc = "Run + B next to a lying opponent in the ring: starts the running ground attack (0x4F) when within reach."
+status = "likely"
+
+[[func]]
+addr = 0x800A7158
+name = "move_stats_counter"
+desc = "Counts a caught strike in the move statistics (g_move_stats) and updates the totals."
+status = "likely"
+
+[[func]]
+addr = 0x800D9F68
+name = "strike_combo_counter"
+desc = "Strike combo receiver: in the last 2 frames of a reversible combo hit, R (or 25 % for trait bit 0 wrestlers) counters into the next slot."
+status = "likely"
+
+[[func]]
+addr = 0x80097530
+name = "hud_count_show"
+desc = "Shows the referee's count number 1-3 (sound 72 + n)."
+status = "likely"
+
+[[func]]
+addr = 0x80099734
+name = "results_text_init"
+desc = "Initialises the results text buffers."
+status = "guess"
+
+[[func]]
+addr = 0x8009A3D0
+name = "pause_menu_draw"
+desc = "Pause menu display list (sub_8009AE40)."
+status = "guess"
+
+[[func]]
+addr = 0x8009BBC8
+name = "shadow_node_place"
+desc = "Places one shadow node from a joint, hiding it outside the ring area (|x|, |z| >= 224)."
+status = "guess"
+
+[[func]]
+addr = 0x800A52D8
+name = "run_target_point"
+desc = "Run start: the point to run at (a given point or the pelvis) and its ring side."
+status = "likely"
+
+[[func]]
+addr = 0x800DA118
+name = "strike_combo_reversal"
+desc = "Strike combo receiver reversal: on a reversible hit (move flags 1), unless only the attacker is SPECIAL, sets REVERSING and gives the receiver its reversal_variant move (debug Z forces it)."
+status = "likely"
+
+[[func]]
+addr = 0x800D6BD8
+name = "whip_ctx_dpad"
+desc = "Whip context: which d-pad directions are valid for the runner's side and position."
+status = "likely"
+
+[[func]]
+addr = 0x800B4DD8
+name = "result_hook_stub"
+desc = "Empty stub called by match_record_result."
+status = "likely"
+
+[[func]]
+addr = 0x800994C0
+name = "results_page_text"
+desc = "Writes the results page text lines."
+status = "guess"
+
+[[func]]
+addr = 0x800C0E10
+name = "ropes_ahead"
+desc = "Whether the ropes of the side the d-pad points at are within reach (used by run_step and the hit reaction stumble)."
+status = "likely"
+
+[[func]]
+addr = 0x800BD244
+name = "dive_aim_step"
+desc = "Dive in flight: during the anim window steers toward the aimed target (flags_hi 0x200)."
+status = "likely"
+
+[[func]]
+addr = 0x80099094
+name = "results_bar"
+desc = "Results screen: draws a bar or value block."
+status = "guess"
+
+[[func]]
+addr = 0x80092AE4
+name = "hud_text"
+desc = "Draws a HUD text / number string at a position with a colour (used by the bars, count and messages)."
+status = "likely"
+
+[[func]]
+addr = 0x800DD368
+name = "illegal_should_leave"
+desc = "Tag, illegal man: true when it should go back to the apron (not allowed to act and not at its own corner / on the turnbuckle), setting flags_hi 0x10000 meanwhile."
+status = "likely"
+
+[[func]]
+addr = 0x800B8DD0
+name = "run_target_side"
+desc = "Running: the coordinate of the ropes / side the runner heads for (by facing_quadrant) and the turn when it arrives."
+status = "likely"
+
+[[func]]
+addr = 0x800D8210
+name = "weapon_tip_point"
+desc = "Weapon swing hit test helper: the tip point of the held weapon (per-weapon points at 0x800EBD6C)."
+status = "likely"
+
+[[func]]
+addr = 0x800A30F8
+name = "carry_walk"
+desc = "Carrying an opponent: walks with the d-pad at walk_speed mode 3."
+status = "likely"
+
+[[func]]
+addr = 0x80099AA4
+name = "results_screen_layout"
+desc = "Results screen layout (two columns)."
+status = "guess"
+
+[[func]]
+addr = 0x80098B84
+name = "hud_text_dl"
+desc = "Builds a text display list."
+status = "guess"
+
+[[func]]
+addr = 0x800D9CAC
+name = "strike_combo_finish"
+desc = "Strike combo: special (slot 58, or the opponent's 183 with A+B) or the next combo slot / finishing move by input."
+status = "likely"
+
+[[func]]
+addr = 0x8009D474
+name = "camera_manual"
+desc = "Camera moved by player 1's stick (dead zone 5)."
+status = "likely"
+
+[[func]]
+addr = 0x8009B6A8
+name = "match_draw"
+desc = "Per-frame match drawing: cameras, wrestler models, HUD."
+status = "likely"
+
+[[func]]
+addr = 0x800A5F00
+name = "rope_rebound_slide"
+desc = "Rope rebound: slides the runner off the ropes."
+status = "likely"
+
+[[func]]
+addr = 0x800B9664
+name = "apron_walk"
+desc = "Apron walking: moving along the apron, turning at its ends (state 0x02)."
+status = "likely"
+
+[[func]]
+addr = 0x800A1998
+name = "joints_from_models"
+desc = "Copies each wrestler's model joint positions (g_model_joints) into Wrestler.joints and joints2."
+status = "confirmed"
+
+[[func]]
+addr = 0x800B4FE0
+name = "match_phase_flags"
+desc = "Match start flags 0x800F16C2: waits for every wrestler's intro (bits 4/8), then sets bit 1 (fight); tag adds the partners."
+status = "likely"
+
+[[func]]
+addr = 0x800A1070
+name = "wrestlers_ground_contact"
+desc = "Per frame: works out each wrestler's contact with the mat / floor (sub_800A13A4) and clears flags_hi 0x400000."
+status = "likely"
+
+[[func]]
+addr = 0x800A37F8
+name = "side_point"
+desc = "The point on a ring side for a run or whip (x or z = +-230 by side)."
+status = "likely"
+
+[[func]]
+addr = 0x800D6418
+name = "whip_ctx_steer"
+desc = "Whip context, attacker: filters and steers the runner direction by the d-pad."
+status = "likely"
+
+[[func]]
+addr = 0x8009A590
+name = "pause_menu_build"
+desc = "Builds the pause menu."
+status = "guess"
+
+[[func]]
+addr = 0x8009BF80
+name = "camera_follow"
+desc = "Normal match camera: frames all wrestlers in the match."
+status = "likely"
+
+[[func]]
+addr = 0x8009B310
+name = "match_setup"
+desc = "Match setup: models, wrestler count, arena, HUD, cameras."
+status = "likely"
+
+[[func]]
+addr = 0x800D31C0
+name = "hold_escape_input"
+desc = "Hold defender: A/B/L/R escape attempt weighted by the two wrestlers' header byte 0x0F (strength?)."
+status = "likely"
+
+[[func]]
+addr = 0x80095B80
+name = "hud_free_nodes"
+desc = "Frees the HUD nodes and lists."
+status = "likely"
+
+[[func]]
+addr = 0x800A5860
+name = "wrestler_dist_list"
+desc = "Up to three 12-byte entries (slot, distance, angle) for the other active wrestlers matching a flags mask and without flags_hi 0x200, sorted nearest first (push_apart, switch target)."
+status = "likely"
+
+[[func]]
+addr = 0x800921D0
+name = "weapons_draw"
+desc = "Draws the weapon objects (0x800EBD40, 92 bytes each) that are in use."
+status = "likely"
+
+[[func]]
+addr = 0x80091DA8
+name = "weapon_model_set"
+desc = "Sets a weapon object's model by type (three model lists) and attaches it to its holder's hand or the floor."
+status = "likely"
+
+[[func]]
+addr = 0x800DC0B4
+name = "hold_for_partner_walk"
+desc = "State 0x64 (holding an opponent for the partner, grapple_ctx 0x2000): walks the pair with the d-pad."
+status = "likely"
+
+[[func]]
+addr = 0x800BD810
+name = "dive_land_hit"
+desc = "A dive that connects: breaks up pins/holds (_unk350 0x10), or applies the dive hit (hit_side_check, reaction state)."
+status = "likely"
+
+[[func]]
+addr = 0x8009A900
+name = "pause_menu"
+desc = "Pause menu logic (Start), returns whether the match is paused."
+status = "likely"
+
+[[func]]
+addr = 0x800D6760
+name = "whip_ctx_targets"
+desc = "Whip context: the other wrestlers in the ring / on the apron the runner can be sent toward."
+status = "likely"
+
+[[func]]
+addr = 0x800C4CC8
+name = "apron_pull_setup"
+desc = "Caught strike from the apron (states 0x6B/0x6C): positions the pair and picks 3383-3393 by side and facing."
+status = "likely"
+
+[[func]]
+addr = 0x8009AE40
+name = "pause_menu_update"
+desc = "Pause menu: selection, and the abort-to-draw option (match_abort_draw)."
+status = "likely"
+
+[[func]]
+addr = 0x800C9110
+name = "move_walk_target"
+desc = "Move needing another place (state 0x46): picks the target point (ropes, corner, turnbuckle) for move flags 0x1000/0x2000, avoiding occupied corners."
+status = "likely"
+
+[[func]]
+addr = 0x80097CB0
+name = "hud_countout_number"
+desc = "Shows the ring-out count number 1-20 (sound 48 + n)."
+status = "likely"
+
+[[func]]
+addr = 0x800976E8
+name = "hud_draw_panels"
+desc = "Draws the per-wrestler HUD panels (name, health, spirit) by layout."
+status = "likely"
+
+[[func]]
+addr = 0x800A13A4
+name = "wrestler_floor_height"
+desc = "Works out a wrestler's floor height and contact (mat 90, apron, floor 0) from its position and links."
+status = "likely"
+
+[[func]]
+addr = 0x800984C4
+name = "hud_draw_messages"
+desc = "Draws HUD messages (rope break, near fall, counts)."
+status = "likely"
+
+[[func]]
+addr = 0x8009D750
+name = "camera_closeup"
+desc = "Close-up / replay camera on one wrestler (picked by camera_interest)."
+status = "likely"
+
+[[func]]
+addr = 0x80094CAC
+name = "hud_draw_bars"
+desc = "Draws health and spirit bars for every slot."
+status = "likely"
+
+[[func]]
+addr = 0x800944F8
+name = "hud_panel_4"
+desc = "HUD panel layout for 4 wrestlers."
+status = "guess"
+
+[[func]]
+addr = 0x800935E8
+name = "hud_panel_3"
+desc = "HUD panel layout for 3 wrestlers."
+status = "guess"
+
+[[func]]
+addr = 0x80093D18
+name = "hud_panel_2"
+desc = "HUD panel layout for 2 wrestlers."
+status = "guess"
+
+[[func]]
+addr = 0x800952EC
+name = "hud_init"
+desc = "Builds every HUD node for the match (panels, counts, messages)."
+status = "likely"
+
+[[func]]
+addr = 0x80092D4C
+name = "hud_panel_1"
+desc = "HUD panel layout for 1 wrestler / tag."
+status = "guess"
+
+[[func]]
+addr = 0x800BC888
+name = "dive_aim"
+desc = "Dive aiming: the heading and timing toward the target's aim joint (move aim_joint, dive_pct), sets dive_flags."
+status = "likely"
+
+[[func]]
+addr = 0x800D4D4C
+name = "whip_attacker_input"
+desc = "Irish whip, attacker: d-pad direction, strength and the runner's path (ropes or corner)."
+status = "likely"
+
+[[func]]
+addr = 0x800903D8
+name = "match_run_loop"
+desc = "The match overlay main loop around match_tick: pads, logic, drawing, fades, restart."
+status = "likely"
+
+[[func]]
+addr = 0x800D6EA0
+name = "pair_scripted_place"
+desc = "Places a scripted pair (runner catch, strike counter, turnbuckle pull, top-rope moves) relative to each other by state."
+status = "likely"
+
+[[func]]
+addr = 0x800960A0
+name = "hud_draw_main"
+desc = "Main HUD draw: bars, spirit / SPECIAL, combo counter, counts."
+status = "likely"
+
+[[func]]
+addr = 0x8009C308
+name = "camera_frame_all"
+desc = "Follow camera geometry: frames the wrestlers' bounding box and picks the view distance."
+status = "likely"
+
+[[func]]
+addr = 0x8001C970
+name = "sinf"
+desc = "sin(x): range-reduced polynomial (used as sin in mtx_rotate_y)."
+status = "confirmed"
+
+[[func]]
+addr = 0x8001CB30
+name = "cosf"
+desc = "cos(x): range-reduced polynomial."
+status = "confirmed"
+
+[[func]]
+addr = 0x80005080
+name = "atanf"
+desc = "atan of a ratio (called by atan2f)."
+status = "likely"
+
+[[func]]
+addr = 0x80005208
+name = "atan2f"
+desc = "atan2 by quadrant on top of atanf; used for facing angles."
+status = "likely"
+
+[[func]]
+addr = 0x800007F4
+name = "heap_alloc"
+desc = "First-fit allocator over the 2 MB heap at 0x80200000, 16-byte units; returns 0 when full."
+status = "confirmed"
+
+[[func]]
+addr = 0x800008FC
+name = "heap_free"
+desc = "Frees a heap_alloc block, merging with neighbours."
+status = "confirmed"
+
+[[func]]
+addr = 0x80002004
+name = "mtx_mul4"
+desc = "4x4 float matrix multiply (out = a*b)."
+status = "confirmed"
+
+[[func]]
+addr = 0x80002274
+name = "node_tree_update"
+desc = "Walks a scene-node tree (child at +4, sibling at +8) computing world matrices: parent world * local, or the local copied at the root."
+status = "likely"
+
+[[func]]
+addr = 0x80008D54
+name = "mtx_rotate_y"
+desc = "Builds a rotation matrix about Y from sinf/cosf."
+status = "confirmed"
+
+[[func]]
+addr = 0x8001C7B0
+name = "mtx_ortho"
+desc = "Orthographic projection matrix (HUD, results, pause screens)."
+status = "confirmed"
+
+[[func]]
+addr = 0x8001C020
+name = "mtx_lookat"
+desc = "Look-at view matrix from eye/target/up."
+status = "likely"
+
+[[func]]
+addr = 0x8000CCBC
+name = "vec_xz_near_zero"
+desc = "True when both components are below a small epsilon."
+status = "likely"
+
+[[func]]
+addr = 0x80001730
+name = "node_init"
+desc = "Clears a scene node and sets its type byte (+24)."
+status = "likely"
+
+[[func]]
+addr = 0x800017AC
+name = "draw_list_add_unique"
+desc = "Appends a node display pointer to the list at 0x80041060 if not already present (count at 0x80041862)."
+status = "likely"
+
+[[func]]
+addr = 0x80001808
+name = "node_attach_display"
+desc = "Creates (if needed) and binds a node display record, flag byte +27."
+status = "guess"
+
+[[func]]
+addr = 0x8000896C
+name = "node_array_free"
+desc = "Frees an array of 40-byte nodes and the array itself (arena, crowd, weapons)."
+status = "likely"
+
+[[func]]
+addr = 0x8000D978
+name = "sfx_play"
+desc = "Plays a sound id (1025-1044 remapped through 0x8002D204) on one of three rotating voices at volume 100; called by the HUD counters."
+status = "guess"
+
+[[func]]
+addr = 0x80028FCC
+name = "text_release"
+desc = "Frees a loaded text/font block unless it lives in the static pool at 0x80062078."
+status = "guess"
+
+[[func]]
+addr = 0x80028E90
+name = "text_load"
+desc = "Loads a text/font resource (heap_alloc + copy) for the HUD, results and pause menu."
+status = "guess"
+
+[[func]]
+addr = 0x80006540
+name = "texture_load_bind"
+desc = "Loads a texture (sub_80006478) and selects it (sub_80006954)."
+status = "guess"
+
+[[func]]
+addr = 0x80013BF0
+name = "sqrtf"
+desc = "sqrt."
+status = "confirmed"
+
+[[func]]
+addr = 0x80008D34
+name = "mtx_set_translation"
+desc = "Writes x,y,z into elements 12-14 of a 4x4 matrix."
+status = "confirmed"
+
+[[func]]
+addr = 0x8001BD90
+name = "mtx_perspective"
+desc = "Perspective projection; the match camera uses fov 33 and aspect 4/3."
+status = "likely"
+
+[[func]]
+addr = 0x80006860
+name = "camera_set_view"
+desc = "Builds the match projection (mtx_perspective at 0x80047B50) and view (mtx_lookat at 0x80047B90) for a camera node."
+status = "likely"
+
+[[func]]
+addr = 0x800080EC
+name = "fade_quad_build"
+desc = "Builds the full-screen fade rectangle display list with an RGB colour (match start, fade in/out)."
+status = "guess"
+
+[[func]]
+addr = 0x80007B58
+name = "hud_box_build"
+desc = "Builds a HUD rectangle display list (clock, panels)."
+status = "guess"
+
+[[func]]
+addr = 0x80005E44
+name = "sprite_init"
+desc = "Clears a sprite record."
+status = "likely"
+
+[[func]]
+addr = 0x80008324
+name = "node_free"
+desc = "Frees a node and its four buffers (+12..+24)."
+status = "likely"
+
+[[func]]
+addr = 0x800082D0
+name = "node_free_buffers"
+desc = "Frees the buffers at +12 and +16."
+status = "likely"
+
+[[func]]
+addr = 0x800083D0
+name = "ptr_pair_free"
+desc = "Frees two heap pointers and clears them."
+status = "likely"
+
+[[func]]
+addr = 0x800089D4
+name = "node_bind_model"
+desc = "Points a node at a model from a 40-byte model table entry and attaches its display."
+status = "likely"
+
+[[func]]
+addr = 0x80008A30
+name = "node_bind_model_ex"
+desc = "Like node_bind_model, also copying the entry flags/size bytes (arena props, weapons)."
+status = "likely"
+
+[[func]]
+addr = 0x80006780
+name = "node_set_model"
+desc = "Sets the node model pointer (+16)."
+status = "likely"
+
+[[func]]
+addr = 0x80009728
+name = "anim_meta_class"
+desc = "High nibble of the g_anim_meta byte for the wrestler current animation (camera framing class)."
+status = "likely"
+
+[[func]]
+addr = 0x8000CB24
+name = "wrestler_render_update"
+desc = "Updates the 5060-byte render record of a wrestler (0x800524B0 + 5060*slot) and its node tree."
+status = "likely"
+
+[[func]]
+addr = 0x80013C00
+name = "virt_to_phys"
+desc = "Address translation: KSEG0/KSEG1 directly, otherwise through the TLB lookup."
+status = "guess"

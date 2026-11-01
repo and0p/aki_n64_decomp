@@ -1,0 +1,427 @@
+# Match flow, clock, roster and HUD (ovl_b).
+# Notes: _re_docs/individual_games/wcw_world_tour/match_state.md
+
+[[func]]
+addr = 0x8009DE70
+name = "clock_tick"
+proto = "void clock_tick(struct MatchClock *clk, s16 ticks_per_second)"
+desc = "Advances a count-up clock by one tick, carrying into seconds and minutes."
+status = "confirmed"
+
+[[func]]
+addr = 0x8009DEE8
+name = "clock_set"
+proto = "void clock_set(struct MatchClock *clk, s16 minutes, s16 seconds)"
+desc = "Sets a clock and clears its ticks."
+status = "confirmed"
+
+[[func]]
+addr = 0x800B28BC
+name = "match_clock_update"
+proto = "void match_clock_update(void)"
+desc = "Per-tick match clock: ticks at 30/s, ends the match on the time limit, wraps at 60 min with no limit, draws the HUD clock."
+status = "confirmed"
+
+[[func]]
+addr = 0x800B12FC
+name = "match_end"
+proto = "void match_end(s32 reason)"
+desc = "Decides a count-out (0x10000) or time limit (0x4000): sorts teams, compares health + spirit when g_match_type & 0x800, handles elimination tag; calls match_record_result. See match_end.md."
+status = "confirmed"
+
+[[func]]
+addr = 0x800970FC
+name = "hud_draw_clock"
+proto = "void hud_draw_clock(s16 seconds, s16 minutes)"
+desc = "Draws the match clock on the HUD."
+status = "likely"
+
+[[func]]
+addr = 0x800B07C0
+name = "match_load_movesets"
+proto = "void match_load_movesets(void)"
+desc = "Loads file 221 and, for each occupied slot, the wrestler's 4 move-set files (header, moves, anim lists, 0x60 block)."
+status = "confirmed"
+
+[[data]]
+addr = 0x80061828
+name = "g_roster_slots"
+type = "u32[4]"
+desc = "Per slot: low byte = roster index + 1, bits 8-11 = group; -1 = empty."
+status = "confirmed"
+
+[[data]]
+addr = 0x8006205C
+name = "g_time_limit_setting"
+type = "s8"
+desc = "0 = no time limit, 1..4 index g_time_limit_minutes."
+status = "confirmed"
+
+[[data]]
+addr = 0x800E74FF
+name = "g_time_limit_minutes"
+type = "s8[5]"
+desc = "Time limit in minutes per setting: {-, 5, 10, 30, 60}."
+status = "confirmed"
+
+[[data]]
+addr = 0x800E74CC
+name = "g_roster_movesets"
+type = "u32[6]"
+desc = "Per group (0 nWo, 1 WCW, 2 DOA, 3 IU, 4/5 WWW): pointer to s16 base move-set file per roster index."
+status = "confirmed"
+
+[[data]]
+addr = 0x800F16E2
+name = "g_match_phase"
+type = "s8"
+desc = "Match-flow phase counter used by the match state machine around 0x800B09E0."
+status = "guess"
+
+[[data]]
+addr = 0x800F16EC
+name = "g_match_clock"
+type = "struct MatchClock"
+desc = "Match clock (elapsed time)."
+status = "confirmed"
+
+[[func]]
+addr = 0x80090000
+name = "match_main"
+proto = "void match_main(void)"
+desc = "Entry of the match overlay (ovl_b): runs match_run until g_match_restart is clear; a special path (sub_800903D8) when only slot 0 is set with its top bit."
+status = "confirmed"
+
+[[func]]
+addr = 0x8009007C
+name = "match_run"
+proto = "void match_run(void)"
+desc = "One match: loads move sets and assets, then the frame loop (match_tick, pause/menu sub_8009AE40, fades) until the match is over; tears down at the end."
+status = "likely"
+notes = "sub_8009AE40 returns >= 2 to leave the loop; 3 sets g_match_restart. Probably the pause menu."
+
+[[func]]
+addr = 0x800B099C
+name = "match_tick"
+proto = "void match_tick(void)"
+desc = "Per-frame match logic: steps the MatchPhase machine and updates all wrestlers; in FIGHT it runs the clock and the end-of-match checks."
+status = "confirmed"
+notes = "FIGHT checks, each advancing the phase when true: sub_800B2238(), match_clock_update, sub_800B2680(), sub_800B29A0(0,64), sub_800B29A0(0,32) - probably pinfall/submission/KO/count-out (unverified). POST_MATCH waits 90 frames, announces (sub_80099D40), then ends after 900 frames or A/B/Start on any pad and writes g_match_results."
+
+[[func]]
+addr = 0x800B5304
+name = "match_pick_winner"
+proto = "s8 match_pick_winner(void)"
+desc = "Called once when the match is decided: reads g_match_result winner/loser bits and returns the wrestler the end screen follows (a human loser rather than a CPU winner), or -1; in tag marks the winning partner flags_lo 0x80."
+status = "likely"
+
+[[data]]
+addr = 0x800E9400
+name = "g_match_restart"
+type = "s16"
+desc = "Set by match_run when the match should be played again (match_main loops)."
+status = "confirmed"
+
+[[data]]
+addr = 0x800F16C0
+name = "g_match_flags"
+type = "u8"
+desc = "0x80 = leave the match loop, 0x40 = winner decided, 0x20 = changes the result banner."
+status = "likely"
+
+[[data]]
+addr = 0x800F16E3
+name = "g_update_first"
+type = "s8"
+desc = "Wrestler index updated first this frame; rotates 0..3 every frame so no slot always acts first."
+status = "confirmed"
+
+[[data]]
+addr = 0x800F16F8
+name = "g_phase_timer"
+type = "s16"
+desc = "Frame counter for the INTRO_WAIT (31 frames) and PRE_BELL (16 frames) phases."
+status = "confirmed"
+
+[[data]]
+addr = 0x800F16FC
+name = "g_post_match_timer"
+type = "s32"
+desc = "Frames since the match was decided (announce at 90, leave at 900 or on a button)."
+status = "confirmed"
+
+[[data]]
+addr = 0x80061868
+name = "g_match_results"
+type = "u8[4][8]"
+desc = "Per-wrestler record kept between matches (8 bytes): health, head, arms, legs, body, whole-body condition, flags (1 bleeding, 2 power-out), injury region; written 900 frames after the decision unless 0x800F16F6, read by match_init_wrestlers."
+status = "likely"
+
+[[enum]]
+name = "MatchPhase"
+desc = "Values of g_match_phase, stepped by match_tick."
+values = { INIT = 0, INTRO_WAIT = 1, ENTRANCE = 2, PRE_BELL_WAIT_P2 = 3, PRE_BELL = 4, FIGHT = 5, DECIDED = 6, POST_MATCH = 7 }
+notes = "Names for 2-4 are guesses; 3 waits for g_wrestlers[1].flags_lo & 8, 4 counts 16 frames, both then ring the bell (sub_80098ACC?)."
+
+# --- count-out (found from a live pause with one wrestler outside, 2026-10-30) ---
+
+[[func]]
+addr = 0x800B2680
+name = "countout_tick"
+proto = "void countout_tick(void)"
+desc = "Ring-out count, run every FIGHT frame. If any active wrestler has LOC_FLOOR (flags_lo & 0x10, not & 0x100) it ticks g_countout_clock; each time its seconds reach 2 (count left >= 6), 3 (left 3-5) or 4 (left 1-2) it decrements g_countout_left, resets the clock and shows the number (sub_80097CB0); at 0 the match ends with result 0x10000. With nobody outside, countout_reset."
+status = "confirmed"
+notes = "One global count, not per wrestler: another wrestler leaving the ring does not restart it; only everyone being back in does. It is skipped while g_countout_setting is 0, while 0x8006205A & 4, and while another count is running (s8 at 0x800F16F3, the wrestler that sub_800B2238 is counting, is not -1). In tag-style settings (0x80062058 & 0x200) only wrestlers with flags_lo & 2 count."
+
+[[func]]
+addr = 0x800B2628
+name = "countout_reset"
+proto = "void countout_reset(void)"
+desc = "Clears the count display (sub_80097BF4), zeroes g_countout_clock and reloads g_countout_left from g_countout_lengths[g_countout_setting]."
+status = "confirmed"
+
+[[data]]
+addr = 0x800F16E4
+name = "g_countout_clock"
+type = "struct MatchClock"
+desc = "Time since the last count-out number (minutes, seconds, ticks of 30)."
+status = "confirmed"
+
+[[data]]
+addr = 0x800F16C4
+name = "g_countout_left"
+type = "s8"
+desc = "Count-out numbers left before the match ends; the screen shows g_countout_lengths[setting] - this."
+status = "confirmed"
+
+[[data]]
+addr = 0x8006205D
+name = "g_countout_setting"
+type = "s8"
+desc = "Ring-out rule from the match options: index into g_countout_lengths (0 off, 1 ten count, 2 twenty count, probably 3 lumberjack). 2 in the paused match."
+status = "likely"
+
+[[data]]
+addr = 0x800E7450
+name = "g_countout_lengths"
+type = "s8[3]"
+desc = "Count length per ring-out setting: 0, 10, 20, 0 (the last is probably lumberjack)."
+status = "confirmed"
+
+# --- random numbers and frame loop; see individual_games/wcw_world_tour/frame_loop.md ---
+
+[[func]]
+addr = 0x80011BF0
+name = "rng_main"
+proto = "u32 rng_main(void)"
+desc = "s = ((4s + 2) * (4s + 3)) >> 2 (unsigned 32-bit), state at 0x80032C40. Also spun in a busy loop by the idle thread, so its state depends on spare CPU time."
+status = "confirmed"
+
+[[func]]
+addr = 0x800A0468
+name = "rng_match"
+proto = "s16 rng_match(void)"
+desc = "LCG s = s * 0x5D588B65 + inc (0x800F05C0 / 0x800F05C4); returns (s & 0xFFFFF) / 1000, retrying until below 1000 (0..999)."
+status = "confirmed"
+
+[[func]]
+addr = 0x800A02D4
+name = "rng_seed_match"
+proto = "void rng_seed_match(s8 spins)"
+desc = "Match start (spins = 10): rng_match state = rng_main(), spins & 15 more rng_main calls, inc = rng_main() | 1, then fills the 32-entry g_rand_pool with rng_match."
+status = "confirmed"
+
+[[func]]
+addr = 0x800A0410
+name = "chance_check"
+proto = "s32 chance_check(s16 chance)"
+desc = "1 when rand_pool_next() <= chance, so a chance c succeeds (c + 1) / 1000 of the time."
+status = "confirmed"
+
+[[func]]
+addr = 0x800004AC
+name = "idle_thread"
+desc = "Boot thread: sets up the managers and threads, then becomes the idle loop spinning rng_main forever."
+status = "confirmed"
+
+[[func]]
+addr = 0x8000544C
+name = "pads_read"
+desc = "Reads the controllers once per frame into g_pads (held, pressed, stick)."
+status = "likely"
+
+[[data]]
+addr = 0x80032C40
+name = "g_rng_main_state"
+type = "u32"
+desc = "rng_main state."
+status = "confirmed"
+
+[[data]]
+addr = 0x800F05C8
+name = "g_rand_pool"
+type = "s16[32]"
+desc = "Shuffle pool of 0..999 values drawn by rand_pool_next."
+status = "confirmed"
+
+# --- match endings (match_end.md, 2026-10-30) ---
+
+[[func]]
+addr = 0x800B2238
+name = "referee_count_tick"
+proto = "void referee_count_tick(void)"
+desc = "Pin count: picks a wrestler with flags_lo 0x400 (only while no ring-out count runs), ticks its g_pin_clocks entry at 30/s, the count is its seconds; 3 = pinfall (0x2000). Kick-out after 2 s 20 ticks = near-fall reaction."
+status = "confirmed"
+
+[[func]]
+addr = 0x800B29A0
+name = "match_check_finish_flags"
+proto = "void match_check_finish_flags(u32 hi_mask, u32 lo_mask)"
+desc = "Each wrestler with flags_lo & lo_mask (0x40 TKO -> result 0x8000, 0x20 submission -> 0x1000) loses to its partner_idx."
+status = "confirmed"
+
+[[func]]
+addr = 0x800B2BAC
+name = "match_record_result"
+proto = "void match_record_result(s8 *winners, s8 *losers, u32 result)"
+desc = "Appends to g_fall_history, sets g_match_result (result, team bit, per-slot bits), winners flags_lo 0x80, losers 0x100 and not LEGAL, computes g_result_margin, announces (sub_80098194)."
+status = "confirmed"
+
+[[func]]
+addr = 0x800B31F8
+name = "wrestler_eliminate"
+proto = "s32 wrestler_eliminate(s8 idx)"
+desc = "Marks a loser out (flags_lo 0x100); returns whether the match is over (singles yes; elimination tag only if the partner is out too, else tag_partner_takes_over)."
+status = "likely"
+
+[[func]]
+addr = 0x800B1FFC
+name = "tag_partner_takes_over"
+proto = "void tag_partner_takes_over(s8 idx)"
+desc = "Makes idx^1 LEGAL and swaps the CPU flags of the pair, so a human whose wrestler is eliminated controls the partner."
+status = "confirmed"
+
+[[func]]
+addr = 0x8009E6C4
+name = "recover_difficulty"
+proto = "s16 recover_difficulty(struct Wrestler *w, struct Wrestler *opp, s16 kind)"
+desc = "Frames to recover / escape, clamped >= 0. 0 knockdown: 200 + 3*0x800F0610[slot] - (health+spirit)/2 - 60*down_count; 1 pin: 110 + opp.spirit/4 + 3*g_times_pinned - (health_eff + spirit/2), capped 87; 2: 100 - spirit/2 - health/4; 3 hold: (300 + opp.spirit/2 - health - spirit/4)/2; 4: 180 - spirit/2 - health/4 (0 late in a ring-out count); 5, 6 as 3. SPECIAL gives 0 (60 for holds)."
+status = "confirmed"
+
+[[func]]
+addr = 0x800A3B40
+name = "mash_count"
+proto = "s16 mash_count(struct Wrestler *w, u16 pressed, s16 mode)"
+desc = "Counts A/B/L/R presses (0x800F06B0[slot]); mode 1 returns 1 every N presses (N = 4; in pins 4/2/1 by referee count) or 3 per press late in count 2; mode 0 resets."
+status = "confirmed"
+
+[[func]]
+addr = 0x800CBC94
+name = "move_aftermath_check"
+proto = "void move_aftermath_check(struct Wrestler *att, struct Wrestler *def, s16 kind)"
+desc = "End of a move on def: may start bleeding (move f07, chance_roll 4 -> state 0x26) or a TKO stagger (rule 0x01, health_eff < 26, move f08, chance_roll 5 -> state 0x25)."
+status = "confirmed"
+
+[[data]]
+addr = 0x80062058
+name = "g_match_type"
+type = "u16"
+desc = "0x100 one-on-one, 0x200 two teams, 0x400 everyone for themselves, 0x800 decide time limit / double count-out on health + spirit; low byte a slot mask (singles 0x012F, tag 0x02C0)."
+status = "likely"
+
+[[data]]
+addr = 0x8006205A
+name = "g_match_rules"
+type = "u16"
+desc = "0x01 TKO, 0x02 rope breaks, 0x04 ring-out count off, 0x08 random give-up, 0x10 submissions, 0x20 pins, 0x40 tag format, 0x80 elimination tag (0x0033 seen)."
+status = "likely"
+
+[[data]]
+addr = 0x80062054
+name = "g_match_result"
+type = "u32"
+desc = "Result word of the last fall (match_end.md table) | team bit | winner bits 0x800E745C | loser bits 0x800E7464."
+status = "confirmed"
+
+[[data]]
+addr = 0x80062020
+name = "g_fall_history"
+type = "u16[4][6]"
+desc = "12 bytes per fall: minutes, seconds, finishing move (loser's last_move_value), result word."
+status = "likely"
+
+[[data]]
+addr = 0x80062050
+name = "g_fall_count"
+type = "s16"
+desc = "Entries in g_fall_history."
+status = "likely"
+
+[[data]]
+addr = 0x800F16C8
+name = "g_pin_clocks"
+type = "struct MatchClock[4]"
+desc = "Per-slot referee count clock; the count is its seconds."
+status = "confirmed"
+
+[[data]]
+addr = 0x800F16F2
+name = "g_ref_count"
+type = "s8"
+desc = "Referee's current count number (shown on screen)."
+status = "confirmed"
+
+[[data]]
+addr = 0x800F16F3
+name = "g_ref_count_slot"
+type = "s8"
+desc = "Wrestler being counted, -1 = none."
+status = "confirmed"
+
+[[data]]
+addr = 0x800F16F4
+name = "g_result_margin"
+type = "s16"
+desc = "Average winner health minus average loser health (>= 0), scaled by the float at 0x800E84B4."
+status = "likely"
+
+[[data]]
+addr = 0x800F05A8
+name = "g_times_pinned"
+type = "s16[4]"
+desc = "Pins on each wrestler this match; each adds 3 to the kick-out difficulty; fewer than 2 caps it at 87."
+status = "confirmed"
+
+[[data]]
+addr = 0x800F16E0
+name = "g_debug_flags"
+type = "u16"
+desc = "Bit 0 enables Z debug shortcuts in pins, holds and move_aftermath_check; cleared at match load, never set by match code."
+status = "likely"
+
+[[func]]
+addr = 0x80098194
+name = "result_announce"
+proto = "void result_announce(u32 result)"
+desc = "Picks the result banner (0x800ED628: 0 pinfall, 1 submission, 2 count-out, 3 TKO, 4 time limit, 5 double count-out, 6 draw) and rings the bell (sub_80098ACC 3/5/7/11)."
+status = "likely"
+
+[[func]]
+addr = 0x80099D40
+name = "results_screen"
+proto = "void results_screen(s16 margin)"
+desc = "Post-match results (90 frames after the decision): per-slot winner (1 << slot) and loser (16 << slot) bits of g_match_result, and the result margin."
+status = "likely"
+
+[[func]]
+addr = 0x800B3400
+name = "match_init_wrestlers"
+desc = "Per-wrestler match start: health and region conditions from g_match_results, injury region, AI setup (ai_init_slot, ai_learn_reset), clears links."
+status = "confirmed"
+
+[[data]]
+addr = 0x800F05B0
+name = "g_ring_kickouts"
+type = "s16[4]"
+desc = "Kick-outs per slot in the ring: state_32_pin_defender adds 1 when a kicked-out pin ends while LOC_RING. Below 2 caps the pin kick-out difficulty at 87 (automatic kick-out). Seen 1 after the first kick-out in RAM (aki_debug, 2026-10-31)."
+status = "confirmed"

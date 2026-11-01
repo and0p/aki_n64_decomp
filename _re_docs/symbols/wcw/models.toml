@@ -1,0 +1,404 @@
+# Wrestler models, skeleton posing and animation streaming (main segment).
+# Notes: _re_docs/file_formats/wrestler_models.md and _re_docs/file_formats/animations.md
+# Tool: tools/rom/wcw_models.py
+
+[[func]]
+addr = 0x800095C0
+name = "anim_headers_load"
+proto = "void anim_headers_load(void)"
+desc = "DMAs the first 4 bytes (header word) of each of the 2598 animation files into g_anim_headers."
+status = "confirmed"
+
+[[func]]
+addr = 0x80009678
+name = "anim_frame_count"
+proto = "s16 anim_frame_count(s16 anim_id)"
+desc = "Frame count of an animation: low 16 bits of its header word."
+status = "confirmed"
+
+[[func]]
+addr = 0x800096F4
+name = "anim_pose_class"
+proto = "s16 anim_pose_class(s16 anim_id)"
+desc = "Pose class of an animation: header bits 26-30 (copied to Wrestler.pose every frame)."
+status = "confirmed"
+
+[[func]]
+addr = 0x8000992C
+name = "models_init"
+proto = "void models_init(void)"
+desc = "Match start: allocates g_anim_headers and four 0x6880-byte animation stream buffers, loads headers and file 618, builds the inverse bind matrices from g_bind_xy."
+status = "confirmed"
+
+[[func]]
+addr = 0x80009D00
+name = "model_animate"
+desc = "Per-frame skeleton update for one wrestler model: switches animation, decodes or interpolates the frame, blends from the previous animation, builds the skin matrices and the world joint positions."
+status = "likely"
+notes = "Odd frames interpolate (model_decode_frame_interp), even frames decode a keyframe (model_decode_frame). set_anim flag (0x800F0640[slot]): bit 0 shifts pos so the new animation's pelvis xz lands where the old one was; bit 1 blends the first 5 frames from the previous pose (weights 0.75/0.6/0.45/0.3/0.15 at 0x8002D410). Joint 5 (head) is aimed at a look-at target when one is passed (from sub_800A13A4, 0x800F0658 + slot*12)."
+
+[[func]]
+addr = 0x8000A42C
+name = "anim_stream_open"
+proto = "void anim_stream_open(s16 slot, u16 anim_id)"
+desc = "Starts streaming an animation file (always stored raw) into the slot's ring buffer: DMAs the first 128 bytes after the 4-byte header."
+status = "confirmed"
+
+[[func]]
+addr = 0x8000A500
+name = "anim_stream_next"
+proto = "void anim_stream_next(s16 slot)"
+desc = "Queues a PI DMA of the next 128 bytes of the slot's animation file."
+status = "confirmed"
+
+[[func]]
+addr = 0x8000A2E0
+name = "anim_stream_seek"
+proto = "void anim_stream_seek(s16 slot, s16 anim_id, s16 frame)"
+desc = "Points the slot's read pointer at keyframe frame/2 (98 bytes each), clamped to the frame count."
+status = "confirmed"
+
+[[func]]
+addr = 0x8000A5C4
+name = "model_build_skin"
+proto = "void model_build_skin(s16 slot)"
+desc = "Walks the joints in g_joint_order: child position = parent position + (bind offset) * parent rotation, then joint matrix = rotation + position, skin matrix = inverse bind * joint matrix into the render node."
+status = "confirmed"
+
+[[func]]
+addr = 0x8000A7F0
+name = "model_blend_prev"
+proto = "void model_blend_prev(s16 slot, s16 frame, u8 flags)"
+desc = "Blends the new animation's first frames toward the previous pose (weights at 0x8002D410)."
+status = "likely"
+
+[[func]]
+addr = 0x8000ABA0
+name = "model_decode_frame"
+proto = "void model_decode_frame(s16 slot)"
+desc = "Decodes one keyframe (19 joints) from the stream into the slot's joint records."
+status = "confirmed"
+
+[[func]]
+addr = 0x8000AC80
+name = "model_decode_frame_interp"
+proto = "void model_decode_frame_interp(s16 slot, s16 phase)"
+desc = "Odd frame: decodes the next keyframe into a temp buffer and moves each joint halfway to it (angles by the shortest arc)."
+status = "confirmed"
+
+[[func]]
+addr = 0x8000AF78
+name = "anim_decode_joint"
+proto = "u8 *anim_decode_joint(u8 *src, f32 *rot, f32 *pos)"
+desc = "Decodes one joint: u32 with three 10-bit angles (x 360/1024 deg); bit 31 adds a position, absolute (bit 30 clear, 4 bytes 11/11/10-bit sign-magnitude) or delta from the last absolute one (bit 30 set, 3 sign-magnitude bytes x 0.5). Returns the next src."
+status = "confirmed"
+
+[[func]]
+addr = 0x8000B1B0
+name = "anim_frame_events"
+proto = "void anim_frame_events(s16 slot, s16 frame)"
+desc = "Fires the 8 (frame, event) byte pairs at file 618 bytes 16-31 whose frame matches: 1-189 sound events, 190-199 the wrestler's own calls, 200-219 rope deflections, 220-243 limbs grabbing / releasing ropes."
+status = "confirmed"
+
+[[func]]
+addr = 0x80008BD0
+name = "mtx_rotate_xyz"
+proto = "void mtx_rotate_xyz(f32 *m, f32 ax, f32 ay, f32 az)"
+desc = "Row-vector rotation matrix from three Euler angles in degrees (the joint angle convention of the animations)."
+status = "confirmed"
+
+[[func]]
+addr = 0x8000BB8C
+name = "model_build_nodes"
+proto = "void model_build_nodes(s16 slot)"
+desc = "Loads the 22 mesh parts of a wrestler's costume into render nodes 1-22 (body list by body type, head parts by head variant) and sets up the seam vertices that follow a neighbouring bone."
+status = "confirmed"
+
+[[func]]
+addr = 0x8000BF70
+name = "model_load_textures"
+proto = "void model_load_textures(s16 slot, s16 half)"
+desc = "Loads texture and palette per node from the costume record (half 0: nodes 1-12 plus head, half 1: nodes 13-22)."
+status = "confirmed"
+
+[[func]]
+addr = 0x8000C854
+name = "model_load"
+proto = "void model_load(s16 slot, s16 roster_entry, s16 costume, s16 unused)"
+desc = "Loads a wrestler model for a slot: clears nodes, builds nodes, textures, joint positions and scale."
+status = "confirmed"
+
+[[func]]
+addr = 0x80005D20
+name = "mesh_load"
+proto = "void mesh_load(void *part, u16 file)"
+desc = "Loads a mesh part file and converts it: 8-byte vertices to N64 Vtx, triangle index triples to G_TRI2/G_TRI1 commands."
+status = "confirmed"
+
+[[func]]
+addr = 0x80005C14
+name = "mesh_build_vtx"
+proto = "u8 *mesh_build_vtx(void *out, u8 *file)"
+desc = "Vertex conversion: pos = (s8 + header offset*16) * (scale+1), s/t = 32 * (u8 + 16*nibble) + 8, normal bytes copied, alpha 0xFF."
+status = "confirmed"
+
+[[func]]
+addr = 0x80005AE0
+name = "mesh_build_tris"
+proto = "u32 *mesh_build_tris(void *part, u8 *file)"
+desc = "Packs triangle index triples into G_TRI2 (0xB1) pairs plus a trailing G_TRI1."
+status = "confirmed"
+
+[[func]]
+addr = 0x80006630
+name = "mesh_split_seam"
+proto = "void mesh_split_seam(void *node, void *part, void *node_b, void *node_a)"
+desc = "Seam skinning: the first header[3]>>4 vertices load with node_a's matrix, the next header[3]&15 with node_b's, the rest with the part's own node."
+status = "confirmed"
+
+[[data]]
+addr = 0x80047BD8
+name = "g_anim_stream_buf"
+type = "u8 *[4]"
+desc = "Per-slot 0x6880-byte ring buffers that animation files stream into."
+status = "confirmed"
+
+[[data]]
+addr = 0x80047BE8
+name = "g_anim_stream"
+type = "u8[4][0x8C]"
+desc = "Per-slot animation stream state: +0x04 read ptr, +0x08 ROM ptr, +0x0C buffer write ptr, +0x10 bytes left, +0x14 anim id, +0x16 frame, +0x18 scale matrix."
+status = "likely"
+
+[[data]]
+addr = 0x80047E20
+name = "g_model_joints"
+type = "u8[4][23][0x7C]"
+desc = "Per-slot joint records (0x7C each): +0x00 rotation (3 f32 degrees), +0x0C position, +0x48/+0x60 world positions used for collision."
+status = "likely"
+
+[[data]]
+addr = 0x8004B8C0
+name = "g_model_nodes"
+type = "u8[4][23][0xDC]"
+desc = "Per-slot render nodes (0xDC each); node n draws the mesh part of bone n, nodes 20-22 are extras on bones 5, 8 and 15. Skin matrix at +0x1C."
+status = "likely"
+
+[[data]]
+addr = 0x800507D0
+name = "g_mesh_parts"
+type = "u8[4][23][0x28]"
+desc = "Per-slot loaded mesh part records: +1 tri count, +2 vertex count, +4/+5 seam counts, +0xC Vtx, +0x10 setup DL, +0x14 tri DL, +0x18 texture, +0x1C palette."
+status = "likely"
+
+[[data]]
+addr = 0x8002D3A0
+name = "g_bind_xy"
+type = "s8[20][2]"
+desc = "Bind pose (x, y) of joints 0-19, z = 0. Mesh vertices are in this pose."
+status = "confirmed"
+
+[[data]]
+addr = 0x8002D3C9
+name = "g_joint_order"
+type = "u8[19]"
+desc = "Joint evaluation order, parents first."
+status = "confirmed"
+
+[[data]]
+addr = 0x8002D3DC
+name = "g_joint_parent"
+type = "u8[20]"
+desc = "Parent joint; 0 = none, and those joints carry a position in the animation."
+status = "confirmed"
+
+[[data]]
+addr = 0x8002DE31
+name = "g_bone_part"
+type = "s8[19]"
+desc = "Bone 1-19 -> index into the body part list and the costume record; -1 for the two head bones."
+status = "confirmed"
+
+[[data]]
+addr = 0x8002E500
+name = "g_body_parts"
+type = "u16 *[]"
+desc = "Per body type: 19 mesh file numbers (17 bones + 2 extras on the feet)."
+status = "confirmed"
+
+[[data]]
+addr = 0x8002F150
+name = "g_head_tables"
+type = "u16 **[6]"
+desc = "Per roster group -> per wrestler -> head variants: 11 u16 (2-3 mesh files, texture/palette pairs, face texture)."
+status = "confirmed"
+
+[[data]]
+addr = 0x80032B40
+name = "g_costume_tables"
+type = "u16 ***[6]"
+desc = "Per roster group -> per wrestler -> 0-terminated costume list. Costume: u16 body type | head variant << 8, then (palette, texture) pairs."
+status = "confirmed"
+
+[[data]]
+addr = 0x800574B0
+name = "g_model_roster"
+type = "s16[4]"
+desc = "Roster entry loaded in each model slot (group << 8 | index + 1)."
+status = "confirmed"
+
+[[data]]
+addr = 0x800574D0
+name = "g_model_costume"
+type = "s16[4]"
+desc = "Costume loaded in each model slot."
+status = "confirmed"
+
+# --- animation pickers (ovl_b); see individual_games/wcw_world_tour/animation_states.md ---
+
+[[func]]
+addr = 0x800A1EEC
+name = "wrestler_base_anim"
+proto = "s16 wrestler_base_anim(struct Wrestler *w, s16 kind, f32 dist)"
+desc = "Picks a basic animation: kind 0 walk, 1 idle, 2 block, 3-8 block hit variants. Style 0-3 from header traits bits 2-5; injured idle/walk by body region when its condition is below 26; 2928/2929 when dist > 355."
+status = "likely"
+notes = "Tables at 0x800E6F40: walk[4] 2911-2914, idle[4] 2901-2904, injured walk[4] 2918/2919/2921/2923, injured idle[4] 2905/2906/2908/2910, block[4] 2969/2972x3, then 6 rows of block-hit [2970, 2973x3]. flags_hi 0x2000 overrides with 3245/3246 (3253/3254 when 0x4000 too). dist is the float third argument; 350/355 thresholds at 0x800E7F40.., its meaning is not traced."
+
+[[func]]
+addr = 0x800C3C6C
+name = "grapple_anim_attacker"
+desc = "Starts the attacker's grapple-lock animation for the GrappleCtx bits: HOLD 2936, REAR 2940, CORNER 2944, DEF_ON_APRON 2948, ATK_ON_APRON 2952, STRENGTH_TEST 2957, MUTUAL 2934."
+status = "confirmed"
+
+[[func]]
+addr = 0x800C421C
+name = "grapple_anim_defender"
+desc = "Defender's grapple-lock animation, the attacker's id + 1 (2937, 2941, 2945, 2949, 2953, 2958, 2935)."
+status = "confirmed"
+
+[[func]]
+addr = 0x800C46EC
+name = "grapple_timeout"
+desc = "The grapple input window: counts state_timer down; returns 1 when the attacker presses A/B/C-down (from behind A/B, plus L/R in some match types; stored in g_grapple_input) or the special input, 2 when the window runs out (plays the break animation 2938/2942/2946/2950/2954; the defender follows with id + 1), 0 otherwise."
+status = "likely"
+
+[[data]]
+addr = 0x800E6F40
+name = "g_base_anims"
+type = "s16[44]"
+desc = "Animation table of wrestler_base_anim: walk, idle, injured walk, injured idle, block, block-hit rows of 4 (by stance style or body region)."
+status = "confirmed"
+
+[[data]]
+addr = 0x800F05A0
+name = "g_injury_region"
+type = "s8[4]"
+desc = "Per wrestler slot: body region (0-3) whose condition wrestler_base_anim checks for the injured idle/walk; set by move_apply_hit when the targeted region becomes the weakest (body_parts.md)."
+status = "confirmed"
+
+[[data]]
+addr = 0x800F19C8
+name = "g_climb_kind"
+type = "s16[4]"
+desc = "Per slot: how the wrestler mounts the turnbuckle; state_09_turnbuckle plays animation 3012 + this. Set from header bytes 17-22 or constants 0/2/4/5."
+status = "likely"
+
+# --- placing two wrestlers for a move; see animation_states.md "Where the partner stands" ---
+
+[[func]]
+addr = 0x8009FB94
+name = "vec_xz_dist_angle"
+proto = "void vec_xz_dist_angle(f32 *from, f32 *to, f32 *out)"
+desc = "out = {dx, xz distance, dz, angle (s32, 0x1000 per turn)} from 'from' to 'to'; out may be NULL."
+status = "confirmed"
+
+[[func]]
+addr = 0x800A000C
+name = "point_at_offset"
+proto = "void point_at_offset(f32 *origin, f32 *offset, s32 angle, f32 *out)"
+desc = "out.xz = origin.xz + offset (x, z) rotated by angle: x' = x*cos + z*sin, z' = z*cos - x*sin. With offset (0, d) this is the point d away in direction angle."
+status = "confirmed"
+
+[[func]]
+addr = 0x800A2490
+name = "wrestler_translate"
+proto = "void wrestler_translate(struct Wrestler *w, f32 *delta)"
+desc = "Moves a wrestler by delta in x and z: pos and both world joint sets."
+status = "confirmed"
+
+[[func]]
+addr = 0x800A57D8
+name = "wrestler_slide_to"
+proto = "void wrestler_slide_to(struct Wrestler *w, f32 *target, s16 frames)"
+desc = "Sets the per-frame slide velocity at +0x32C/+0x334 that brings the pelvis (joints[0]) to target in 'frames' frames."
+status = "likely"
+
+[[func]]
+addr = 0x800A3390
+name = "ground_approach_plan"
+desc = "Plans the attacker's walk to the spot next to a downed opponent chosen by state_33 (fills a 48-byte record at 0x800F0730 + slot*48)."
+status = "guess"
+
+[[func]]
+addr = 0x800CD894
+name = "ai_learn_strike_reach"
+proto = "void ai_learn_strike_reach(struct Wrestler *w)"
+desc = "At the hit frame of a strike or ground attack (slots 4-6, 122-128, 154, 155), averages the distance from the attacker's pos to the joint that hits into a per-wrestler table at 0x800F1870 (8 categories x 8 bytes)."
+status = "guess"
+
+# --- animation frame events (file 618 bytes 16-31); see file_formats/animations.md ---
+
+[[func]]
+addr = 0x8000DE1C
+name = "sound_play_event"
+proto = "void sound_play_event(s16 slot, s16 code)"
+desc = "Plays a sound on the wrestler's 3-voice channel. code < 256 is a sound id; code >= 256 is an animation sound event (code - 256): looked up in the event tables at 0x8002D86E (sound id), 0x8002D907 / 0x8002D953 (two play parameters) and 0x8002D9B7 (grunt category), with floor substitutions and crowd events 45-63 routed to crowd_sound_play."
+status = "likely"
+
+[[func]]
+addr = 0x8000DB2C
+name = "crowd_sound_play"
+proto = "void crowd_sound_play(s16 id)"
+desc = "Plays a sound on the shared (non-wrestler) 3-voice channel at 0x80057488; ids 1025-1044 map through a table at 0x8002D204."
+status = "likely"
+
+[[func]]
+addr = 0x8000E5A4
+name = "wrestler_grunt"
+proto = "void wrestler_grunt(s16 voice_set, s8 a, s8 b, s8 c)"
+desc = "Queues the wrestler's own voice sample (voice set 0x800F1848[slot] - 1) for a grunt category 1-6 of an animation sound event."
+status = "guess"
+
+[[func]]
+addr = 0x8000E1B8
+name = "wrestler_voice_sound"
+proto = "s16 wrestler_voice_sound(s16 slot, s16 k)"
+desc = "Sound id of the wrestler's own call k (0 or 1) from the per-roster table at 0x8002E670 (two s16 per wrestler, -1 = none); used by frame events 190/191."
+status = "confirmed"
+
+[[func]]
+addr = 0x800103B0
+name = "ring_rope_push"
+proto = "void ring_rope_push(s16 kind, s16 side, f32 along)"
+desc = "Starts a rope deflection on one ring side at a position along it (clamped to +-180): kind 1-11 picks which of the 3 ropes (0x80058600 + side*120 + rope*40) move, by how much (+-10) and over how many frames (6/12). Frame events 200-219."
+status = "likely"
+
+[[func]]
+addr = 0x8000FF08
+name = "rope_anim_set"
+desc = "Fills one rope's deflection record: position, start/end offsets and per-frame steps over n frames."
+status = "likely"
+
+[[func]]
+addr = 0x800101F0
+name = "rope_attach"
+proto = "void rope_attach(s16 slot, s16 limb, s16 side, s16 rope)"
+desc = "Records that a wrestler's limb holds or stands on rope 'rope' (0 bottom .. 2 top, from the order of the turnbuckle climb) of ring side 'side' (table 0x800587E0, 4 sides x 3 ropes); frame events 221-239."
+status = "likely"
+
+[[func]]
+addr = 0x8000B7CC
+name = "rope_release"
+proto = "void rope_release(s16 slot, s16 limb)"
+desc = "Releases a limb's rope attachment (per-slot tables at 0x8004AAB0 rope / 0x8004AAD0 side); frame events 220/230 (all hands/feet) and 240-243."
+status = "likely"

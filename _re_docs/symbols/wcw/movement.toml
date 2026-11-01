@@ -1,0 +1,107 @@
+# Walking, running and collision (ovl_b).
+# Notes: _re_docs/individual_games/wcw_world_tour/movement.md
+
+[[func]]
+addr = 0x800A2964
+name = "walk_step"
+proto = "u32 walk_step(struct Wrestler *w, struct Wrestler *opp, u16 held, s16 no_anim)"
+desc = "One frame of standing/walking: with the d-pad moves by walk_speed in that direction and plays the base walk animation (apron: shuffle 3335/3349; pushing an opponent in state 0x29: 2915 and both move); without it plays the idle; then keep_in_bounds and push_apart."
+status = "confirmed"
+
+[[func]]
+addr = 0x800A2574
+name = "walk_speed"
+proto = "void walk_speed(struct Wrestler *w, f32 *out, s16 mode)"
+desc = "Returns the per-frame speed from the header walk class (byte 4, 1-3), one class slower per legs-condition threshold missed (0x800E6FA0..): 4.5/5.0/5.5/6.0. Mode 0 walk (3.0 on the apron), 2 run (x2, 12.0 on the apron), 3/4 = 1.5, 5 = 8.0. Writes (speed, 0, second value 3.25-4.0) to out when given."
+status = "likely"
+
+[[func]]
+addr = 0x800A4010
+name = "dpad_dir8"
+proto = "s16 dpad_dir8(u16 buttons)"
+desc = "D-pad bits to direction 1-8 (1 up, clockwise to 8 up-left), 0 = none; headings in g_dir8_angles."
+status = "confirmed"
+
+[[func]]
+addr = 0x800A4994
+name = "keep_in_bounds"
+desc = "Keeps a wrestler's body (bounding box of selected joints) inside its zone box from g_zone_bounds (ring +-230, floor strips between +-280 and +-497, apron lines at 265), moving it back by overlap / factor along the allowed axes and moving grapple partners with it. Returns the sides hit."
+status = "confirmed"
+
+[[func]]
+addr = 0x800A46F0
+name = "keep_in_bounds_self"
+desc = "keep_in_bounds for one wrestler with no partners."
+status = "likely"
+
+[[func]]
+addr = 0x800A4170
+name = "push_apart"
+proto = "s8 push_apart(struct Wrestler *w, u16 axes, s8 ignore_idx, s16 mode)"
+desc = "Pushes w out of any other wrestler closer than 66 (lying wrestlers use an ellipse along their facing via sub_800A0100): a quarter of the overlap per frame along the line between them (mode 2) or half straight back (mode 1). Returns the first wrestler hit, -1 if none."
+status = "likely"
+
+[[func]]
+addr = 0x8009FA94
+name = "vec_from_angle"
+proto = "void vec_from_angle(s32 angle, f32 length, f32 *out)"
+desc = "out.x = sin(angle) * length, out.z = cos(angle) * length."
+status = "confirmed"
+
+[[func]]
+addr = 0x800A28D4
+name = "aim_at_side_point"
+proto = "s32 aim_at_side_point(struct Wrestler *w, s16 side)"
+desc = "Heading from the wrestler's pelvis to the fixed point for ring side 'side' (0x800E6FF0, the middle of that side's ropes); used to steer runs."
+status = "likely"
+
+[[func]]
+addr = 0x800B7A60
+name = "run_step"
+desc = "Run loop: moves by slide_vel, checks bounds; a wall hit stops the run (run_flags & 4, heading 2-178 deg off the wall) or, near a corner with C-down, starts the turnbuckle climb (state 0x09)."
+status = "confirmed"
+
+[[data]]
+addr = 0x800E709C
+name = "g_dir8_angles"
+type = "s32[9]"
+desc = "Heading per dpad_dir8 index 1-8: 0, 0x200, 0x400, 0x600, 0x800, -0x600, -0x400, -0x200 (entry 0 unused)."
+status = "confirmed"
+
+[[data]]
+addr = 0x800E70D0
+name = "g_zone_bounds"
+type = "f32[11][4]"
+desc = "Bounds per movement zone (z max, x max, z min, x min): 0 ring +-230, 3-6 floor per side, 7-10 apron per side."
+status = "confirmed"
+
+[[func]]
+addr = 0x800B7430
+name = "run_start"
+desc = "Sets up a run: clears run_flags and picks the target (a ring side's ropes with bit 8, a fixed heading with bit 2, a floor side with bit 0x10, apron left/right), stores the heading in 0x800F16A0[slot] and the side in facing_quadrant, sets slide_vel to twice the walk speed along it. Returns non-zero when there is nowhere to run (already at those ropes)."
+status = "confirmed"
+
+[[func]]
+addr = 0x800A3DE8
+name = "recover_tick"
+proto = "void recover_tick(struct Wrestler *w, u16 pressed)"
+desc = "recover_count -= 1, and once more when sub_800A3B40 counts an A/B/L/R press (mashing)."
+status = "confirmed"
+
+[[func]]
+addr = 0x800B8214
+name = "run_collide"
+desc = "Runner bumping into another wrestler: both running -> both state 0x05 (0x24 on the apron); into a blocking opponent (0x39/0x3A) -> runner 0x05, blocker 0x3A; a whipped runner into an opponent resting in the corner (0x13) -> runner 0x05, opponent 0x24 (out of the corner); otherwise the run stops. Sets flags_lo 0x800000 (BACK_HIT) on whoever was facing away."
+status = "confirmed"
+
+[[func]]
+addr = 0x800B87DC
+name = "run_inputs"
+desc = "Buttons while running: B -> running attack (0x07), or at a lying opponent in reach the running ground attack (0x4F); L/R -> 0x06; A near the ropes with an opponent on the floor -> dive (0x57, reach 180, 390 for header trait 0x200); A on the apron (trait 0x20000) -> 0x5A; A toward a corner (trait 0x80000) -> 0x5C. Whipped runners only get whip_run_inputs."
+status = "confirmed"
+
+[[func]]
+addr = 0x800B9058
+name = "whip_run_inputs"
+desc = "A whipped runner heading for a corner may press A/B/L/R once in a distance window: chance_roll kind 3 decides; A sets run_flags 0x800, B/L/R 0x400 (corner counters 0x15 / 0x14 on arrival); 0x200 marks the try."
+status = "likely"

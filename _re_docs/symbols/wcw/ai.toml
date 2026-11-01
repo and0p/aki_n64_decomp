@@ -1,0 +1,219 @@
+# CPU opponent AI (ovl_b).
+# Notes: _re_docs/individual_games/wcw_world_tour/ai.md
+
+[[func]]
+addr = 0x800DEEF0
+name = "ai_situation"
+proto = "s16 ai_situation(struct Wrestler *w, struct Wrestler *self)"
+desc = "Classifies a wrestler's state for the AI: 1 standing, 2 running, 3 grappled, 4 pinned/held, 5 whipped, 6 striking, 8 down, 9 dazed, 10 grapple attempt, 11 staggered, 12, 13 about to rise, 14 corner, 15 getting up, 16 grappling, 17 turnbuckle/dive, 18 blocking, 19 whip runner."
+status = "confirmed"
+
+[[func]]
+addr = 0x800DF1D4
+name = "ai_set_mode"
+proto = "void ai_set_mode(s16 mode)"
+desc = "Sets the AI mode, resets its step, remembers the opponent's state and clears +0x50 bits 0-2."
+status = "confirmed"
+
+[[func]]
+addr = 0x800DF298
+name = "ai_pick_mode"
+proto = "void ai_pick_mode(const s16 *table)"
+desc = "Weighted pick: rand_pool_next against cumulative bounds in (bound, mode, flags) triples; sets the mode and ORs flags into +0x50."
+status = "confirmed"
+
+[[func]]
+addr = 0x800DF360
+name = "ai_perceive"
+proto = "f32 ai_perceive(f32 value, f32 max_frac)"
+desc = "Noisy reading: spread = value * min(max_frac, 1 - skill/1000), result uniform within +-spread/2, >= 0."
+status = "confirmed"
+
+[[func]]
+addr = 0x800DF548
+name = "ai_update_perception"
+proto = "void ai_update_perception(void)"
+desc = "Fills the AI block with perceived health, spirit and recover_count of self and opponent (30% max error), the reach margin (20%), and the ring/apron/floor area pair bits 16-24 of +0x50."
+status = "confirmed"
+
+[[func]]
+addr = 0x800B5590
+name = "ai_init_slot"
+proto = "void ai_init_slot(s8 slot)"
+desc = "Per-slot AI setup: level from 0x80062060[slot] (clamped to 0-2), skill = 0x800E7560[level] (50/250/900) +- 30."
+status = "confirmed"
+
+[[func]]
+addr = 0x800B5A8C
+name = "ai_decide"
+proto = "void ai_decide(void)"
+desc = "Mode 0: standing -> per area pair (ai_decide_fight for same area / ring-apron, sub_800B6010 opponent on the floor, ...); getting up -> 38; grappling -> 14; whip runner -> 46."
+status = "confirmed"
+
+[[func]]
+addr = 0x800B5C48
+name = "ai_decide_fight"
+proto = "void ai_decide_fight(void)"
+desc = "Standing near the opponent: tag/apron cases, out of reach -> approach (25/26), in reach -> weighted mode tables 0x800E7568-0x800E762C, or per-class handlers for a downed / dazed / grappling opponent."
+status = "confirmed"
+
+[[data]]
+addr = 0x800F1710
+name = "g_ai_state"
+type = "u8[4][84]"
+desc = "Per-slot AI block: mode +2, step +4, output held/pressed/stick +6/+8/+0xC, level +0x10, skill +0x12, situation classes +0x14/+0x1C, perceived values +0x16-+0x22, reach margin +0x28, area flags +0x50."
+status = "likely"
+
+[[data]]
+addr = 0x800E7AE0
+name = "g_ai_modes"
+type = "void (*[48])(void)"
+desc = "AI mode handlers, indexed by g_ai_state.mode; mode 0 = ai_decide."
+status = "confirmed"
+
+[[data]]
+addr = 0x800E7560
+name = "g_ai_skill_by_level"
+type = "s16[3]"
+desc = "Skill per CPU difficulty level: 50, 250, 900."
+status = "confirmed"
+
+[[data]]
+addr = 0x80062060
+name = "g_cpu_level"
+type = "s16[4]"
+desc = "CPU difficulty per slot, 0-2 (1 in every match seen)."
+status = "likely"
+
+[[func]]
+addr = 0x800B6598
+name = "ai_check_floor"
+desc = "On the floor and not out: climb back in (mode 21) when the ring-out count is under 6, or 10% with no count."
+status = "confirmed"
+
+[[func]]
+addr = 0x800B665C
+name = "ai_check_target_4way"
+desc = "0x400 matches: press switch-target when the opponent is beyond 230 or eliminated."
+status = "likely"
+
+[[func]]
+addr = 0x800B67A0
+name = "ai_check_target_tag"
+desc = "Tag: press switch-target so the legal man faces the legal man."
+status = "likely"
+
+[[func]]
+addr = 0x800DD7B8
+name = "ai_wants_tag_out"
+desc = "Legal man in the ring: 25% chance to go tag when 51+ health lost since 0x800F1D30 or in for 2701 frames (0x800F1D38) with the partner on the apron."
+status = "likely"
+
+[[func]]
+addr = 0x800B649C
+name = "ai_read_opponent"
+desc = "Opponent class as the AI sees it: with chance 1 - skill a striker is read as grappling and the reverse (blocking: 50/50)."
+status = "confirmed"
+
+[[func]]
+addr = 0x800B71A0
+name = "ai_vs_turnbuckle"
+desc = "Opponent on the turnbuckle: follow and grapple it off (41/42), run to the corner (40) or wander (39)."
+status = "likely"
+
+[[func]]
+addr = 0x800B6010
+name = "ai_vs_floor"
+desc = "Self in the ring, opponent on the floor: stay in late in a ring-out count, dive (47) with traits 0x300 from 490 (280 with 0x100), else table 0x800E7638."
+status = "likely"
+
+[[func]]
+addr = 0x800B6AD0
+name = "ai_vs_striker"
+desc = "Opponent striking: block within 190, else table 0x800E775C."
+status = "likely"
+
+[[func]]
+addr = 0x800B6B78
+name = "ai_vs_downed"
+desc = "Opponent down: taunt, pin (mode 5) when its health reads < 25 and it stays down (15%), ground attacks near, else walk over."
+status = "likely"
+
+[[func]]
+addr = 0x800B6D9C
+name = "ai_vs_dazed"
+desc = "Opponent dazed or rising: taunt, attack tables near, follow (19) when rising."
+status = "likely"
+
+[[func]]
+addr = 0x800B6968
+name = "ai_vs_grappler"
+desc = "Opponent attempting a grapple: tables by distance (0x800E76BC/76E0/7718/7730)."
+status = "likely"
+
+[[func]]
+addr = 0x800B6EEC
+name = "ai_vs_staggered"
+desc = "Opponent staggered: running attack from over 100 with a skill roll, else tables 0x800E7808/7820."
+status = "likely"
+
+[[func]]
+addr = 0x800B7090
+name = "ai_vs_cornered"
+desc = "Opponent in the corner: running corner attack (35) with a skill roll over 130, taunt, or tables 0x800E7868/7874."
+status = "likely"
+
+[[func]]
+addr = 0x800E55E8
+name = "ai_steer"
+desc = "D-pad bits pointing from self to the opponent (8 directions, table 0x800E7090)."
+status = "likely"
+
+[[func]]
+addr = 0x800E5644
+name = "ai_steer_axis"
+desc = "On the floor: d-pad bits from the x and z differences separately."
+status = "likely"
+
+[[func]]
+addr = 0x800E2E80
+name = "ai_counter_delay"
+desc = "Frames until the opponent grapple attempt (state 0x3D) reaches its window_start, or 0 when a skill x 0.8 roll fails."
+status = "likely"
+
+[[func]]
+addr = 0x800DF948
+name = "ai_pick_dpad"
+desc = "Weighted pick of d-pad bits from (bound, bits) pairs, e.g. 0x800E7BA0: Up / Down / none, a third each."
+status = "likely"
+
+[[func]]
+addr = 0x800E1350
+name = "ai_mode_14_grapple"
+desc = "Grappling as attacker: after 5-20 frames picks A/B with Up/Down/none, the stick when SPECIAL is ready, or a whip (mode 8) 10% from a weak grapple."
+status = "likely"
+
+[[func]]
+addr = 0x800DFCD4
+name = "ai_mode_3_strike"
+desc = "B (half with d-pad), then repeat 25% or react by the opponent situation with a skill roll."
+status = "likely"
+
+[[func]]
+addr = 0x800E3608
+name = "ai_block_delay"
+desc = "Frames until the striking opponent reaches its window_start (timed block for a block counter), or 0 when a skill x 0.8 roll fails."
+status = "likely"
+
+[[func]]
+addr = 0x800C95E0
+name = "ai_learn_reset"
+desc = "Resets a wrestler's g_strike_learn entries (reach 150, count 0)."
+status = "likely"
+
+[[data]]
+addr = 0x800F1870
+name = "g_strike_learn"
+type = "u8[4][64]"
+desc = "Per wrestler 8 x {f32 reach, s16 hit frame, s16 count} learned by ai_learn_strike_reach: slots 123/5, 124/6, 125, 126, 128, 154, 155, 122/4."
+status = "likely"

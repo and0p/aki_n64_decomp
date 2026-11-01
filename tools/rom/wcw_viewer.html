@@ -1,0 +1,487 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>World Tour Animations</title>
+<!-- Template for tools/rom/wcw_models.py viewer. The generated page embeds ROM-derived data:
+     keep it out of git. Pose maths follows func_8000A5C4 / func_80008BD0, see
+     _re_docs/file_formats/animations.md. -->
+<style>
+  :root { --bg:#f4f4f2; --panel:#ffffff; --text:#1d1d1b; --muted:#6b6b66; --line:#d9d9d4; --accent:#2d6cdf; --sel:#e3ecfb; }
+  @media (prefers-color-scheme: dark) { :root { --bg:#161615; --panel:#1f1f1e; --text:#ecece8; --muted:#9a9a94; --line:#33332f; --accent:#7aa7ff; --sel:#253247; } }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--text); font:13px/1.4 system-ui, sans-serif; display:flex; height:100vh; }
+  #side { width:360px; display:flex; flex-direction:column; border-right:1px solid var(--line); background:var(--panel); }
+  #side > div { padding:8px 10px; border-bottom:1px solid var(--line); }
+  #list { flex:1; overflow:auto; padding:0 !important; }
+  .row { padding:3px 10px; cursor:pointer; display:flex; gap:8px; white-space:nowrap; }
+  .row:hover { background:var(--sel); }
+  .row.on { background:var(--sel); font-weight:600; }
+  .row .id { width:38px; color:var(--muted); }
+  .row .tag { overflow:hidden; text-overflow:ellipsis; color:var(--accent); }
+  #main { flex:1; display:flex; flex-direction:column; min-width:0; }
+  #view { flex:1; position:relative; }
+  #bar { padding:8px 10px; display:flex; flex-wrap:wrap; gap:8px; align-items:center; border-top:1px solid var(--line); background:var(--panel); }
+  #info { font-family:ui-monospace, monospace; font-size:12px; color:var(--muted); }
+  select, input, button { font:inherit; color:var(--text); background:var(--bg); border:1px solid var(--line); border-radius:4px; padding:3px 6px; }
+  button { cursor:pointer; }
+  label { color:var(--muted); }
+  #scrub { flex:1; min-width:160px; }
+  #tag { width:100%; }
+  .row .lab { overflow:hidden; text-overflow:ellipsis; color:var(--muted); }
+  #events { padding:6px 10px; font:12px ui-monospace, monospace; color:var(--muted); border-top:1px solid var(--line); background:var(--panel); }
+  #events .evon { color:var(--accent); font-weight:700; }
+  #uses { max-height:110px; overflow:auto; font-size:12px; color:var(--muted); padding:6px 10px; border-top:1px solid var(--line); background:var(--panel); white-space:pre-wrap; }
+</style>
+<script type="importmap">
+{ "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+               "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/" } }
+</script>
+</head>
+<body>
+<div id="side">
+  <div><select id="wrestler"></select> <select id="costume"></select>
+    <label style="display:block;margin-top:6px"><input type="checkbox" id="pair"> partner plays the next animation (e.g. receiver)</label>
+    <div id="partner" style="display:none;margin-top:6px"><select id="wrestler2"></select> <select id="costume2"></select>
+      <div style="margin-top:6px"><select id="ppreset">
+          <option value="73.5,1">front grapple (73.5, facing)</option>
+          <option value="53.5,0">rear grapple (53.5, same way)</option>
+          <option value="72.1,1">corner grapple (72.1, facing)</option>
+          <option value="76,1">apron grapple (76, facing)</option>
+          <option value="80,1">test of strength (80, facing)</option>
+          <option value="">custom</option></select></div>
+      <div style="margin-top:6px"><label>partner placed <input type="number" id="pdist" value="73.5" step="0.5" style="width:60px"> in front,</label>
+        <label><input type="checkbox" id="pface" checked> facing back</label></div></div>
+  </div>
+  <div><input id="filter" placeholder="filter: id, 3000-3100, pose:7, untagged, or text" style="width:100%"></div>
+  <div id="list"></div>
+  <div>
+    <input id="tag" placeholder="tag for this animation (Enter saves)">
+    <div style="margin-top:6px;display:flex;gap:6px">
+      <button id="export">Export tags</button>
+      <button id="import">Import tags</button>
+      <input type="file" id="importFile" accept=".json" hidden>
+    </div>
+  </div>
+</div>
+<div id="main">
+  <div id="view"></div>
+  <div id="bar">
+    <button id="play">Pause</button>
+    <button id="prev">&lt;</button><button id="next">&gt;</button>
+    <input type="range" id="scrub" min="0" max="0" value="0">
+    <label>speed <select id="speed"><option>0.25</option><option>0.5</option><option selected>1</option><option>2</option></select></label>
+    <label><input type="checkbox" id="loop" checked> loop</label>
+    <label><input type="checkbox" id="bones"> skeleton</label>
+    <label>arena <select id="arena"><option value="">none</option><option value="0">WCW</option><option value="1">nWo</option><option value="2">DOA</option><option value="3">IU</option></select></label>
+    <label><input type="checkbox" id="mirror"> mirror X</label>
+    <span id="info"></span>
+  </div>
+  <div id="events"></div>
+  <div id="uses"></div>
+</div>
+<script>
+window.WCW = /*DATA*/null;
+window.WCW_ANIMS = /*ANIMBLOB*/"";
+</script>
+<script type="module">
+import * as THREE from "three";
+import { OrbitControls } from "three/addons/controls/OrbitControls.js";
+
+const D = window.WCW;
+if (!D) {
+  document.body.textContent = "This is the template. Open the page built by: py tools/rom/wcw_models.py ROM viewer _tools/viewer/wcw_viewer.html";
+  throw new Error("viewer template opened without data");
+}
+const blob = Uint8Array.from(atob(window.WCW_ANIMS), c => c.charCodeAt(0));
+const SK = D.skeleton;
+const TICK_HZ = 30;   // match logic rate (clock ticks), see match_state.md
+
+// ---- animation decoding (func_8000AF78) ----
+function decodeAnim(entry) {
+  const [id, off, len, meta] = entry;
+  const dv = new DataView(blob.buffer, off, len);
+  const hdr = dv.getUint32(0);
+  const keys = [];
+  for (let p0 = 4; p0 + 98 <= len; p0 += 98) {
+    let p = p0, last = [0, 0, 0];
+    const rot = [], pos = [];
+    for (let j = 0; j < 19; j++) {
+      const w = dv.getUint32(p); p += 4;
+      rot.push([(w & 1023) * 360 / 1024, ((w >>> 10) & 1023) * 360 / 1024, ((w >>> 20) & 1023) * 360 / 1024]);
+      let ps = null;
+      if (w & 0x80000000) {
+        if (w & 0x40000000) {
+          const sm = b => (b & 0x80 ? -(b & 0x7f) : b & 0x7f) * 0.5;
+          ps = [last[0] + sm(dv.getUint8(p)), last[1] + sm(dv.getUint8(p + 1)), last[2] + sm(dv.getUint8(p + 2))];
+          p += 3;
+        } else {
+          const v = dv.getUint32(p); p += 4;
+          const sm = (x, b) => { const m = x & ((1 << (b - 1)) - 1); return x & (1 << (b - 1)) ? -m : m; };
+          ps = [sm(v, 11), sm(v >>> 11, 11), sm(v >>> 22, 10)];
+          last = ps;
+        }
+      }
+      pos.push(ps);
+    }
+    keys.push({ rot, pos });
+  }
+  return { id, frames: hdr & 0xffff, yaw: ((hdr >>> 16) & 0x3ff) * 4, pose: (hdr >>> 26) & 31, meta, keys };
+}
+
+const angDiff = (a, b) => { let d = b - a; while (d > 180) d -= 360; while (d < -180) d += 360; return d; };
+function sampleKeys(anim, frame) {
+  // keyframe every 2 frames; odd frames are the midpoint (func_8000AC80)
+  const k = frame >> 1, A = anim.keys[Math.min(k, anim.keys.length - 1)];
+  if (!(frame & 1) || k + 1 >= anim.keys.length) return A;
+  const B = anim.keys[k + 1];
+  return {
+    rot: A.rot.map((r, j) => r.map((x, i) => x + angDiff(x, B.rot[j][i]) * 0.5)),
+    pos: A.pos.map((p, j) => p && B.pos[j] ? p.map((x, i) => x + (B.pos[j][i] - x) * 0.5) : p),
+  };
+}
+
+// rotation matrix of func_80008BD0, rows of a row-vector matrix (v' = v * M)
+function rotMat([ax, ay, az]) {
+  const r = Math.PI / 180, sx = Math.sin(ax * r), cx = Math.cos(ax * r), sy = Math.sin(ay * r),
+        cy = Math.cos(ay * r), sz = Math.sin(az * r), cz = Math.cos(az * r);
+  return [
+    [cz * cy, sz * cx + cz * sy * sx, sz * sx - cz * sy * cx],
+    [-sz * cy, cz * cx - sz * sy * sx, cz * sx + sz * sy * cx],
+    [sy, -cy * sx, cy * cx],
+  ];
+}
+const mulRow = (v, M) => [v[0] * M[0][0] + v[1] * M[1][0] + v[2] * M[2][0],
+                          v[0] * M[0][1] + v[1] * M[1][1] + v[2] * M[2][1],
+                          v[0] * M[0][2] + v[1] * M[1][2] + v[2] * M[2][2]];
+
+function pose(sample) {
+  const R = [], P = [];
+  for (const j of SK.order) {
+    R[j] = rotMat(sample.rot[j - 1]);
+    const p = SK.parent[j];
+    if (!p) P[j] = sample.pos[j - 1] || [0, 0, 0];
+    else {
+      const o = mulRow([SK.bind[j][0] - SK.bind[p][0], SK.bind[j][1] - SK.bind[p][1], 0], R[p]);
+      P[j] = [P[p][0] + o[0], P[p][1] + o[1], P[p][2] + o[2]];
+    }
+  }
+  return { R, P };
+}
+
+// ---- scene ----
+const view = document.getElementById("view");
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setPixelRatio(devicePixelRatio);
+view.appendChild(renderer.domElement);
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(matchMedia("(prefers-color-scheme: dark)").matches ? 0x202020 : 0xb8c4cc);
+const camera = new THREE.PerspectiveCamera(40, 1, 1, 8000);
+camera.position.set(0, 120, 330);
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.target.set(0, 80, 0);
+scene.add(new THREE.HemisphereLight(0xffffff, 0x666666, 1.6));
+const sun = new THREE.DirectionalLight(0xffffff, 1.6); sun.position.set(100, 200, 150); scene.add(sun);
+const grid = new THREE.GridHelper(400, 20, 0x888888, 0x999999); scene.add(grid);
+function resize() { const r = view.getBoundingClientRect(); renderer.setSize(r.width, r.height); camera.aspect = r.width / r.height; camera.updateProjectionMatrix(); }
+addEventListener("resize", resize); resize();
+
+const texCache = {};
+function texture(key) {
+  if (texCache[key]) return texCache[key];
+  const t = D.textures[key];
+  const tx = new THREE.TextureLoader().load("data:image/png;base64," + t.png);
+  tx.colorSpace = THREE.SRGBColorSpace;
+  tx.magFilter = THREE.LinearFilter;
+  const wrap = m => m & 2 ? THREE.ClampToEdgeWrapping : m & 1 ? THREE.MirroredRepeatWrapping : THREE.RepeatWrapping;
+  tx.wrapS = wrap(t.wrap[0]); tx.wrapT = wrap(t.wrap[1]);
+  tx.flipY = false;
+  return (texCache[key] = tx);
+}
+
+// A posed wrestler: one THREE.Mesh per costume node, vertices re-skinned on the CPU each frame.
+// figA plays the selected animation, figB (optional) the next animation in the list.
+function makeFigure() {
+  // root: placement in the scene; inner: mirror and pelvis alignment
+  const f = { root: new THREE.Group(), inner: new THREE.Group(), parts: [], skel: null };
+  f.root.add(f.inner); scene.add(f.root);
+  return f;
+}
+const figA = makeFigure(), figB = makeFigure();
+// Arena scenery: static meshes in world space (arena_build / arena_crowd_build). The mat is at
+// y = 90 in the game, while the animations stand on y = 0, so the arena is lowered by 90.
+// Pieces with a side are repeated per ring side, rotated 90 degrees each.
+const arenaRoot = new THREE.Group(); arenaRoot.position.y = -90; scene.add(arenaRoot);
+function buildArena(index) {
+  arenaRoot.clear();
+  grid.visible = index === "";
+  if (index === "") return;
+  for (const p of D.arenas[+index]) {
+    const m = D.meshes[p.mesh], t = D.textures[p.texkey];
+    const g = new THREE.BufferGeometry();
+    g.setAttribute("position", new THREE.BufferAttribute(new Float32Array(m.verts.flatMap(v => v.pos)), 3));
+    g.setAttribute("uv", new THREE.BufferAttribute(new Float32Array(m.verts.flatMap(v => [v.st[0] / t.w, v.st[1] / t.h])), 2));
+    g.setIndex(m.tris.flat());
+    const mesh = new THREE.Mesh(g, new THREE.MeshBasicMaterial({ map: texture(p.texkey), side: THREE.DoubleSide, alphaTest: 0.5 }));
+    // corner pieces are lifted by a per-piece offset (0x800E6284): pads +125, post +90
+    if (p.side !== null) { mesh.rotation.y = p.side * Math.PI / 2; mesh.position.y = p.dy || 0; }
+    arenaRoot.add(mesh);
+  }
+  for (let side = 0; side < 4; side++) arenaRoot.add(buildRopes(side));
+}
+// Ropes are generated, not stored (rope_build_side / rope_shape, see arena.md): per side 3 ropes
+// at heights 140/175/210 (mat at 90), 230 units out, 7 stations from x = -224 every 74. Each rope
+// is two crossed ribbons 6 units wide, shaded 100/0 and 50/50 (vertex grey levels). Drawn at rest
+// (no deflection) and without the rope texture.
+function buildRopes(side) {
+  const H = [140, 175, 210], DY = [3, -3, 0, 0], DZ = [0, 0, 3, -3], SHADE = [100, 0, 50, 50];
+  const pos = [], col = [], idx = [];
+  const stations = []; for (let x = -224; x < 294; x += 74) stations.push(x);
+  stations.forEach((x, s) => H.forEach((h, r) => DY.forEach((dy, k) => {
+    pos.push(x, h + dy, 230 + DZ[k]);
+    const c = 0.25 + SHADE[k] / 140; col.push(c, c, c);
+  })));
+  for (let s = 0; s + 1 < stations.length; s++) for (let r = 0; r < 3; r++) for (const k of [0, 2]) {
+    const a = s * 12 + r * 4 + k, b = a + 12;
+    idx.push(a, a + 1, b, a + 1, b + 1, b);
+  }
+  const g = new THREE.BufferGeometry();
+  g.setAttribute("position", new THREE.BufferAttribute(new Float32Array(pos), 3));
+  g.setAttribute("color", new THREE.BufferAttribute(new Float32Array(col), 3));
+  g.setIndex(idx);
+  const mesh = new THREE.Mesh(g, new THREE.MeshBasicMaterial({ vertexColors: true, side: THREE.DoubleSide }));
+  mesh.rotation.y = side * Math.PI / 2;
+  return mesh;
+}
+function buildCostume(fig, costume) {
+  fig.inner.clear(); fig.parts = [];
+  const seams = {}; for (const [b, first, next] of D.seams) seams[b] = [first, next];
+  for (const node of costume.nodes) {
+    const m = D.meshes[node.mesh], t = D.textures[node.texkey];
+    const n = m.verts.length;
+    const bones = new Array(n).fill(node.bone);
+    const [sa, sb] = m.seam, sm = seams[node.bone];
+    if (sm && sa > 0 && sb > 0) { for (let i = 0; i < sa; i++) bones[i] = sm[0]; for (let i = sa; i < sa + sb; i++) bones[i] = sm[1]; }
+    const g = new THREE.BufferGeometry();
+    g.setAttribute("position", new THREE.BufferAttribute(new Float32Array(n * 3), 3));
+    g.setAttribute("normal", new THREE.BufferAttribute(new Float32Array(n * 3), 3));
+    g.setAttribute("uv", new THREE.BufferAttribute(new Float32Array(m.verts.flatMap(v => [v.st[0] / t.w, v.st[1] / t.h])), 2));
+    g.setIndex(m.tris.flat());
+    const mat = new THREE.MeshLambertMaterial({ map: texture(node.texkey), side: THREE.DoubleSide, alphaTest: 0.5 });
+    const mesh = new THREE.Mesh(g, mat);
+    fig.inner.add(mesh);
+    fig.parts.push({ mesh, m, bones });
+  }
+  fig.skel = new THREE.LineSegments(new THREE.BufferGeometry(), new THREE.LineBasicMaterial({ color: 0xff3366, depthTest: false }));
+  fig.skel.renderOrder = 9; fig.inner.add(fig.skel);
+}
+
+function applyPose(fig, ps) {
+  for (const { mesh, m, bones } of fig.parts) {
+    const pa = mesh.geometry.attributes.position, na = mesh.geometry.attributes.normal;
+    m.verts.forEach((v, i) => {
+      const j = bones[i], b = SK.bind[j];
+      const q = mulRow([v.pos[0] - b[0], v.pos[1] - b[1], v.pos[2] - b[2]], ps.R[j]);
+      pa.setXYZ(i, q[0] + ps.P[j][0], q[1] + ps.P[j][1], q[2] + ps.P[j][2]);
+      const nn = mulRow(v.n, ps.R[j]); const l = Math.hypot(...nn) || 1;
+      na.setXYZ(i, nn[0] / l, nn[1] / l, nn[2] / l);
+    });
+    pa.needsUpdate = na.needsUpdate = true;
+    mesh.geometry.computeBoundingSphere();
+  }
+  const seg = [];
+  for (const j of SK.order) if (SK.parent[j]) seg.push(...ps.P[SK.parent[j]], ...ps.P[j]);
+  fig.skel.geometry.setAttribute("position", new THREE.BufferAttribute(new Float32Array(seg), 3));
+  fig.skel.visible = document.getElementById("bones").checked;
+}
+
+// ---- UI ----
+const $ = id => document.getElementById(id);
+let tags = {}; try { tags = JSON.parse(localStorage.getItem("wcw_anim_tags") || "{}"); } catch {}
+const esc = s => s.replace(/&/g, "&amp;").replace(/</g, "&lt;");
+const saveTags = () => { try { localStorage.setItem("wcw_anim_tags", JSON.stringify(tags)); } catch {} };
+const headers = D.anims.map(e => { const h = new DataView(blob.buffer, e[1], 4).getUint32(0); return { frames: h & 0xffff, pose: (h >>> 26) & 31 }; });
+
+// two wrestler pickers: A plays the selected animation, B the next one in the list
+const pickers = [[figA, "wrestler", "costume"], [figB, "wrestler2", "costume2"]];
+for (const [fig, ws, cs] of pickers) {
+  D.roster.forEach((w, i) => $(ws).add(new Option(`${w.group} · ${w.name}`, i)));
+  $(ws).onchange = () => fillCostumes(fig, ws, cs, 0);
+  $(cs).onchange = () => { buildCostume(fig, D.roster[$(ws).value].costumes[$(cs).value]); show(); };
+}
+function fillCostumes(fig, ws, cs, pick) {
+  const w = D.roster[$(ws).value]; $(cs).innerHTML = "";
+  w.costumes.forEach((c, i) => $(cs).add(new Option(`costume ${i + 1}`, i)));
+  $(cs).value = Math.min(pick, w.costumes.length - 1);
+  buildCostume(fig, w.costumes[$(cs).value]); show();
+}
+
+let cur = 0, anim = null, animB = null, frame = 0, playing = true, acc = 0;
+const pairOn = () => $("pair").checked && animB;
+const totalFrames = () => pairOn() ? Math.max(anim.frames, animB.frames) : anim.frames;
+function loadPartner() {
+  const on = $("pair").checked;
+  $("partner").style.display = on ? "" : "none";
+  figB.root.visible = on;
+  animB = on && cur + 1 < D.anims.length ? decodeAnim(D.anims[cur + 1]) : null;
+  $("scrub").max = Math.max(0, totalFrames() - 1);
+}
+$("pair").onchange = () => { try { localStorage.setItem("wcw_pair", $("pair").checked ? "1" : ""); } catch {} loadPartner(); show(); };
+function renderList() {
+  const f = $("filter").value.trim().toLowerCase();
+  const rng = f.match(/^(\d+)\s*-\s*(\d+)$/), pz = f.match(/^pose:(\d+)$/);
+  const html = [];
+  D.anims.forEach((e, i) => {
+    const id = e[0], t = tags[id] || "", lab = (D.labels[id] || []).join("\n");
+    if (f && !(rng ? id >= +rng[1] && id <= +rng[2] : pz ? headers[i].pose == +pz[1] : f === "untagged" ? !t
+        : String(id).includes(f) || t.toLowerCase().includes(f) || lab.toLowerCase().includes(f))) return;
+    const short = t ? `<span class="tag">${esc(t)}</span>` : `<span class="lab">${esc((D.labels[id] || [""])[0])}</span>`;
+    html.push(`<div class="row${i === cur ? " on" : ""}" data-i="${i}"><span class="id">${id}</span><span>${headers[i].frames}f</span><span>p${headers[i].pose}</span>${short}</div>`);
+  });
+  $("list").innerHTML = html.join("");
+}
+$("list").onclick = e => { const r = e.target.closest(".row"); if (r) select(+r.dataset.i); };
+$("filter").oninput = renderList;
+// frame events from file 618 bytes 16-31 (anim_frame_events); they fire on the 1-based frame
+const LIMB = { 1: "-x hand", 2: "+x hand", 3: "both hands", 5: "-x foot", 6: "+x foot", 7: "both feet" };
+function eventText(c) {
+  if (c < 45) return `sound ${c}`;
+  if (c < 64) return `crowd ${c}`;
+  if (c < 200) return `own call ${c - 190}`;
+  if (c < 220) return `rope push ${c - 200}`;
+  if (c === 220) return "release hands";
+  if (c === 230) return "release feet";
+  if (c < 240) {
+    const k = (c - 220) % 10, limb = Math.floor((k - 1) / 3) + (c < 230 ? 1 : 5);
+    return `${LIMB[limb]} on rope ${2 - (k - 1) % 3}`;
+  }
+  return `release limb ${c - 240}`;
+}
+function frameEvents(meta) {
+  const out = [];
+  for (let k = 0; k < 8; k++) {
+    const f = parseInt(meta.substr(32 + 4 * k, 2), 16), c = parseInt(meta.substr(34 + 4 * k, 2), 16);
+    if (c) out.push({ f, c, text: eventText(c) });
+  }
+  return out;
+}
+function select(i) {
+  cur = i; anim = decodeAnim(D.anims[i]); frame = 0;
+  loadPartner(); $("tag").value = tags[anim.id] || "";
+  $("uses").textContent = (D.labels[anim.id] || ["no move-set or state reference found"]).join("\n");
+  anim.events = frameEvents(anim.meta);
+  try { localStorage.setItem("wcw_anim_last", anim.id); } catch {}
+  renderList(); show();
+  const row = $("list").querySelector(".on"); if (row) row.scrollIntoView({ block: "nearest" });
+}
+// In a pair, line up each animation so its frame-0 pelvis is at the wrestler's origin.
+// The game starts moves with set_anim flag 1, which keeps the pelvis where the lock-up left
+// it, and the lock-up animations end with the pelvis over the origin.
+function place(fig, an, sx) {
+  fig.inner.scale.x = sx;
+  const p0 = pairOn() ? pose(sampleKeys(an, 0)).P[1] : [0, 0, 0];
+  fig.inner.position.set(-sx * p0[0], 0, -p0[2]);
+}
+function show() {
+  if (!anim || !figA.parts.length) return;
+  const sx = $("mirror").checked ? -1 : 1;
+  applyPose(figA, pose(sampleKeys(anim, Math.min(frame, anim.frames - 1))));
+  place(figA, anim, sx);
+  let extra = "";
+  if (pairOn() && figB.parts.length) {
+    // the partner holds its last frame if it is shorter
+    applyPose(figB, pose(sampleKeys(animB, Math.min(frame, animB.frames - 1))));
+    place(figB, animB, sx);
+    // models face -z; the partner can be moved in front of A and turned to face it
+    figB.root.position.set(0, 0, -(+$("pdist").value || 0));
+    figB.root.rotation.y = $("pface").checked ? Math.PI : 0;
+    extra = `   |   partner anim ${animB.id}  ${Math.min(frame, animB.frames - 1) + 1}/${animB.frames}  pose class ${animB.pose}`;
+  }
+  $("scrub").value = frame;
+  const ev = anim.events || [], cf = Math.min(frame, anim.frames - 1) + 1;
+  $("events").innerHTML = ev.length ? ev.map(e => `<span class="${e.f === cf ? "evon" : ""}">f${e.f} ${esc(e.text)}</span>`).join("&nbsp;&nbsp; ") : "no frame events";
+  $("info").textContent = `anim ${anim.id}  frame ${Math.min(frame, anim.frames - 1) + 1}/${anim.frames}  keys ${anim.keys.length}  pose class ${anim.pose}  yaw ${anim.yaw ? (anim.yaw * 360 / 4096).toFixed(0) + "°" : "0"}${extra}  meta ${anim.meta}`;
+}
+$("tag").onkeydown = e => {
+  if (e.key !== "Enter" || !anim) return;
+  const v = $("tag").value.trim(); if (v) tags[anim.id] = v; else delete tags[anim.id];
+  saveTags(); renderList();
+  // if the tag took this animation out of the filter (e.g. "untagged"), move on to the
+  // next one still listed, keeping the cursor in the tag box
+  const rows = [...$("list").querySelectorAll(".row")].map(r => +r.dataset.i);
+  if (!rows.includes(cur)) {
+    const next = rows.find(i => i > cur) ?? rows[rows.length - 1];
+    if (next !== undefined) { select(next); $("tag").focus(); }
+  }
+};
+$("export").onclick = () => {
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([JSON.stringify(tags, null, 1)], { type: "application/json" }));
+  a.download = "wcw_anim_tags.json"; a.click();
+};
+$("import").onclick = () => $("importFile").click();
+$("importFile").onchange = async e => { const f = e.target.files[0]; if (!f) return; Object.assign(tags, JSON.parse(await f.text())); saveTags(); renderList(); };
+$("play").onclick = () => { playing = !playing; $("play").textContent = playing ? "Pause" : "Play"; };
+$("prev").onclick = () => { playing = false; $("play").textContent = "Play"; frame = Math.max(0, frame - 1); show(); };
+$("next").onclick = () => { playing = false; $("play").textContent = "Play"; frame = Math.min(totalFrames() - 1, frame + 1); show(); };
+$("scrub").oninput = () => { frame = +$("scrub").value; show(); };
+$("bones").onchange = $("mirror").onchange = show;
+// partner placement: presets are the lock-up distances from grapple_anim_attacker
+// (pelvis to pelvis, see _re_docs/individual_games/wcw_world_tour/animation_states.md)
+$("ppreset").onchange = () => {
+  const v = $("ppreset").value; if (!v) return;
+  const [d, f] = v.split(","); $("pdist").value = d; $("pface").checked = f === "1"; show();
+};
+$("pface").onchange = $("pdist").oninput = () => { $("ppreset").value = ""; show(); };
+addEventListener("keydown", e => {
+  if (e.target.tagName === "INPUT") return;
+  if (e.key === " ") { $("play").click(); e.preventDefault(); }
+  if (e.key === "ArrowLeft") $("prev").click();
+  if (e.key === "ArrowRight") $("next").click();
+  if (e.key === "ArrowDown" || e.key === "ArrowUp") {
+    const rows = [...$("list").querySelectorAll(".row")].map(r => +r.dataset.i);
+    const k = rows.indexOf(cur) + (e.key === "ArrowDown" ? 1 : -1);
+    if (k >= 0 && k < rows.length) select(rows[k]);
+    e.preventDefault();
+  }
+});
+
+let last = performance.now();
+renderer.setAnimationLoop(now => {
+  const dt = (now - last) / 1000; last = now;
+  if (playing && anim) {
+    acc += dt * TICK_HZ * +$("speed").value;
+    while (acc >= 1) {
+      acc -= 1; frame++;
+      if (frame >= totalFrames()) frame = $("loop").checked ? 0 : totalFrames() - 1;
+    }
+    show();
+  }
+  controls.update(); renderer.render(scene, camera);
+});
+
+// optional link state: #w=<wrestler>&c=<costume>&a=<anim id>&f=<frame> (f pauses),
+// pair=1 shows the partner, w2/c2 pick it (default: same wrestler, second costume)
+const hp = new URLSearchParams(location.hash.slice(1));
+if (hp.has("w")) $("wrestler").value = hp.get("w");
+if (D.arenaNames) $("arena").innerHTML = '<option value="">none</option>' +
+  D.arenaNames.map((n, i) => `<option value="${i}">${n}</option>`).join("");
+$("arena").onchange = () => { buildArena($("arena").value); try { localStorage.setItem("wcw_arena", $("arena").value); } catch {} };
+try { $("arena").value = hp.get("arena") ?? localStorage.getItem("wcw_arena") ?? ""; } catch {}
+buildArena($("arena").value);
+fillCostumes(figA, "wrestler", "costume", +(hp.get("c") || 0));
+$("wrestler2").value = hp.get("w2") || $("wrestler").value;
+fillCostumes(figB, "wrestler2", "costume2", +(hp.get("c2") || 1));
+if (hp.has("pd")) $("pdist").value = hp.get("pd");
+if (hp.has("pf")) $("pface").checked = hp.get("pf") === "1";
+try { $("pair").checked = (hp.get("pair") ?? localStorage.getItem("wcw_pair")) === "1"; } catch {}
+let start = 0; try { const l = +(hp.get("a") || localStorage.getItem("wcw_anim_last")); start = Math.max(0, D.anims.findIndex(e => e[0] === l)); } catch {}
+select(start);
+if (hp.has("f")) { $("play").click(); frame = Math.min(+hp.get("f"), totalFrames() - 1); show(); }
+if (hp.has("cam")) { const [x, y, z] = hp.get("cam").split(",").map(Number); camera.position.set(x, y, z); }
+if (hp.has("tgt")) { const [x, y, z] = hp.get("tgt").split(",").map(Number); controls.target.set(x, y, z); }
+window.__viewerReady = true;
+</script>
+</body>
+</html>

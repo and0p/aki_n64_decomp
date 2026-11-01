@@ -1,0 +1,323 @@
+# Per-wrestler state and update (ovl_b).
+# Struct: types.h Wrestler. Notes: _re_docs/individual_games/wcw_world_tour/match_state.md
+
+[[func]]
+addr = 0x800A7C80
+name = "wrestler_update"
+proto = "void wrestler_update(void)"
+desc = "Per-wrestler tick: sets the g_cur_* pointers, clears per-tick flags, updates ring_zone, then calls g_state_handlers[state]."
+status = "confirmed"
+
+[[func]]
+addr = 0x800A0860
+name = "wrestler_add_spirit"
+proto = "void wrestler_add_spirit(struct Wrestler *w, s16 delta)"
+desc = "Adds delta to spirit, clamped to 0..100; does nothing while flags_lo & 0x1800."
+status = "confirmed"
+
+[[func]]
+addr = 0x800A0E48
+name = "wrestler_set_anim"
+proto = "void wrestler_set_anim(struct Wrestler *w, s16 anim_id, s16 flag)"
+desc = "Sets anim_id, records it in g_last_anim[slot] and starts it on the wrestler's animation player."
+status = "confirmed"
+
+[[func]]
+addr = 0x800A54B0
+name = "wrestler_set_state"
+proto = "void wrestler_set_state(struct Wrestler *w, s16 state)"
+desc = "Sets state, clears state_step and _unk350, clears some flag bits."
+status = "confirmed"
+
+[[func]]
+addr = 0x800A5D70
+name = "ring_zone_of"
+proto = "s16 ring_zone_of(struct Vec3 *pos)"
+desc = "Classifies a position into a ring zone (in ring, apron, floor...)."
+status = "guess"
+
+[[func]]
+addr = 0x800AD7EC
+name = "state_42_attack_move"
+proto = "void state_42_attack_move(void)"
+desc = "Attacker side of a grapple move (part 0): kept snapped to the receiver, hit on move_frames_left == 1, then move_followup; swaps to 0x43 at the reversal frame when the receiver is REVERSING (grapples.md)."
+status = "likely"
+notes = "Reversal path: if opponent flags_lo & 0x80000 and _unk006 == anim_player[14], takes part 1 of the opponent's move and switches to state 0x43."
+
+[[func]]
+addr = 0x800ADA38
+name = "state_43_receive_move"
+proto = "void state_43_receive_move(void)"
+desc = "Receiver side of a grapple move (part 1); takes the lead (0x42) when the attacker gets REVERSAL_ATTACKER; at the end neutral by pose and move_aftermath_check."
+status = "likely"
+
+[[func]]
+addr = 0x800A6F54
+name = "wrestler_end_move"
+proto = "void wrestler_end_move(struct Wrestler *w)"
+desc = "Called when move_frames_left reaches 0."
+status = "guess"
+
+[[data]]
+addr = 0x800F07F0
+name = "g_wrestlers"
+type = "struct Wrestler[4]"
+desc = "All four wrestler slots; unused slots have active = -1."
+status = "confirmed"
+
+[[data]]
+addr = 0x800F1680
+name = "g_cur_wrestler"
+type = "struct Wrestler *"
+desc = "Wrestler being updated (g_wrestlers[g_cur_index])."
+status = "confirmed"
+
+[[data]]
+addr = 0x800F1684
+name = "g_cur_opponent"
+type = "struct Wrestler *"
+desc = "Opponent of the wrestler being updated (g_wrestlers[g_opp_index])."
+status = "confirmed"
+
+[[data]]
+addr = 0x800F1688
+name = "g_cur_partner"
+type = "struct Wrestler *"
+desc = "g_wrestlers[g_cur_wrestler->partner_idx]."
+status = "likely"
+
+[[data]]
+addr = 0x800F168C
+name = "g_cur_other"
+type = "struct Wrestler *"
+desc = "g_wrestlers[g_cur_wrestler->other_idx]."
+status = "likely"
+
+[[data]]
+addr = 0x800F1670
+name = "g_cur_wrestler2"
+type = "struct Wrestler *"
+desc = "Copy of g_cur_wrestler (used by some states)."
+status = "confirmed"
+
+[[data]]
+addr = 0x800F1674
+name = "g_cur_opponent2"
+type = "struct Wrestler *"
+desc = "Copy of g_cur_opponent."
+status = "confirmed"
+
+[[data]]
+addr = 0x800F1678
+name = "g_cur_partner2"
+type = "struct Wrestler *"
+desc = "Copy of g_cur_partner."
+status = "confirmed"
+
+[[data]]
+addr = 0x800F167C
+name = "g_cur_other2"
+type = "struct Wrestler *"
+desc = "Copy of g_cur_other."
+status = "confirmed"
+
+[[data]]
+addr = 0x800F1698
+name = "g_cur_index"
+type = "s8"
+desc = "Index of the wrestler being updated."
+status = "confirmed"
+
+[[data]]
+addr = 0x800F16B0
+name = "g_opp_index"
+type = "s8"
+desc = "Index of its opponent."
+status = "confirmed"
+
+[[data]]
+addr = 0x800F0650
+name = "g_last_anim"
+type = "s16[4]"
+desc = "Last animation started per wrestler slot (written by wrestler_set_anim)."
+status = "confirmed"
+
+[[data]]
+addr = 0x800E723C
+name = "g_state_handlers"
+type = "u32[64]"
+desc = "Action-state handler table indexed by Wrestler.state (at least 64 entries)."
+status = "confirmed"
+
+[[data]]
+addr = 0x800E7040
+name = "g_facing_quadrant_angles"
+type = "s32[4]"
+desc = "Facing angle per facing_quadrant: {0x800, -0x400, 0, 0x400}."
+status = "confirmed"
+
+[[enum]]
+name = "WrestlerState"
+desc = "Values of Wrestler.state seen so far."
+values = { STAND = 0x01, RUN = 0x03, RUNNING_ATTACK = 0x07, TURNBUCKLE = 0x09, WHIP_ATTACKER = 0x0A, WHIP_RUNNER = 0x0B, WHIP_CTX_ATTACKER = 0x0C, WHIP_CTX_RUNNER = 0x0D, WALK = 0x16, STRIKE = 0x1D, GROUND_ATTACK = 0x23, RECOVER = 0x27, APRON = 0x29, PICKUP_ATTACKER = 0x2D, PICKUP_DEFENDER = 0x2E, COVER_ATTACKER = 0x2F, COVER_DEFENDER = 0x30, PIN_ATTACKER = 0x31, PIN_DEFENDER = 0x32, HOLD_ATTACKER = 0x35, HOLD_DEFENDER = 0x36, BLOCK = 0x39, STANCE = 0x3B, GET_UP = 0x3C, GRAPPLE_ATTEMPT = 0x3D, GRAPPLE_ATTACKER = 0x3E, GRAPPLE_DEFENDER = 0x3F, ATTACK_MOVE = 0x42, RECEIVE_MOVE = 0x43, MOVE_FAIL_ATTACKER = 0x46, MOVE_FAIL_DEFENDER = 0x47, ROPES_A = 0x54, ROPES_B = 0x55, APRON_RECOVER = 0x56, DIVE_OUTSIDE = 0x57, REAR_L_ATTACKER = 0x64, REAR_L_DEFENDER = 0x65, CARRY_ATTACKER = 0x66, CARRY_CARRIED = 0x67, CROWD_WEAPON = 0x6F, TAG_IN = 0x71, TAG_OUT = 0x72, TAG_REACH = 0x73 }
+notes = "Only states with a known role are listed; each handler carries its own status (sym.py show state_XX_...). Pairs are usually attacker = even, defender = odd. All 120 handlers: states.toml."
+
+[[func]]
+addr = 0x800B4178
+name = "wrestlers_update_all"
+proto = "void wrestlers_update_all(void)"
+desc = "Updates every wrestler once per frame, starting at g_update_first: first grapple leaders (flags_lo & GRAPPLE_LEAD) followed by their linked_idx partners, then everyone not yet updated, then anyone flagged RERUN; then attached pairs are synced and g_update_first rotates."
+status = "confirmed"
+
+[[func]]
+addr = 0x800B47D4
+name = "wrestler_tick"
+proto = "void wrestler_tick(void)"
+desc = "Updates g_wrestlers[g_cur_index]: reads its pad (human) or runs the AI (CPU) into g_input_*, calls wrestler_update until RERUN clears, sets the anim window flag and marks it UPDATED."
+status = "confirmed"
+
+[[func]]
+addr = 0x800B5780
+name = "ai_think"
+proto = "void ai_think(void)"
+desc = "CPU opponent decision for g_cur_index; result is read from g_ai[slot] as if it were pad input. Repeats while RERUN is set."
+status = "confirmed"
+
+[[func]]
+addr = 0x800A553C
+name = "wrestler_set_state_now"
+proto = "void wrestler_set_state_now(struct Wrestler *w, s16 state)"
+desc = "wrestler_set_state plus flags_lo |= RERUN, so the new state runs again in the same frame."
+status = "confirmed"
+
+[[data]]
+addr = 0x800F1714
+name = "g_ai"
+type = "u8[4][84]"
+desc = "Per-slot CPU state (84 bytes). +2/+4 are fed to g_input_held/g_input_pressed and +8 to g_input_far when the slot is CPU-controlled."
+status = "confirmed"
+
+[[enum]]
+name = "WrestlerFlagsLo"
+desc = "Bits of Wrestler.flags_lo."
+values = { CPU = 0x1, LEGAL = 0x2, LOC_RING = 0x4, LOC_APRON = 0x8, LOC_FLOOR = 0x10, SPIRIT_EMPTY = 0x800, SPECIAL = 0x1000, SPECIAL_POSED = 0x2000, RUNNING = 0x4000, FACE_DOWN = 0x8000, BACK_HIT = 0x800000, REVERSAL_ATTACKER = 0x40000, REVERSING = 0x80000, CAN_REVERSE = 0x100000, RERUN = 0x1000000, UPDATED = 0x2000000, GRAPPLE_LEAD = 0x4000000, ATTACHED = 0x10000000, TEAM_B = 0x20000000, BLEEDING = 0x40000000 }
+notes = "Confirmed: CPU (wrestler_tick picks AI vs pad), RERUN, UPDATED (wrestlers_update_all), REVERSING (set by grapple_check_reversal, read by state_42). LOC_* are set together by wrestler_apply_anim_location (ring/floor heights confirmed; LOC_APRON is a guess, it is also checked by match phase 3). SPIRIT_EMPTY (spirit hit 0; spirit frozen for 300 ticks, then reset to 50) and SPECIAL (spirit hit 100; lasts 900 ticks, each hit taken removes 60, damage dealt x1.2, health reads health_max) are confirmed from wrestler_spirit_tick and move_apply_hit. LEGAL (the wrestler who is in the match in tag team; set on both in singles; countout_tick only counts these in tag matches) and TEAM_B (set on both members of the second team) are confirmed from snapshot 9. Guesses: CAN_REVERSE, GRAPPLE_LEAD, ATTACHED (pair is synced by sub_800A5658 / wrestler_turn_toward), BLEEDING."
+
+[[enum]]
+name = "GrappleCtx"
+desc = "Bits of Wrestler.grapple_ctx, read by grapple_choose_move."
+values = { SPECIAL_READY = 0x1, STRONG = 0x2, CATCH_RUNNER = 0x4, REAR = 0x8, CORNER = 0x10, DEF_ON_APRON = 0x20, ATK_ON_APRON = 0x40, HOLD = 0x80, DT_FRONT = 0x100, DT_REAR = 0x200, DT_MIXED = 0x400, DT_SIDE_A = 0x800, DT_SIDE_B = 0x1000, APRON_REACH = 0x2000, FLOOR_TO_APRON = 0x4000, FLOOR_TO_RING = 0x8000, STRENGTH_TEST = 0x10000, MUTUAL = 0x40000, SPECIAL_ALLOWED = 0x80000 }
+notes = "STRONG/REAR/CORNER confirmed against the slot tables and the FAQ. SPECIAL_* (slot 58 front / 69 rear special needs 0x1|0x2|0x80000), DEF_ON_APRON/ATK_ON_APRON (unknown positions, maybe apron or ropes; slots 105/106 and whip states 12-15) and HOLD (required for any grapple move) are inferred. The grapple animation pickers (grapple_anim_attacker etc.) give one animation set per bit: HOLD front 2936-2939, REAR 2940-2943, CORNER 2944-2947, DEF_ON_APRON 2948-2951 and ATK_ON_APRON 2952-2955 (Andrew tagged these as grapples between the apron and the ring, so DEF_ON_APRON/ATK_ON_APRON are probably the two apron/ropes cases), STRENGTH_TEST 2957/2958 (test of strength, states 0x40/0x41), MUTUAL 2934/2935 (untagged). See individual_games/wcw_world_tour/animation_states.md."
+
+[[func]]
+addr = 0x800A1C98
+name = "wrestler_apply_anim_frame"
+proto = "void wrestler_apply_anim_frame(struct Wrestler *w)"
+desc = "Per-frame animation side effects: facing += anim.yaw_delta, copies anim.pose_class to +0x038, then wrestler_apply_anim_location. Called by 87 functions (nearly every state)."
+status = "likely"
+
+[[func]]
+addr = 0x800A1D00
+name = "wrestler_apply_anim_location"
+proto = "void wrestler_apply_anim_location(struct Wrestler *w)"
+desc = "Sets the location bits of flags_lo from the animation's location class (anim._unk06): 1 -> LOC_RING with pos.y = 90, 2 -> LOC_FLOOR with pos.y = 0, 3 -> LOC_APRON? with pos.y = 90."
+status = "confirmed"
+
+[[func]]
+addr = 0x800A56E0
+name = "wrestler_turn_toward"
+proto = "void wrestler_turn_toward(struct Wrestler *w, s32 target, s32 max_step)"
+desc = "Turns facing toward target by at most max_step per call; on arrival snaps to target and ORs a flag word (stack argument) into flags_lo/flags_hi."
+status = "likely"
+
+[[enum]]
+name = "WrestlerFlagsHi"
+desc = "Bits of Wrestler.flags_hi."
+values = { IN_ANIM_WINDOW = 0x4, HOLDING_WEAPON = 0x2000, WEAPON_ALT = 0x4000 }
+notes = "IN_ANIM_WINDOW is set by wrestler_tick while anim.window_start <= anim_frame <= anim.window_end (window meaning not yet known). HOLDING_WEAPON: set on the wrestler holding a bat in snapshot 9; wrestler_base_anim then uses the weapon idle/walk 3245/3246, or 3253/3254 with WEAPON_ALT (also set there; probably the weapon type)."
+
+# --- health and spirit timers (found 2026-10-30 while naming Wrestler fields) ---
+
+[[func]]
+addr = 0x800A05E0
+name = "wrestler_add_health"
+proto = "void wrestler_add_health(struct Wrestler *w, s16 delta, s16 mode)"
+desc = "health += delta, clamped to 0..health_max. mode 0 records |delta| in g_last_damage[slot], mode 2 clears it."
+status = "confirmed"
+
+[[func]]
+addr = 0x800A0594
+name = "wrestler_health_eff"
+proto = "s16 wrestler_health_eff(struct Wrestler *w)"
+desc = "Health used by recovery and reaction code: health_max while SPECIAL (flags_lo & 0x1000), else health."
+status = "confirmed"
+
+[[func]]
+addr = 0x800A0544
+name = "wrestler_add_region_condition"
+proto = "void wrestler_add_region_condition(struct Wrestler *w, s16 region, s8 delta)"
+desc = "region_condition[region] += delta, floored at 0."
+status = "confirmed"
+
+[[func]]
+addr = 0x800A04F0
+name = "wrestler_region_condition"
+proto = "s16 wrestler_region_condition(struct Wrestler *w, s16 region)"
+desc = "region_condition[region], or 50 while SPECIAL."
+status = "confirmed"
+
+[[func]]
+addr = 0x800A08D4
+name = "wrestler_spirit_tick"
+proto = "s16 wrestler_spirit_tick(struct Wrestler *w, s16 op)"
+desc = "Spirit timers. op 0 reset; 1 every 120 ticks drift spirit toward 50 (+3 below 31, +2 below 50, -1 above 50), set SPIRIT_EMPTY at 0 and SPECIAL at 100; 2 count down SPECIAL (900) and SPIRIT_EMPTY (300), then spirit = 50; 3 a hit while SPECIAL takes 60 off its timer; 4 returns the SPECIAL timer."
+status = "confirmed"
+
+[[data]]
+addr = 0x800F0610
+name = "g_last_damage"
+type = "s16[4]"
+desc = "Damage of the last hit taken, per slot (wrestler_add_health mode 0); lengthens the time down (x3, recover_difficulty) and slows the get-up (get_up_anim)."
+status = "confirmed"
+
+[[data]]
+addr = 0x800F0620
+name = "g_spirit_drift_timer"
+type = "s16[4]"
+desc = "Ticks until the next spirit drift toward 50 (reload 120)."
+status = "confirmed"
+
+[[data]]
+addr = 0x800F0628
+name = "g_spirit_empty_timer"
+type = "s16[4]"
+desc = "Ticks left in SPIRIT_EMPTY (reload 300)."
+status = "confirmed"
+
+[[data]]
+addr = 0x800F0630
+name = "g_special_timer"
+type = "s16[4]"
+desc = "Ticks left in SPECIAL (reload 900, -60 per hit taken)."
+status = "confirmed"
+
+[[func]]
+addr = 0x800A06F8
+name = "health_regen"
+proto = "void health_regen(struct Wrestler *w, s16 op)"
+desc = "op 1 (every standing frame): every 60 ticks adds header byte 1 to health, or every 90 ticks header byte 2 while BLEEDING (timer 0x800F0618[slot])."
+status = "confirmed"
+
+[[func]]
+addr = 0x8000C6A0
+name = "blood_apply"
+proto = "void blood_apply(s16 slot)"
+desc = "Paints blood into the textures of mesh parts 5 (head), 4 (neck) and 3 (chest; another mask for some costumes): sets texels chosen by 1-bit masks at 0x8002DA30 to the last palette entry and makes that entry red (0xF801). Skipped when the blood option byte 0x80061FEF is set."
+status = "likely"
+
+[[func]]
+addr = 0x8000C260
+name = "tex_paint_mask"
+proto = "void tex_paint_mask(void *part, u32 *mask, u16 color)"
+desc = "For a loaded CI8 part texture: every texel whose mask bit is clear becomes index 0xFF, and palette entry 255 becomes color."
+status = "likely"

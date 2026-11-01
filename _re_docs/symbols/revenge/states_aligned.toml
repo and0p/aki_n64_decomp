@@ -1,0 +1,770 @@
+# Revenge state handlers named from the state-table alignment (wcw_revenge/README.md), 2026-11-01.
+# Boundaries of insertions may be off by one; the names in states.toml were matched one by one.
+
+[[func]]
+addr = 0x8009DC18
+name = "state_00"
+desc = "Handler for Revenge state 0x00, new in Revenge (no World Tour state in the alignment)."
+status = "guess"
+
+[[func]]
+addr = 0x8009F468
+name = "state_05"
+desc = "Handler for Revenge state 0x05; World Tour state 0x05 (state_05) by the state-table alignment (README)."
+status = "guess"
+
+[[func]]
+addr = 0x8009F654
+name = "state_06"
+desc = "Handler for Revenge state 0x06; World Tour state 0x06 (state_06) by the state-table alignment (README). Seen in a CPU vs CPU emulator run (2026-11-01)."
+status = "likely"
+
+[[func]]
+addr = 0x8009F758
+name = "state_08_run_weapon_attack"
+desc = "Revenge state, new: Running + B while holding a weapon (run_inputs; hi 0x10000)."
+status = "guess"
+
+[[func]]
+addr = 0x800C6B1C
+name = "state_08_run_weapon_attack_body"
+desc = "Body of state_08_run_weapon_attack (the handler only calls it)."
+status = "guess"
+
+[[func]]
+addr = 0x8009F774
+name = "state_09"
+desc = "Handler for Revenge state 0x09; World Tour state 0x08 (state_08) by the state-table alignment (README)."
+status = "guess"
+
+[[func]]
+addr = 0x8009F860
+name = "state_0D_whip_ctx_attacker"
+desc = "Handler for Revenge state 0x0D; World Tour state 0x0C (state_0C_whip_ctx_attacker) by the state-table alignment (README)."
+status = "guess"
+
+[[func]]
+addr = 0x8009F87C
+name = "state_0E_whip_ctx_runner"
+desc = "Handler for Revenge state 0x0E; World Tour state 0x0D (state_0D_whip_ctx_runner) by the state-table alignment (README)."
+status = "guess"
+
+[[func]]
+addr = 0x8009F898
+name = "state_0F_whip_ctx_attacker"
+desc = "Handler for Revenge state 0x0F; World Tour state 0x0E (state_0E_whip_ctx_attacker) by the state-table alignment (README). Seen in a CPU vs CPU emulator run (2026-11-01)."
+status = "likely"
+
+[[func]]
+addr = 0x8009F8B4
+name = "state_10_whip_ctx_runner"
+desc = "Handler for Revenge state 0x10; World Tour state 0x0F (state_0F_whip_ctx_runner) by the state-table alignment (README). Seen in a CPU vs CPU emulator run (2026-11-01)."
+status = "likely"
+
+[[func]]
+addr = 0x8009F8D0
+name = "state_11_crash"
+desc = "Handler for Revenge state 0x11; World Tour state 0x10 (state_10_crash) by the state-table alignment (README). Also used for states 0x12."
+status = "guess"
+
+[[func]]
+addr = 0x8009FC0C
+name = "state_13"
+desc = "Handler for Revenge state 0x13, new in Revenge (no World Tour state in the alignment)."
+status = "guess"
+
+[[func]]
+addr = 0x800A0044
+name = "state_15"
+desc = "Handler for Revenge state 0x15; World Tour state 0x14 (state_14) by the state-table alignment (README)."
+status = "guess"
+
+[[func]]
+addr = 0x800A0194
+name = "state_16"
+desc = "Handler for Revenge state 0x16; World Tour state 0x15 (state_15) by the state-table alignment (README); confirmed by call-graph matching of its body."
+status = "likely"
+
+[[func]]
+addr = 0x800C4A2C
+name = "state_16_body"
+desc = "Body of state_16 (the handler only calls it)."
+status = "likely"
+
+[[func]]
+addr = 0x800A01B0
+name = "state_17_taunt"
+desc = "Handler for Revenge state 0x17; World Tour state 0x16 (state_16_taunt) by the state-table alignment (README)."
+status = "guess"
+
+[[func]]
+addr = 0x800A0FFC
+name = "state_18_special_pose"
+desc = "Handler for Revenge state 0x18; World Tour state 0x17 (state_17_special_pose) by the state-table alignment (README)."
+status = "guess"
+
+[[func]]
+addr = 0x800A110C
+name = "state_19_trip_runner"
+desc = "Handler for Revenge state 0x19; World Tour state 0x18 (state_18_trip_runner) by the state-table alignment (README)."
+status = "guess"
+
+[[func]]
+addr = 0x800A13DC
+name = "state_1A_tripped"
+desc = "Revenge state, new: Opponent of a successful trip (state_19_trip_runner)."
+status = "guess"
+
+[[func]]
+addr = 0x800A1550
+name = "state_1B"
+desc = "Handler for Revenge state 0x1B; World Tour state 0x1A (state_1A) by the state-table alignment (README). Also used for states 0x1C, 0x1D. Seen in a CPU vs CPU emulator run (2026-11-01)."
+status = "likely"
+
+[[func]]
+addr = 0x800C5190
+name = "state_1B_body"
+desc = "Body of state_1B (the handler only calls it)."
+status = "guess"
+
+[[func]]
+addr = 0x800A1588
+name = "state_1F_strong_strike"
+desc = "Handler for Revenge state 0x1F; World Tour state 0x1E (state_1E_strong_strike) by the state-table alignment (README); confirmed by call-graph matching of its body. Seen in a CPU vs CPU emulator run (2026-11-01)."
+status = "likely"
+
+[[func]]
+addr = 0x800C5A28
+name = "state_1F_strong_strike_body"
+desc = "Body of state_1F_strong_strike (the handler only calls it)."
+status = "likely"
+
+[[func]]
+addr = 0x800A15A4
+name = "state_20_strike_runner"
+desc = "Handler for Revenge state 0x20; World Tour state 0x1F (state_1F_strike_runner) by the state-table alignment (README); confirmed by call-graph matching of its body. Seen in a CPU vs CPU emulator run (2026-11-01)."
+status = "likely"
+
+[[func]]
+addr = 0x800C5D48
+name = "state_20_strike_runner_body"
+desc = "Body of state_20_strike_runner (the handler only calls it)."
+status = "likely"
+
+[[func]]
+addr = 0x800A15C0
+name = "state_21_getup_attack"
+desc = "Handler for Revenge state 0x21; World Tour state 0x20 (state_20_getup_attack) by the state-table alignment (README); confirmed by call-graph matching of its body. Seen in a CPU vs CPU emulator run (2026-11-01)."
+status = "likely"
+
+[[func]]
+addr = 0x800C61D8
+name = "state_21_getup_attack_body"
+desc = "Body of state_21_getup_attack (the handler only calls it)."
+status = "likely"
+
+[[func]]
+addr = 0x800C6868
+name = "state_22_body"
+desc = "Body of state_22 (the handler only calls it)."
+status = "guess"
+
+[[func]]
+addr = 0x800A3ED4
+name = "state_24_ground_attack"
+desc = "Handler for Revenge state 0x24; World Tour state 0x23 (state_23_ground_attack) by the state-table alignment (README); confirmed by call-graph matching of its body. Also used for states 0x55, 0x56."
+status = "likely"
+
+[[func]]
+addr = 0x800C6418
+name = "state_24_ground_attack_body"
+desc = "Body of state_24_ground_attack (the handler only calls it)."
+status = "likely"
+
+[[func]]
+addr = 0x800A15F8
+name = "state_25_break_up"
+desc = "Revenge state, new: C-up on a wrestler who is pinning, holding or carrying someone (hi 0x2000): breaks it up (move slots 185/186)."
+status = "guess"
+
+[[func]]
+addr = 0x800C6D54
+name = "state_25_break_up_body"
+desc = "Body of state_25_break_up (the handler only calls it)."
+status = "guess"
+
+[[func]]
+addr = 0x800A1614
+name = "state_27"
+desc = "Handler for Revenge state 0x27, new in Revenge (no World Tour state in the alignment)."
+status = "guess"
+
+[[func]]
+addr = 0x800C707C
+name = "state_27_body"
+desc = "Body of state_27 (the handler only calls it)."
+status = "guess"
+
+[[func]]
+addr = 0x800C72DC
+name = "state_28_body"
+desc = "Body of state_28 (the handler only calls it)."
+status = "guess"
+
+[[func]]
+addr = 0x800A1B94
+name = "state_2A"
+desc = "Handler for Revenge state 0x2A; World Tour state 0x26 (state_26) by the state-table alignment (README). Seen in a CPU vs CPU emulator run (2026-11-01)."
+status = "likely"
+
+[[func]]
+addr = 0x800A297C
+name = "state_2E_recover_bent"
+desc = "Handler for Revenge state 0x2E; World Tour state 0x2A (state_2A_recover_bent) by the state-table alignment (README). Seen in a CPU vs CPU emulator run (2026-11-01)."
+status = "likely"
+
+[[func]]
+addr = 0x800A2A70
+name = "state_2F_flip_over"
+desc = "Handler for Revenge state 0x2F; World Tour state 0x2B (state_2B_flip_over) by the state-table alignment (README). Seen in a CPU vs CPU emulator run (2026-11-01)."
+status = "likely"
+
+[[func]]
+addr = 0x800A2CC4
+name = "state_31_flipped"
+desc = "Revenge state, new: Being flipped over by 0x30 (C-Left on a downed opponent; sub_800E0590 pair 0x30/0x31)."
+status = "guess"
+
+[[func]]
+addr = 0x800C858C
+name = "state_31_flipped_body"
+desc = "Body of state_31_flipped (the handler only calls it)."
+status = "guess"
+
+[[func]]
+addr = 0x800A2CFC
+name = "state_33_pickup_defender"
+desc = "Handler for Revenge state 0x33; World Tour state 0x2E (state_2E_pickup_defender) by the state-table alignment (README); confirmed by call-graph matching of its body. Seen in a CPU vs CPU emulator run (2026-11-01)."
+status = "likely"
+
+[[func]]
+addr = 0x800C7E6C
+name = "state_33_pickup_defender_body"
+desc = "Body of state_33_pickup_defender (the handler only calls it)."
+status = "likely"
+
+[[func]]
+addr = 0x800A2D18
+name = "state_34_r_counter"
+desc = "Revenge state, new: R counter of an attack (input_strike, opponent byte +0x37 bit 0); 0x35 is countered."
+status = "guess"
+
+[[func]]
+addr = 0x800C9970
+name = "state_34_body_rv"
+desc = "Body of state_34_r_counter (the handler only calls it)."
+status = "guess"
+
+[[func]]
+addr = 0x800A2D34
+name = "state_35_r_countered"
+desc = "Revenge state, new: Receiver of the R counter 0x34."
+status = "guess"
+
+[[func]]
+addr = 0x800C9A34
+name = "state_35_r_countered_body"
+desc = "Body of state_35_r_countered (the handler only calls it)."
+status = "guess"
+
+[[func]]
+addr = 0x800A2D6C
+name = "state_37_ground_grappled"
+desc = "Revenge state, new: Receiver of the ground grapple 0x36 (ground_grapple_try)."
+status = "guess"
+
+[[func]]
+addr = 0x800CA114
+name = "state_37_ground_grappled_body"
+desc = "Body of state_37_ground_grappled (the handler only calls it)."
+status = "guess"
+
+[[func]]
+addr = 0x800A2D88
+name = "state_38_pin_attacker"
+desc = "Handler for Revenge state 0x38; World Tour state 0x31 (state_31_pin_attacker) by the state-table alignment (README); confirmed by call-graph matching of its body."
+status = "likely"
+
+[[func]]
+addr = 0x800CA2FC
+name = "state_38_pin_attacker_body"
+desc = "Body of state_38_pin_attacker (the handler only calls it)."
+status = "likely"
+
+[[func]]
+addr = 0x800A2DA4
+name = "state_39_pin_defender"
+desc = "Handler for Revenge state 0x39; World Tour state 0x32 (state_32_pin_defender) by the state-table alignment (README)."
+status = "guess"
+
+[[func]]
+addr = 0x800A2E30
+name = "state_3E_move_pin"
+desc = "Handler for Revenge state 0x3E; World Tour state 0x37 (state_37_move_pin) by the state-table alignment (README). Seen in a CPU vs CPU emulator run (2026-11-01)."
+status = "likely"
+
+[[func]]
+addr = 0x800A2E4C
+name = "state_3F_move_pinned"
+desc = "Handler for Revenge state 0x3F; World Tour state 0x38 (state_38_move_pinned) by the state-table alignment (README). Seen in a CPU vs CPU emulator run (2026-11-01)."
+status = "likely"
+
+[[func]]
+addr = 0x800A3364
+name = "state_42_stance"
+desc = "Handler for Revenge state 0x42; World Tour state 0x3B (state_3B_stance) by the state-table alignment (README); confirmed by call-graph matching of its body. Seen in a CPU vs CPU emulator run (2026-11-01)."
+status = "likely"
+
+[[func]]
+addr = 0x800E09DC
+name = "state_42_stance_body"
+desc = "Body of state_42_stance (the handler only calls it)."
+status = "likely"
+
+[[func]]
+addr = 0x800A33B8
+name = "state_45_grapple"
+desc = "Handler for Revenge state 0x45; World Tour state 0x3E (state_3E_grapple) by the state-table alignment (README); confirmed by call-graph matching of its body. Seen in a CPU vs CPU emulator run (2026-11-01)."
+status = "likely"
+
+[[func]]
+addr = 0x800CF3A0
+name = "state_45_grapple_body"
+desc = "Body of state_45_grapple (the handler only calls it)."
+status = "likely"
+
+[[func]]
+addr = 0x800A33D4
+name = "state_46_grappled"
+desc = "Handler for Revenge state 0x46; World Tour state 0x3F (state_3F_grappled) by the state-table alignment (README); confirmed by call-graph matching of its body. Seen in a CPU vs CPU emulator run (2026-11-01)."
+status = "likely"
+
+[[func]]
+addr = 0x800CFA50
+name = "state_46_grappled_body"
+desc = "Body of state_46_grappled (the handler only calls it)."
+status = "likely"
+
+[[func]]
+addr = 0x800D0804
+name = "state_47_body"
+desc = "Body of state_47 (the handler only calls it)."
+status = "guess"
+
+[[func]]
+addr = 0x800D0C68
+name = "state_48_body"
+desc = "Body of state_48 (the handler only calls it)."
+status = "guess"
+
+[[func]]
+addr = 0x800A3428
+name = "state_49_attack_move"
+desc = "Handler for Revenge state 0x49; World Tour state 0x42 (state_42_attack_move) by the state-table alignment (README). Seen in a CPU vs CPU emulator run (2026-11-01)."
+status = "likely"
+
+[[func]]
+addr = 0x800A3610
+name = "state_4A_receive_move"
+desc = "Handler for Revenge state 0x4A; World Tour state 0x43 (state_43_receive_move) by the state-table alignment (README). Seen in a CPU vs CPU emulator run (2026-11-01)."
+status = "likely"
+
+[[func]]
+addr = 0x800A37A8
+name = "state_4B_strike_combo"
+desc = "Handler for Revenge state 0x4B; World Tour state 0x44 (state_44_strike_combo) by the state-table alignment (README); confirmed by call-graph matching of its body."
+status = "likely"
+
+[[func]]
+addr = 0x800AC3A0
+name = "state_4B_strike_combo_body"
+desc = "Body of state_4B_strike_combo (the handler only calls it)."
+status = "likely"
+
+[[func]]
+addr = 0x800A37C4
+name = "state_4C_strike_combo_received"
+desc = "Handler for Revenge state 0x4C; World Tour state 0x45 (state_45_strike_combo_received) by the state-table alignment (README); confirmed by call-graph matching of its body."
+status = "likely"
+
+[[func]]
+addr = 0x800ACC48
+name = "state_4C_strike_combo_received_body"
+desc = "Body of state_4C_strike_combo_received (the handler only calls it)."
+status = "likely"
+
+[[func]]
+addr = 0x800A37FC
+name = "state_4E_move_walk_defender"
+desc = "Handler for Revenge state 0x4E; World Tour state 0x47 (state_47_move_walk_defender) by the state-table alignment (README); confirmed by call-graph matching of its body."
+status = "likely"
+
+[[func]]
+addr = 0x800D1724
+name = "state_4E_move_walk_defender_body"
+desc = "Body of state_4E_move_walk_defender (the handler only calls it)."
+status = "likely"
+
+[[func]]
+addr = 0x800A3A74
+name = "state_51_combo_move"
+desc = "Handler for Revenge state 0x51; World Tour state 0x4A (state_4A_combo_move) by the state-table alignment (README)."
+status = "guess"
+
+[[func]]
+addr = 0x800A3BFC
+name = "state_52_combo_received"
+desc = "Handler for Revenge state 0x52; World Tour state 0x4B (state_4B_combo_received) by the state-table alignment (README)."
+status = "guess"
+
+[[func]]
+addr = 0x800A3D74
+name = "state_53_chain_move"
+desc = "Handler for Revenge state 0x53; World Tour state 0x4C (state_4C_chain_move) by the state-table alignment (README). Seen in a CPU vs CPU emulator run (2026-11-01)."
+status = "likely"
+
+[[func]]
+addr = 0x800A4028
+name = "state_58_strike_counter"
+desc = "Handler for Revenge state 0x58; World Tour state 0x51 (state_51_strike_counter) by the state-table alignment (README)."
+status = "guess"
+
+[[func]]
+addr = 0x800A4274
+name = "state_59"
+desc = "Handler for Revenge state 0x59, new in Revenge (no World Tour state in the alignment)."
+status = "guess"
+
+[[func]]
+addr = 0x800A442C
+name = "state_5A"
+desc = "Handler for Revenge state 0x5A, new in Revenge (no World Tour state in the alignment)."
+status = "guess"
+
+[[func]]
+addr = 0x800A4660
+name = "state_5B_strike_countered"
+desc = "Handler for Revenge state 0x5B; World Tour state 0x52 (state_52_strike_countered) by the state-table alignment (README)."
+status = "guess"
+
+[[func]]
+addr = 0x800A47C4
+name = "state_5C"
+desc = "Handler for Revenge state 0x5C, new in Revenge (no World Tour state in the alignment)."
+status = "guess"
+
+[[func]]
+addr = 0x800A4864
+name = "state_5D"
+desc = "Handler for Revenge state 0x5D, new in Revenge (no World Tour state in the alignment)."
+status = "guess"
+
+[[func]]
+addr = 0x800A4AD8
+name = "state_5E"
+desc = "Handler for Revenge state 0x5E, new in Revenge (no World Tour state in the alignment)."
+status = "guess"
+
+[[func]]
+addr = 0x800A4E68
+name = "state_60_ropes_a"
+desc = "Handler for Revenge state 0x60; World Tour state 0x54 (state_54_ropes_a) by the state-table alignment (README); confirmed by call-graph matching of its body."
+status = "likely"
+
+[[func]]
+addr = 0x800C0E44
+name = "state_60_ropes_a_body"
+desc = "Body of state_60_ropes_a (the handler only calls it)."
+status = "likely"
+
+[[func]]
+addr = 0x800A4EBC
+name = "state_63_dive_outside"
+desc = "Handler for Revenge state 0x63; World Tour state 0x57 (state_57_dive_outside) by the state-table alignment (README); confirmed by call-graph matching of its body."
+status = "likely"
+
+[[func]]
+addr = 0x800DD6B4
+name = "state_63_dive_outside_body"
+desc = "Body of state_63_dive_outside (the handler only calls it)."
+status = "likely"
+
+[[func]]
+addr = 0x800A4ED8
+name = "state_64"
+desc = "Handler for Revenge state 0x64; World Tour state 0x58 (state_58) by the state-table alignment (README); confirmed by call-graph matching of its body."
+status = "likely"
+
+[[func]]
+addr = 0x800DC798
+name = "state_64_body"
+desc = "Body of state_64 (the handler only calls it)."
+status = "likely"
+
+[[func]]
+addr = 0x800A4EF4
+name = "state_65"
+desc = "Handler for Revenge state 0x65, new in Revenge (no World Tour state in the alignment). Also used for states 0x66."
+status = "guess"
+
+[[func]]
+addr = 0x800DCB54
+name = "state_65_body"
+desc = "Body of state_65 (the handler only calls it)."
+status = "guess"
+
+[[func]]
+addr = 0x800A4F10
+name = "state_67"
+desc = "Handler for Revenge state 0x67; World Tour state 0x59 (state_59) by the state-table alignment (README)."
+status = "guess"
+
+[[func]]
+addr = 0x800DCD64
+name = "state_67_body"
+desc = "Body of state_67 (the handler only calls it)."
+status = "guess"
+
+[[func]]
+addr = 0x800A4F2C
+name = "state_68_apron_run_attack"
+desc = "Revenge state, new: Running on the apron + A with header trait 0x200000 (run_inputs)."
+status = "guess"
+
+[[func]]
+addr = 0x800DCFBC
+name = "state_68_apron_run_attack_body"
+desc = "Body of state_68_apron_run_attack (the handler only calls it)."
+status = "guess"
+
+[[func]]
+addr = 0x800A4F48
+name = "state_69"
+desc = "Handler for Revenge state 0x69, new in Revenge (no World Tour state in the alignment)."
+status = "guess"
+
+[[func]]
+addr = 0x800DD370
+name = "state_69_body"
+desc = "Body of state_69 (the handler only calls it)."
+status = "guess"
+
+[[func]]
+addr = 0x800A4F64
+name = "state_6A_rv"
+desc = "Handler for Revenge state 0x6A, new in Revenge (no World Tour state in the alignment)."
+status = "guess"
+
+[[func]]
+addr = 0x800DD188
+name = "state_6A_rv_body"
+desc = "Body of state_6A_rv (the handler only calls it)."
+status = "guess"
+
+[[func]]
+addr = 0x800A52CC
+name = "state_76"
+desc = "Handler for Revenge state 0x76; World Tour state 0x68 (state_68) by the state-table alignment (README)."
+status = "guess"
+
+[[func]]
+addr = 0x800A553C
+name = "state_77"
+desc = "Handler for Revenge state 0x77; World Tour state 0x69 (state_69) by the state-table alignment (README)."
+status = "guess"
+
+[[func]]
+addr = 0x800A58BC
+name = "state_79_apron_strike_caught"
+desc = "Handler for Revenge state 0x79; World Tour state 0x6B (state_6B_apron_strike_caught) by the state-table alignment (README)."
+status = "guess"
+
+[[func]]
+addr = 0x800A5D64
+name = "state_7C_turnbuckle_pull"
+desc = "Handler for Revenge state 0x7C; World Tour state 0x6D (state_6D_turnbuckle_pull) by the state-table alignment (README)."
+status = "guess"
+
+[[func]]
+addr = 0x800A5EC4
+name = "state_7F_tag_in"
+desc = "Handler for Revenge state 0x7F; World Tour state 0x71 (state_71_tag_in) by the state-table alignment (README); confirmed by call-graph matching of its body."
+status = "likely"
+
+[[func]]
+addr = 0x800DA158
+name = "state_7F_tag_in_body"
+desc = "Body of state_7F_tag_in (the handler only calls it)."
+status = "likely"
+
+[[func]]
+addr = 0x800A5EE0
+name = "state_80_tag_out"
+desc = "Handler for Revenge state 0x80; World Tour state 0x72 (state_72_tag_out) by the state-table alignment (README); confirmed by call-graph matching of its body."
+status = "likely"
+
+[[func]]
+addr = 0x800DA2D8
+name = "state_80_tag_out_body"
+desc = "Body of state_80_tag_out (the handler only calls it)."
+status = "likely"
+
+[[func]]
+addr = 0x800D9F04
+name = "state_81_body"
+desc = "Body of state_81 (the handler only calls it)."
+status = "guess"
+
+[[func]]
+addr = 0x800A5F18
+name = "state_82"
+desc = "Handler for Revenge state 0x82, new in Revenge (no World Tour state in the alignment)."
+status = "guess"
+
+[[func]]
+addr = 0x800C17D8
+name = "state_82_body"
+desc = "Body of state_82 (the handler only calls it)."
+status = "guess"
+
+[[func]]
+addr = 0x800A5F34
+name = "state_83_turn_dazed"
+desc = "Revenge state 0x83, new: L next to a dazed opponent (state 0x2D) in the ring starts the pair 0x83 / 0x84 (input_l, pair_set_state). Plays 3934/3935 (World Tour 3091, the turn-around), turning the opponent half a turn over 6 frames, then ends in 0x2B. World Tour did this with C-up inside the dazed state."
+status = "likely"
+
+[[func]]
+addr = 0x800A6108
+name = "state_84_turned_dazed"
+desc = "Revenge state 0x84, new: the dazed wrestler being turned around by 0x83 (3930 = World Tour 3087, the dazed idle)."
+status = "likely"
+
+[[func]]
+addr = 0x800A6244
+name = "state_85"
+desc = "Handler for Revenge state 0x85, new in Revenge (no World Tour state in the alignment)."
+status = "guess"
+
+[[func]]
+addr = 0x800C1A24
+name = "state_85_body"
+desc = "Body of state_85 (the handler only calls it)."
+status = "guess"
+
+[[func]]
+addr = 0x800A6260
+name = "state_86_intro_pose"
+desc = "Handler for Revenge state 0x86; World Tour state 0x74 (state_74_intro_pose) by the state-table alignment (README)."
+status = "guess"
+
+[[func]]
+addr = 0x800C2368
+name = "state_86_intro_pose_body"
+desc = "Body of state_86_intro_pose (the handler only calls it)."
+status = "guess"
+
+[[func]]
+addr = 0x800A627C
+name = "state_87_eliminated_leave"
+desc = "Handler for Revenge state 0x87; World Tour state 0x75 (state_75_eliminated_leave) by the state-table alignment (README)."
+status = "guess"
+
+[[func]]
+addr = 0x800A63D8
+name = "state_88_eliminated_collapse"
+desc = "Handler for Revenge state 0x88; World Tour state 0x76 (state_76_eliminated_collapse) by the state-table alignment (README)."
+status = "guess"
+
+[[func]]
+addr = 0x800A64CC
+name = "state_89"
+desc = "Handler for Revenge state 0x89, new in Revenge (no World Tour state in the alignment)."
+status = "guess"
+
+[[func]]
+addr = 0x800A65E8
+name = "state_8A"
+desc = "Handler for Revenge state 0x8A, new in Revenge (no World Tour state in the alignment)."
+status = "guess"
+
+[[func]]
+addr = 0x800A67B0
+name = "state_8B_apron_grapple"
+desc = "Revenge state, new: Grapple between the apron and the ring, attacker (sub_800CD3F8); 0x8C defender."
+status = "guess"
+
+[[func]]
+addr = 0x800D1F50
+name = "state_8B_apron_grapple_body"
+desc = "Body of state_8B_apron_grapple (the handler only calls it)."
+status = "guess"
+
+[[func]]
+addr = 0x800A67CC
+name = "state_8C_apron_grappled"
+desc = "Revenge state, new: Grapple between the apron and the ring, defender."
+status = "guess"
+
+[[func]]
+addr = 0x800D21E0
+name = "state_8C_apron_grappled_body"
+desc = "Body of state_8C_apron_grappled (the handler only calls it)."
+status = "guess"
+
+[[func]]
+addr = 0x800A67E8
+name = "state_8D_fetch_weapon"
+desc = "Revenge state, new: Run off to grab a weapon: run + Z + up at a set spot; a press wins chance_roll 3 and weapon_give hands the weapon."
+status = "guess"
+
+[[func]]
+addr = 0x800A6AD8
+name = "state_8E_stay_down_getup"
+desc = "Revenge state, new: Get-up end of the stay-down pair (same animations as 0x85)."
+status = "guess"
+
+[[func]]
+addr = 0x800E1634
+name = "state_8E_stay_down_getup_body"
+desc = "Body of state_8E_stay_down_getup (the handler only calls it)."
+status = "guess"
+
+[[func]]
+addr = 0x800A6AF4
+name = "state_8F_run_in"
+desc = "Revenge state, new: Probably the interference / run-in: started by match_tick (sub_800C0004) with chance_check."
+status = "guess"
+
+[[func]]
+addr = 0x800C0354
+name = "state_8F_run_in_body"
+desc = "Body of state_8F_run_in (the handler only calls it)."
+status = "guess"
+
+[[func]]
+addr = 0x800A6B10
+name = "state_90"
+desc = "Handler for Revenge state 0x90, new in Revenge (no World Tour state in the alignment)."
+status = "guess"
+
+[[func]]
+addr = 0x800C18D4
+name = "state_90_body"
+desc = "Body of state_90 (the handler only calls it)."
+status = "guess"
+
+[[func]]
+addr = 0x800A6B2C
+name = "state_91_pre_match_pose"
+desc = "Revenge state, new: Pose chosen by the d-pad with the facing reset; probably the pre-match pose."
+status = "guess"
