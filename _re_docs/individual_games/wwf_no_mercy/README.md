@@ -5,6 +5,26 @@ Tour; anything not mentioned here is not checked yet. No Mercy is WrestleMania 2
 and shares its engine, which differs much more from Revenge than Revenge did from World Tour.
 WrestleMania 2000 is not analysed yet.
 
+## System docs
+
+Per-system notes (2026-11-02), laid out like World Tour's; this README keeps the overview, tooling and
+landmarks:
+
+| Doc | Covers |
+|-----|--------|
+| `frame_loop.md` | match_tick's phases and per-frame order, the rotating update order, the context, state setters, 0x30 / end_pose, moves and animation codes, randomness |
+| `movement.md` | standing (0x01) and its input priority, walking speeds, running and what it turns into, collisions, the location bits, keep_in_bounds |
+| `strikes.md` | starting a strike (tap / hold / A+B), the hit test, landing and reactions, blocking, the timed R counter and its outcomes, the kick catch, L |
+| `grapples.md` | the attempt and its resolution, grapple kinds by place, the lock-up (timers, walking, inputs, move numbers, reversals), grapple moves, the whip, ground grapples, lifts and carries |
+| `pins_and_holds.md` | every escape_time op, down and getting up, the get-up attack, the TKO check, pins step by step, rope breaks, the ground hold |
+| `damage_and_spirit.md` | health, regions, the damage formula, the attitude meter, chance_roll's tables, the attribute record |
+| `match_rules.md` | the rule words, falls and result codes, the count-out, the clock, run-ins, cage / ladder / battle royal / guest referee / tag / tables |
+| `ai.md` | the CPU: perception, situations, the where-class deciders, weighted tables, traits, modes |
+| `objects_and_weapons.md` | object records and physics, getting and using weapons, ladders, tables and the steps |
+| `animation_data.md` | move sets from the roster to an animation (files 495-497 and the packed move-set files), file 703's per-animation records (active window, end place / pose, paired-move frames), the frame events (sounds, hand shapes, ropes), the follow-up variant files |
+| `wrestler_models.md` | appearances, part slots, texture layers, seams, the previewer |
+| `anim_tags.json` | Andrew's viewer tags of the animations of states that were unclear |
+
 ## ROM revision
 
 Everything here is for the **USA Rev 1** ROM (SHA1 `91cee3d0…`, `_roms/WWF No Mercy (USA) (Rev
@@ -21,7 +41,13 @@ symbol dump does not fit it. `akiemu --game nomercy` loads Rev 1.
   Three AI mode handlers (`ai_mode_49`, `ai_mode_55`, `ai_mode_63`) are only accepted by
   `add_func` with their end given, so the build retries refused starts with the dump's sizes
   (`AKI_SEED_SIZES`).
-- Symbols: `_re_docs/symbols/nomercy/`, same format; `types.h` holds only basic types for now.
+  `py tools/ida/nomercy_build_idb.py --overlay c` builds the **menu overlay ovl_c** instead (output in
+  `_tools/ida_nomercy_c/`, 1,746 functions, main-segment names only) and `--overlay b` the **story overlay
+  ovl_b** (`_tools/ida_nomercy_b/`, 1,248 functions); both are read through their `export.json` or the IDA
+  MCP, not through `sym.py` (2026-11-02; used for the game modes, the Pay Per View card and the type bits).
+- Symbols: `_re_docs/symbols/nomercy/`, same format; `types.h` maps the Wrestler record (most fields to +0x358),
+  WrestlerCtx, MoveRecord and the AI block. After a field-layout change rebuild with `--ida`; the sym database also keeps
+  an `access` table of typed field uses (`sym.py show` lists them).
   - `from_revenge.toml` / `from_wcw.toml`: names carried over by `match_games.py` (identical
     code, 281 pairs, mostly library code), `match_consts.py` and `match_calls.py`, merged by
     `tools/sym/merge_matches.py`. Unchecked; a state number inside a carried-over name is the
@@ -130,9 +156,9 @@ Function and field details are in `symbols/nomercy/` (`match.toml`, `types.h`); 
   hidden by the decompiler.
 - **CPU.** `ai_update` per slot, 176-byte AI blocks (`g_ai_blocks`), 145 modes; not read further.
 - **Match types.** `g_match_type` (0x80097EC0) and `g_match_rules` (0x800A9950) are set in the
-  menus; bit readings from the functions using them are in their descs (tag 0x2000, run-ins
-  0x1000, a rope-blocking type 0x10000 that looks like the cage, timed entrants 0x20000 that
-  look like the Royal Rumble). Ladders are objects (type2 25) climbed through
+  menus (`match_rules_build`, ovl_c); the bit tables and the menu mapping (singles 0x1000, tag
+  0x2000, cage 0x10000, handicap 0x20000, ironman 0x40000, guest referee 0x80000, ladder 0x100000,
+  survival / Royal Rumble 0x4000) are in `match_rules.md`. Ladders are objects (type2 25) climbed through
   `input_ladder_climb`.
 
 ## Grapples, pins and the clock (code, 2026-11-02)
@@ -181,15 +207,19 @@ Function and field details are in `symbols/nomercy/` (`match.toml`, `types.h`); 
 
 ## State families (profile pass, 2026-11-02)
 
-Named from each handler's setters, animations and calls; many are `guess` (see `states.toml`):
+Named from each handler's setters, animations and calls, then reviewed (2026-11-02): of 182 handlers **115
+`confirmed`** (setter code plus Andrew's tags, RAM or a full handler read), **66 `likely`** (one code read; mostly paired
+move states whose animation comes from the move under way) and **1 `guess`** (0x7E, no setter). States still needing RAM
+or the viewer are labelled "Needs RAM" in their `states.toml` desc and listed in `QUESTIONS.md`.
 running (0x03 run, 0x04 rope rebound, 0x05 / 0x35 / 0xC1 collisions, 0x9E leapfrog, 0x9F dodge,
 0xA5 run to a side, 0x78 running move); strikes (0x22 / 0x23 and the variants 0x24, 0x25 get-up
 attack, 0x2B, 0x2C, 0xBF, 0xC9); grapples (0x50-0x56, running 0xA0 / 0xA1, apron, floor, turnbuckle
 0xCD / 0xCE, double team 0x83-0x85, carry 0x80-0x82); pins (0x43 start, 0x44 / 0x4A holding, 0x45 /
 0x4B pinned; cover approaches 0x36 / 0x42); dives 0x79-0x7D; weapons (0x8A crowd grab, 0x8C steps,
-0x91 pick up, 0x8B drop, 0x8D throw, 0x26 / 0x27 / 0x28 attacks); ladders 0xAA-0xBD (climb, top,
-strikes and moves from it, knocked off, tipping, grabbing the prize); turnbuckle 0xC4-0xCF; tags
-(0x93 reach, 0x95 apron partner, 0x6E cheap shot); end of match (0xA8 victory).
+0x91 pick up, 0x8B drop, 0x8D stand a ladder up, 0x26 / 0x27 / 0x28 attacks); ladders 0xAA-0xBD (climb, top,
+strikes and moves from it, knocked off, jumping off, grabbing the prize); the cage 0xC2-0xCF
+(climbing, hanging, attacks from the top, the escape; Andrew's viewer tags); tags
+(0x93 tag received, 0x94 tag out, 0x95 apron partner, 0x1B apron wait, 0x02 apron corner walk, 0x6E dropping off the apron); end of match (0xA8 victory).
 
 ## Exact rules read from the disassembly (2026-11-02)
 
@@ -219,14 +249,40 @@ strikes and moves from it, knocked off, tipping, grabbing the prize); turnbuckle
 
 ## Coverage (2026-11-02)
 
-Every function in the match overlay ovl_e (899) has a name: 65 `confirmed`, about 470 `likely`,
-the rest `guess` from one read (`bulk.toml` holds the one-pass names, grouped by area). The main
-segment (engine, graphics, audio, file loading; 975 functions) is mostly unnamed.
+Every function in the match overlay ovl_e (899) has a name; after the confirming passes of 2026-11-02 (61
+functions in the damage, pins, grapple, strike, movement and object areas re-read, 24 renamed; then the 62
+CPU helpers in `bulk.toml` and 52 of the mode handlers in `ai.toml` checked against their code, 9 renamed)
+then every mode handler in `ai.toml`, the one-pass helpers in `bulk.toml` and the carried-over Revenge /
+World Tour names checked against No Mercy's code, and the 20 large graphics / HUD / camera / set-up
+functions read in full) the whole database stands at 258 `confirmed`, 868 `likely` and one `guess`, state
+0x7E (no setter; RAM). Two carried-over names were wrong (`move_record_unpack` is a texture stamp,
+`model_set_anim` the blood stamp). The camera (`camera_update`, `camera_target`, `camera_target_b`,
+`camera_preset`) is described in `bulk.toml` for the port's camera work. The main segment
+(engine, graphics, audio, file loading; 975 functions) is mostly unnamed (228 named).
 
 ## Next
 
-- Map the wrestler record from `wrestler_update`, the state setters and the handlers, and start
-  `types.h`.
-- Find the new features from the guide (`QUESTIONS.md`, "No Mercy") among the unnamed states.
-- WrestleMania 2000 is the closer relative: its IDA build and symbols would make matching far
-  better than going through Revenge.
+- The open items per system are in each doc's **Open** list and in `QUESTIONS.md` ("No Mercy", including the RAM
+  follow-ups). Code first: RAM only when an item is truly blocked.
+- Confirming pass over the `guess` functions in `bulk.toml`, area by area, in the order a port needs them:
+  damage, pins, grapples and the lock-up, strikes, movement, objects.
+- Converter: add the file 703 records, the move sets and the attribute files to the library's asset output
+  (`tools/rom/nomercy_models.py` already decodes them: `attrs`, `moves`, `collision`, the viewer).
+- WrestleMania 2000 is the closer relative: its IDA build and symbols would make matching far better than
+  going through Revenge.
+
+## Working notes for the next thread (2026-11-02)
+
+- **Reading code:** the recomp's `syms/dump.toml` gives function boundaries; IDA via `tools/sym/build.py --game
+  nomercy --ida`; `py tools/sym/sym.py --game nomercy show <name>` prints desc, callers, callees and field uses, and
+  `check` validates the toml files. Rebuild the database (`build.py --game nomercy`) after editing any toml.
+- **Names:** a name in `from_revenge.toml` / `from_wcw.toml` is a call-graph match and may be wrong (`input_strike`
+  was really `input_r`, R held, 2026-11-02). Numbers inside carried-over state names are the source game's.
+- **Misreads to avoid:** a constant near a setter call is not always the state argument (0x88's moves 141 / 142 were
+  once read as states 0x8D / 0x8E); check that the number lands in a1 (or a3 for the pair setters).
+- **Emulator:** `py tools/n64emu/akiemu.py --game nomercy --headless --fast --port <port>` with
+  `tools/recomp_dbg/akidbg.py` (`AKIDBG_PORT`); use a port other than Andrew's own instance (5664).
+- **Viewer:** `py tools/rom/nomercy_models.py viewer` builds `_tools/viewer/nomercy_viewer.html` (git-ignored); headless Edge
+  (`--dump-dom`) is enough to check that it loads.
+- **Andrew's tags:** `anim_tags.json` holds his descriptions of animations; state names lean on them, so recheck a
+  state's name if a tag is corrected.

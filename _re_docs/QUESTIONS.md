@@ -63,8 +63,7 @@ work, which is on hold):
 - Leads from a feature list in an online guide (Andrew, 2026-11-01), to match against code:
   the run-in when one wrestler keeps the advantage (probably state 0x8F, `run_in_check`); the
   stance only near the focused opponent; runners always hop over a fallen opponent (maybe 0x89 /
-  0x8A); fights going up the entrance aisle (check against 0x8D, read so far as fetching a
-  weapon); instant replays after a big move in singles; multi-hit combos (chained strikes); 6
+  0x8A); fights going up the entrance aisle (0x8D is not it: it stands a ladder up); instant replays after a big move in singles; multi-hit combos (chained strikes); 6
   arena setups. (`wcw_revenge/states.md`, `matches.md`)
 - Revenge move slots marked `weak` in `wcw_revenge/moves.md` (guide fit): settle them from
   Revenge's own grapple slot table (World Tour's `g_grapple_slots`). Hidden wrestlers are done; alternate entries, managers and THQ Man (reads as AKI Man) are not. (`wcw_revenge/moves.md`)
@@ -85,6 +84,17 @@ work, which is on hold):
 
 ## No Mercy
 
+The system docs in `individual_games/wwf_no_mercy/` (frame_loop, movement, strikes, grapples,
+pins_and_holds, damage_and_spirit, match_rules, ai, objects_and_weapons; 2026-11-02) each end with an
+**Open** list: those are the current code questions per system. Settled in that pass: the mash
+thresholds, the ground hold's give-up rule and rope breaks, the TKO check, the get-up crouch, the lock-up
+steps, the CPU's lock-up choice and close-range decider, and the move record layout. Settled later the
+same day: the CPU's position deciders (ring / floor / apron and the count-out return; the "turnbuckle"
+deciders are the cage wall's), `match_result` (time-limit draws, count-out sides, decisions by health),
+the tag partner's walk back (0x92), the match-over flag, the stick byte (`in_byte`), the walk and run
+speeds, the R counter's move, chance_roll kinds 4-6 / 12 / 19, and several Wrestler fields. The items
+below are older and partly overlap.
+
 Addresses are USA Rev 1 (`symbols/nomercy/README.md`). Names in `symbols/nomercy/from_revenge.toml`
 and `from_wcw.toml` come from call-graph and constant matching and are unchecked; in particular
 the state numbers inside `state_XX_...` names are Revenge's (or World Tour's), not No Mercy's.
@@ -96,11 +106,30 @@ the state numbers inside `state_XX_...` names are Revenge's (or World Tour's), n
   grapple; spinning a groggy opponent (L, "flip standing opponent"); Z toggling CPU / manual
   control; C-right changing the focused opponent; weapons staying on the ground; C-left dragging
   a lying opponent; ref calls with C-left; ladder climbing and placing (ladder match).
+  (2026-11-02: all found in code: the table climb 0x9B / 0x0F, the apron walk and corner 0x02, the R counter,
+  the L deflect 0x6B-0x6D, the rear lift 0x7F-0x82, the "flip" is L in a front lock-up into the corner hang
+  0x3E / 0x3F, Z and C-right in `frame_loop.md`, weapons in `objects_and_weapons.md`, C-left drag 0xD0 / 0xD1,
+  the guest referee's calls, the ladder states 0xAA-0xBD.)
 - Match types in the guide that the earlier games lack or differ in: triple threat, cage
   (escape to win), Royal Rumble (four in the ring, over the top rope), guest referee, ladder,
   ironman (most falls in 5 to 60 minutes), survival. Where each is set up and checked.
+  (2026-11-02: set up by `match_rules_build` and checked in code, `match_rules.md`; Pay Per View's card
+  table and the game-mode byte were read later that day from the ovl_c IDA build, `match_rules.md`.)
 - `g_state_handlers` entry 0xD2 holds `stance_turn_anim` (a carried-over name). No state setter
   call with a constant goes above 0xCD; is 0xD2 a real state, reached with a computed number?
+
+### No Mercy: RAM follow-ups
+- States with no constant setter (2026-11-02): **0x7E** (`state_7E_walk_to_climb`, the only state still `guess`).
+  Watch for it in RAM to see what sets it. (~~0x9A~~: settled from code later that day: `run_exit_check`
+  sets 0x9A / 0x9B with a computed number, 0x9A for the run out of the ring at an exit segment with +0x26
+  bit 0x02; `states.toml`.)
+- State review (2026-11-02): 115 states confirmed, 66 likely (0x2D settled after: health below 100 picks the slouched fall). Labelled "Needs RAM" in `states.toml`: 0x75 / 0x76 (which dive each plays), 0xC9 / 0xCD / 0xCE (location 0x400 on the turnbuckle
+  outside a cage, or only the cage wall), plus 0x7E and 0x9A above. The other `likely` ones rest on one code read
+  without a tag or RAM sighting: mostly paired move states whose animation comes from the move under way.
+
+- **[RAM]** Object probe points: read `0x800A9C70 + 140 × object` (+1 count, +0x2C the points, 12 bytes
+  each) for a few weapon types (a stick, a mid-size weapon, a ladder) while they are loose, to pin where
+  the 2 / 4 / 8 points sit relative to the model (`objects_and_weapons.md`).
 
 ### No Mercy: wrestler models (code, for the previewer)
 
@@ -115,37 +144,59 @@ animation:
 
 ### No Mercy: check in the animation viewer
 
-States whose code was read but whose meaning is still a guess. Most of them only play an
-animation and hand on, so watching the animation answers what they are. Open
-`_tools/viewer/nomercy_viewer.html` (built by `tools/rom/nomercy_models.py ROM viewer`), type the
-animation id (= archive file number) into the filter, and note what the move looks like. The ids
-are the constants each handler passes to `wrestler_set_anim` (2026-11-02). Where none is listed, the
-handler picks its animation from a table or the move record, so watch the state in a match instead.
+Done 2026-11-02: Andrew tagged every `check` animation (`wwf_no_mercy/anim_tags.json`) and the
+states in `symbols/nomercy/states.toml` are renamed from the tags. What the tags settled: 0x1B is
+the apron wait (not a taunt), 0x02 the apron corner walk, 0x6E dropping off the apron (not a cheap
+shot), 0x6F climbing onto the steps / table / off the cage, 0x17 / 0x32 draped and leaning on the
+ropes, 0x34 held upside down, 0x3F corner reversal, 0x68 dodging a dive, 0xD0 / 0xD1 the drag,
+and the 0xC2-0xCF family is the **cage** (hanging, hit while hanging, attacks from the top).
 
-- **Stand-up and neutral:** 0x00 (12959), 0x02 (11795 / 11796, from the apron d-pad), 0x09
-  (11876), 0x15 (12003 / 12005), 0x16 (12625), 0x19 (12055), 0x1E (11978, a hit taken with weapon
-  release), 0xD2 (12506, carried over as a stance turn), 0x66 (special pose?).
-- **Taunt / apron:** 0x1B (11745, 12168: taunt, or the partner's apron wait), 0x0A / 0x93 / 0x95
-  (12092, 12921 / 12922: tag reach and apron partner), 0x94 (12924).
-- **Hit reactions and falls:** 0x17 (12147-12150), 0x2E TKO check (12611-12616), 0x32 dazed
-  (12557-12559), 0x33 off balance (12562 / 12563), 0x4D hit while blocking (12990 / 12991),
-  0x18 corner slump (12060), 0x05 / 0x35 run collision and knocked back (table-picked), 0x2D
-  knockdown (12565 / 12579 seen in RAM: what picks the slouched sit-down fall?).
-- **Lifts and carries:** 0x34 (12076 / 12081, being lifted?), 0x3A (12066 / 12068), 0x3C (12070 /
-  12072), 0x3E (12074 / 12083), 0x3F (12082), 0x40 (12077), 0x38 / 0x39 pick-up (11909 / 11910),
-  0x80 carried escape (12642 / 12646).
-- **Getting up / down:** 0x4E / 0x4F (12157, 12171, 12172), 0xA7 stay down (12943, 12950).
-- **Grapple and counters:** 0x68 (11887, from `dive_counter`), 0x6B grapple evade (11877 /
-  11878), 0x6E cheap shot (12128, 13017), 0x6F (11824, 12805, 13016: also climbing onto a raised
-  place), 0x72 (12104), 0xD0 / 0xD1 (12041-12043: the lock-up's second whip kind).
-- **Turnbuckle / cage family:** 0xC2 (12827 / 12833), 0xC3 (12828 / 12830), 0xC6 (12862 / 12863),
-  0xCA (12860 / 12862), 0xCB (12855), 0xCC (12804), 0xCF (12843), 0xC8 cage climb start (12856 /
-  12858). Which are the cage and which the turnbuckle?
-- **Ladders:** 0xAA-0xBD (12967-13001; e.g. 0xB6 tipping 12972-12974, 0xB4 grapple on the ladder
-  12982 / 12983, 0xBA / 0xBB 12993 / 12994).
-- **Weapons:** 0x8B drop (12390), 0x8C ring steps (12379, 12384, 12962, 12964), 0x90 (12458-12460).
-- **Picked from tables (watch in a match):** 0x06, 0x07, 0x1A, 0x1C, 0x1D, 0x5A-0x60, 0x67, 0x71,
-  0x73-0x78, 0x7E, 0x7F, 0x88, 0x89, 0x8E, 0x8F, 0x92, 0x96-0x99, 0x9C / 0x9D, 0xA4, 0xBC, 0xC1, 0xC7.
+Still open from the tags (code or a match needed):
+- ~~0x4D's ladder poses~~: yes, steps 5-7 are the ladder version (`strikes.md`).
+- ~~Unnamed states~~ (2026-11-02, code): 0x06 R while running, 0x08 the running weapon strike, 0x11-0x14 C-down in a
+  lock-up across the ropes, 0x1A a whipped runner's strike out of the corner, 0x1C the corner taunt (the stick when running into a
+  corner, move 232), 0x1F-0x21 strikes from the apron, 0x3B the shared receiver, 0x7E walk and climb, 0x87 pulled
+  from above, 0xB9 B mid-ladder. A later pass the same day checked every remaining `guess` against its setters, calls and Andrew's tags: all are
+  `likely` or `confirmed` now except 0x7E (no setter; RAM follow-up). Renamed in that pass: 0x8B weapon drop, 0x93 /
+  0x94 tag received / tag out, 0xCB a running B at a cage climber, 0x1C corner taunt.
+- ~~0x3A / 0x3C / 0x3E / 0x40~~: small paired moves; 0x3C sets a slumped opponent up on the top turnbuckle (L) and 0x3A pulls it out of the corner (R; `input_r`, formerly `input_strike`) (`grapples.md`).
+  The turnbuckle or the table? Watch them in a match.
+- ~~0xC2 / 0xC3~~: the cage whip (C-right in the lock-up in a cage match, `match_rules.md`).
+- ~~0x00 (two heads slammed together)~~: the pre-bell state; 12959 is the guest referee's start animation (2026-11-02).
+- ~~0xD2 and 0x94~~: 0x94 is the legal man tagging out (`tag_exchange`; 0x93 the partner taking the tag); 0xD2 has no setter and poses the wrestler at the
+  ring centre by the d-pad, probably a leftover test state (2026-11-02).
+- States that pick their animation from tables (no fixed id): 0x06, 0x07, 0x1A, 0x1C, 0x1D,
+  0x5A-0x60, 0x67, 0x71, 0x73-0x78, 0x7E, 0x7F, 0x88, 0x89, 0x8E, 0x8F, 0x92, 0x96-0x99, 0x9C /
+  0x9D, 0xA4, 0xBC, 0xC1, 0xC7: watch them in a match.
+  In a 4-CPU match (600 frames sampled, 2026-11-02) only 0x07 came up: from the run (0x03),
+  animation 15256 for 52 frames: a running shoulder block (Andrew). The rest need set-ups that
+  trigger them.
+  Read from RAM instead (2026-11-02): states that start a fixed move get their animation from the
+  move set through `anim_style` (code from `g_move_anims`, table 0x8015A700, + 13090 + part). For
+  the four loaded wrestlers: 0x06 (move 208) 15320-15322, 0x1A (move 207) 15341-15343, 0x1C
+  (move 232, per wrestler) 17141-17143 / 17504-17506 / 17510-17512, 0x73 (move 270, Austin only)
+  16817-16819; labelled `check: ... (move-set (RAM))` in the viewer. The other runtime-picked
+  states (0x5A-0x60, 0x71, 0x77, 0x88 ...) play the animation of whatever move is under way, so they
+  have no single id.
+  Code-first pass on their setters (2026-11-02, `states.toml`): 0x5B / 0x5C running-grapple counter,
+  0x59 / 0x5A move follow-up, 0x5F / 0x60 a move from a carry or pick-up, 0x66 / 0x67 a second strike
+  counter kind (strike flags 0x3800), 0x73 apron moves, 0x7F / 0x80 the rear lift, 0x96 leaving after
+  a lost fall, 0xA4 an illegal man leaving, 0xBC C-up on the ladder, 0xC1 into the cage wall, 0xC7
+  dropping down from the cage or turnbuckle (also once the match is over, 0x8016B599 bit 0x40). Second pass (setters reached through shared jumps): 0x1D L
+  against a runner, 0x97 / 0x98 L at an opponent on the ropes, 0x5D / 0x5E chained grapple moves,
+  0x71 a running move at a target, 0x73 / 0x74 aerial attacks from the apron / turnbuckle (moves
+  269 / 270), 0x75 / 0x76 dives from the apron, 0x77 apron attacks into the ring, 0x88 / 0x89 catching
+  a flyer (then moves 141 / 142; 0x8D / 0x8E are the ladder set-up and a paired move with a held
+  object, from `input_weapon_grab_zone`), 0x9C / 0x9D grapple from the floor at the apron. No setter
+  found at all: 0x7E (its own handler: drop the weapon, walk away from the ring centre and climb onto a raised place, `state_7E_walk_to_climb`); 0x8F is the weapon throw (from
+  `input_weapon_use`), 0x92 the tag partner's walk back (through stand_flags_update).
+  Later the same day: `anim_style`'s table 0x8015A700 is ROM file 496 (loaded by `match_load`), so a
+  move's animation can be worked out from the ROM for every wrestler: the packed move-set files (the
+  attire descriptor's +10) are decoded too (`nomercy_models.py moves`, checked in RAM); `animation_data.md` has each animation's
+  record and events.
+  Caution (2026-11-02): the second pass misread 0x88's moves 141 / 142 as states 0x8D / 0x8E, so its
+  other "setters read from code" entries are worth a second look where the number is not the state
+  argument of a setter call.
 
 ### No Mercy: wrestler record and states (open-ended)
 
@@ -185,21 +236,28 @@ Still open, code first:
   needs one RAM read per arena (low priority).
 - Flag words `flags80`-`flags8e`, `flags_e9`-`flags_f7`: bit meanings from the setters and the
   tests, one word at a time (`sym.py --game nomercy field Wrestler.flags8a`).
-- `move_info` (+0x2E4), `info` (+0x310), `zone_info` (+0x348): what the pointed-to records are
-  (the area data with a forced weapon type at +8, trait bits at info +0x20).
+- ~~`move_info` / `info`~~: +0x2E4 is the attribute record (`damage_and_spirit.md`), +0x310 the move record
+  (`struct MoveRecord`). `zone_info` (+0x348): the ring-zone data (forced weapon at +8, place flags at
+  +0x26 / +0x28), layout not fully named.
 - `wrestler_start_move` and the move table it reads: move numbers 172-190 so far; tie them to the
   per-wrestler move sets.
 - States: a profile pass (2026-11-02) named about 50 more from setters, animations and calls (many `guess`).
-  Still unnamed or only paired: 0x1B (apron partners alternate with 0x01; `guest_referee_call`
-  sets it), 0x5B /
-  0x5C, 0x4E, 0x6F, 0x83-0x85 (double team), 0xAE / 0xB1 (after a move on a ladder), 0xA6 (a
-  count). Read each handler's animation and setter.
-- `end_pose` (+0xE2) values that `state_30_settle` switches on.
-- Start table 0x80146350 (`match_init_wrestlers`): layout per match type.
-- New features still to find among the states: apron walking round the corners, spinning a
-  groggy opponent, C-right focus change (probably writes `opponent`), the cage, Z (CPU /
-  manual control). Look for their inputs in the stand / apron input functions.
-- `g_state_handlers` entry 0xD2: no setter uses a constant above 0xCD.
+  (2026-11-02: 0x1B apron wait, 0x4E the crouch, 0x5B / 0x5C the running-grapple counter, 0x6F climbing
+  onto, 0x83-0x85 the double team, 0xAE / 0xB1 ladder control, 0xA6 the referee's count all have names
+  and descriptions in `states.toml` now; 0x4E is the attacker's get-up after a grapple move with a one-frame window for a taunt, the stick or C-left
+  (its steps in `states.toml`; whether match_can_interrupt's nonzero really means "stand at once" is unchecked); the double team's
+  start, moves 163-165 and steps are in `grapples.md`.)
+- ~~`end_pose` values~~: listed in `frame_loop.md` (`state_30_settle`).
+- ~~Start table 0x80146350~~: not start positions; four words 0x100-0x400 by the winning slot (0x801591E8), used
+  by `match_tick` after the bell and the run-in; start positions come from `wrestler_start_place`.
+- ~~Spinning a groggy opponent~~: not a spin. **L in a front lock-up** (`lockup_input` 0x80128B44, not a rear
+  grapple) is the flip into the corner, hung upside down by the legs (a tree of woe): attacker 0x3E (12074),
+  opponent 0x3F (the attacker's animation + 1, 12075), then 0x34 held upside down (12076, dropped 12081). An
+  opponent with flags_f0 0x02 / 0x04 reverses it instead (12082) and the roles swap (0x3E plays 12083).
+  Andrew's viewer tags, 2026-11-02, and code. Still open: whether anything requires a corner nearby.
+  (The apron corner walk is state 0x02, `movement.md`.) (C-right focus, Z CPU / manual and the cage are read, 2026-11-02: `frame_loop.md`,
+  `match_rules.md`.)
+- `g_state_handlers` entry 0xD2: no setter; a centre-of-ring pose by d-pad, probably a test leftover.
 - Every ovl_e function is named, about half `guess` from a single read (`symbols/nomercy/bulk.toml`).
   Worth a confirming pass, area by area, starting with the ones a port needs first: damage, pins,
   grapple and lock-up, strikes, movement, objects.
@@ -210,7 +268,8 @@ Still open, code first:
     the over-the-top elimination (g_match_rules 0x400). The count-out is `countout_tick` (10 or 20 counts
     from the option, 2-4 seconds a count; result 0x80000 like over the top). Still open:
     match_result's long tail (time limit, ironman). The World Tour name results_screen at the same
-    call-graph spot may be worth rechecking in that game.
+    call-graph spot may be worth rechecking in that game. (2026-11-02: `match_result` is read,
+    `match_rules.md`.)
   - The CPU: the situation classes are mapped (`AiSituation` in `symbols/nomercy/ai.toml`); the deciders
     are named by where-class (`bulk.toml`); next is what each personality trait means (which chance
     table it picks in which decision), the remaining mode bodies, and a converter-side dump of
@@ -218,18 +277,20 @@ Still open, code first:
     passed as computed pointers); every function in the AI area (0x800F0000-0x8010A000) now has a name, most `guess` from one
     read; the trait readings in `ai_update`'s desc are guesses from where each trait is used; a profile pass (2026-11-02) gave about 40 modes `guess` names by the buttons
     they press. No RAM needed: the modes write the buttons to AI block +0x0C, so the code shows
-    what each one does; RAM would only show how often each comes up.
-  - The damage history (+0x344) entries: who writes them and what (a, b) are.
-  - `apply_damage`'s three summed parts (only the base damage is visible in the pseudocode).
-  - The move record's remaining bytes, and how a wrestler's 548 moves are laid out (which
-    numbers are strikes, grapples per direction, running, ground, turnbuckle, finishers).
-  - Match types: which bit of `g_match_type` is which match. Reading the menu overlay that sets
-    it would settle it from code (not in the IDA build yet); otherwise **[RAM]** at the start of
-    each match type.
+    what each one does; RAM would only show how often each comes up. (2026-11-02: every decider and the
+    traits are read, `ai.md`.)
+  - ~~The damage history entries~~: `apply_damage` → `damage_history_add` adds 1 hit and the damage to the
+    current second's (a, b) bytes, when the damage is non-zero (2026-11-02).
+  - ~~`apply_damage`'s three parts~~: the formula is in `damage_and_spirit.md`.
+  - The move record's remaining bytes (2026-11-02: +0x00 / +0x1E are padding; +0x0E-0x0F and +0x19-0x1A
+    have values in file 495 but no reader in the match code, maybe menu data), and names for the 548 move slots (the move-set decoding is done:
+    `animation_data.md`; the lock-up direction tables, the CPU lists and the finisher classes name many).
+  - ~~Match types~~: settled 2026-11-02 from the menu code (`match_rules_build`, ovl_c) plus one emulator
+    run naming the modes (`match_rules.md`).
 - **[RAM]**: which weapon each type number is (17 = stop sign, 5 = the next crowd weapon) and
   which 12 types the unlock mask (`weapon_type_allowed`, 0x8009FDEA) covers; who a wrestler's
-  ally is (ally_id, set outside the match); the option words 0x80097EC0 / 0x800A9950 under the
-  menu settings; what `g_arena` (0x80159628) is per arena.
+  ally is (ally_id, set outside the match); what `g_arena` (0x80159628) is per arena. (The option
+  words are settled from the menu code.)
 
 ## World Tour: outside the match code
 

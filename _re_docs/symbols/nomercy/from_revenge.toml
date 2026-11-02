@@ -5,14 +5,14 @@
 [[func]]
 addr = 0x800007D4
 name = "heap_alloc"
-desc = "As Revenge heap_alloc (0x80000854), matched by constants, through paired neighbours. Revenge: Matches World Tour heap_alloc (0x800007F4), call-graph score 1.42."
-status = "guess"
+desc = "Checked against No Mercy's code 2026-11-02: first-fit allocator over the 2,234,368-byte heap at 0x8016E000 (16-byte units, headers (next, units, 0, magic), the search starting from the last block 0x800435F0); counts 0x800A945C. As Revenge heap_alloc (0x80000854), matched by constants, through paired neighbours. Revenge: Matches World Tour heap_alloc (0x800007F4), call-graph score 1.42."
+status = "likely"
 
 [[func]]
 addr = 0x8000093C
 name = "heap_free"
-desc = "As Revenge heap_free (0x80000958), matched by constants, through paired neighbours. Revenge: Matches World Tour heap_free (0x800008FC), call-graph score 1.83."
-status = "guess"
+desc = "Checked against No Mercy's code 2026-11-02: returns a block to the free list (magic check, coalescing with both neighbours), counts 0x800A945C down. As Revenge heap_free (0x80000958), matched by constants, through paired neighbours. Revenge: Matches World Tour heap_free (0x800008FC), call-graph score 1.83."
+status = "likely"
 
 [[func]]
 addr = 0x800015B4
@@ -77,8 +77,8 @@ status = "likely"
 [[func]]
 addr = 0x8000FE4C
 name = "fade_quad_build"
-desc = "As Revenge fade_quad_build (0x80006B84), matched by constants (score 0.68). Revenge: Matches World Tour fade_quad_build (0x800080EC), call-graph score 2.10."
-status = "guess"
+desc = "Checked against No Mercy's code 2026-11-02: builds the full-screen fade quad display list (768 bytes, 60 rows) with the colour a2-a4 / alpha, on a node at depth -60000. As Revenge fade_quad_build (0x80006B84), matched by constants (score 0.68). Revenge: Matches World Tour fade_quad_build (0x800080EC), call-graph score 2.10."
+status = "likely"
 
 [[func]]
 addr = 0x8000FFE4
@@ -119,8 +119,8 @@ status = "likely"
 [[func]]
 addr = 0x80011BD8
 name = "anim_player_set"
-desc = "As Revenge anim_player_set (0x800086A4), matched by constants (score 0.72). Revenge: Matches World Tour anim_player_set (0x800097EC), call-graph score 1.14."
-status = "guess"
+desc = "Code 2026-11-02: copies animation id's 36-byte record from file 703 (0x8006A224, id - 11737) into the animation player (Wrestler +0x2E8): +0 turn, +4 frames, +6 end place, +7 end pose, +8 / +9 the active window, +0x15 the paired hold frame ... (map in animation_data.md). As Revenge anim_player_set (0x800086A4), matched by constants (score 0.72). Revenge: Matches World Tour anim_player_set (0x800097EC), call-graph score 1.14."
+status = "likely"
 
 [[func]]
 addr = 0x80011EE0
@@ -178,15 +178,15 @@ status = "likely"
 
 [[func]]
 addr = 0x8001A7B0
-name = "move_record_unpack"
-desc = "As Revenge move_record_unpack (0x800A7D64), matched by constants (score 0.61). Revenge: Matches World Tour move_record_unpack (0x800A6514), call-graph score 1.69."
-status = "guess"
+name = "texture_stamp_by_class"
+desc = "Not a move-record unpack (code 2026-11-02; the Revenge match was wrong): stamps a texture pair (12 + 2 x class, 13 + 2 x class, classes from byte_8009FF78[a2]) onto layers 26 / 27 of slot a1's model (texture_stamp_layer) unless 0x801594D8; the attire mark / paint. Called by wrestler_set_move_from (also a carried-over name)."
+status = "likely"
 
 [[func]]
 addr = 0x80021B10
 name = "rope_shape"
-desc = "As Revenge rope_shape (0x8000F710), matched by constants (score 0.67). Revenge: Matches World Tour rope_shape (0x8000F8A4), call-graph score 1.37."
-status = "guess"
+desc = "Checked against No Mercy's code 2026-11-02: lays out one rope side (7 posts x 3 ropes x 4 vertices from the sag table 0x80084414, the post / rope offsets at 0x800528E8 / 0x800528EC) and the rope node heights. As Revenge rope_shape (0x8000F710), matched by constants (score 0.67). Revenge: Matches World Tour rope_shape (0x8000F8A4), call-graph score 1.37."
+status = "likely"
 
 [[func]]
 addr = 0x8002240C
@@ -197,8 +197,8 @@ status = "likely"
 [[func]]
 addr = 0x800225BC
 name = "ring_rope_push"
-desc = "As Revenge ring_rope_push (0x80010200), matched by constants, through paired neighbours. Revenge: Matches World Tour ring_rope_push (0x800103B0), call-graph score 1.25."
-status = "guess"
+desc = "Checked against No Mercy's code 2026-11-02: pushes a rope side (a1 1-3, the depth a3 clamped to +-180, mirrored for sides 0-1) through rope_anim_set. As Revenge ring_rope_push (0x80010200), matched by constants, through paired neighbours. Revenge: Matches World Tour ring_rope_push (0x800103B0), call-graph score 1.25."
+status = "likely"
 
 [[func]]
 addr = 0x80022B98
@@ -275,8 +275,8 @@ status = "likely"
 [[func]]
 addr = 0x800DB6C0
 name = "results_page_text"
-desc = "As Revenge results_page_text (0x80097BE0), matched by constants, through paired neighbours. Revenge: Matches World Tour results_page_text (0x800994C0), call-graph score 1.03."
-status = "guess"
+desc = "Checked against No Mercy's code 2026-11-02: the end-of-match banner: slides the panel in 24 pixels a frame to 239 (sfx 137 when it lands), draws the quad and the banner text, then counts it out (0x801531A2). As Revenge results_page_text (0x80097BE0), matched by constants, through paired neighbours. Revenge: Matches World Tour results_page_text (0x800994C0), call-graph score 1.03."
+status = "likely"
 
 [[func]]
 addr = 0x800DBB80
@@ -293,8 +293,8 @@ status = "likely"
 [[func]]
 addr = 0x800DBD40
 name = "results_page_draw"
-desc = "As Revenge results_page_draw (0x80098560), matched by constants (score 0.75). Revenge: Draws the end-of-match results page."
-status = "guess"
+desc = "Checked against No Mercy's code 2026-11-02: draws the results page from match_draw into the double-buffered list 0x80152190 (2 KB each) and hides it when the HUD is hidden. As Revenge results_page_draw (0x80098560), matched by constants (score 0.75). Revenge: Draws the end-of-match results page."
+status = "likely"
 
 [[func]]
 addr = 0x800DBE60
@@ -335,8 +335,8 @@ status = "likely"
 [[func]]
 addr = 0x800DE6EC
 name = "hud_free_nodes"
-desc = "As Revenge hud_free_nodes (0x80094424), matched by call graph (score 0.99). Revenge: Matches World Tour hud_free_nodes (0x80095B80), call-graph score 1.06."
-status = "guess"
+desc = "Checked against No Mercy's code 2026-11-02: frees the HUD nodes, sprites and pointer pairs (4 x 3 panels, 5 message nodes, 11 pairs, 3 + 3 and 2 x 10 sprites). As Revenge hud_free_nodes (0x80094424), matched by call graph (score 0.99). Revenge: Matches World Tour hud_free_nodes (0x80095B80), call-graph score 1.06."
+status = "likely"
 
 [[func]]
 addr = 0x800E0158
@@ -509,20 +509,20 @@ status = "likely"
 [[func]]
 addr = 0x801118D8
 name = "corner_run_step"
-desc = "As Revenge corner_run_step (0x800B60C8), matched by call graph (score 0.98). Revenge: Matches World Tour corner_run_step (0x800B926C), call-graph score 0.93."
-status = "guess"
+desc = "Checked against No Mercy's code 2026-11-02: run_step(ctx, 1) and, when it ends, run_corner_stop (state 0x78). As Revenge corner_run_step (0x800B60C8), matched by call graph (score 0.98). Revenge: Matches World Tour corner_run_step (0x800B926C), call-graph score 0.93."
+status = "likely"
 
 [[func]]
 addr = 0x80115000
 name = "match_init_wrestlers"
-desc = "As Revenge match_init_wrestlers (0x800BAC30), matched by call graph (score 0.93). Revenge: Matches World Tour match_init_wrestlers (0x800B3400), call-graph score 1.19."
-status = "guess"
+desc = "Checked against No Mercy's code 2026-11-02: places the wrestlers when a match or area starts (match_tick, 0x8016B598 0x02): walking in from the area table 0x80146388 (6 bytes an area: position, facing) in the order 0x80159608 (the mover 0x100 runs in: state 0xBE, walk_speed 8; 0x200 / 0x400 the drag pair), resets pin counts, location 0x04, and then wrestler_start_place for the rest. As Revenge match_init_wrestlers (0x800BAC30), matched by call graph (score 0.93). Revenge: Matches World Tour match_init_wrestlers (0x800B3400), call-graph score 1.19."
+status = "likely"
 
 [[func]]
 addr = 0x801161E8
 name = "hud_health_value"
-desc = "As Revenge hud_health_value (0x800B83CC), matched by call graph (score 0.90). Revenge: HUD: wrestler_health_eff for slot a1 unless it is in state 0x3D."
-status = "guess"
+desc = "Checked against No Mercy's code 2026-11-02: wrestler_health_eff for slot a1 unless it is in state 0x49 (the ground hold); used by camera_update. As Revenge hud_health_value (0x800B83CC), matched by call graph (score 0.90). Revenge: HUD: wrestler_health_eff for slot a1 unless it is in state 0x3D."
+status = "likely"
 
 [[func]]
 addr = 0x80116328
@@ -539,14 +539,14 @@ status = "likely"
 [[func]]
 addr = 0x80118368
 name = "wrestler_tick"
-desc = "As Revenge wrestler_tick (0x800BBFD8), matched by call graph (score 0.91). Revenge: Matches World Tour wrestler_tick (0x800B47D4), call-graph score 1.39."
-status = "guess"
+desc = "Checked against No Mercy's code 2026-11-02: per slot from wrestlers_update_all: copies the pad (0x8009EDA4 + 12 x pad) into the input entry (0x80159540 + 56 x slot) through input_remap; Z with a C button toggles CPU control (flags_e9 0x08, AI block cleared) when the match type allows (not for a legal man under 0x1000 unless 0x400000, not in elimination / ladder matches); then the per-slot update. As Revenge wrestler_tick (0x800BBFD8), matched by call graph (score 0.91). Revenge: Matches World Tour wrestler_tick (0x800B47D4), call-graph score 1.39."
+status = "likely"
 
 [[func]]
 addr = 0x80118A20
 name = "match_record_fall"
-desc = "As Revenge match_record_fall (0x800B9730), matched by call graph (score 0.94). Revenge: Records a fall (World Tour match_record_result): result word 0x8007E848, winners lo 0x4000, losers lo 0x8000; each loser gets the next battle-royal entrant (br_next_entrant, then lo 0x10) or, with none left, loses LEGAL (lo 0x200)."
-status = "guess"
+desc = "Checked against No Mercy's code 2026-11-02: records a fall (match_end, match_result, match_abort_draw): result_stats_record, the fall time per slot (0x8009FE58), the move that ended it (0x800A84C4), the cause word 0x800A10EC (plus 0x100 / 0x200 by the winner's team flags_e9 0x20 in tag / handicap), end_flags 0x04 on the winners' bits from 0x8014637C, then the elimination / entrant bookkeeping. As Revenge match_record_fall (0x800B9730), matched by call graph (score 0.94). Revenge: Records a fall (World Tour match_record_result): result word 0x8007E848, winners lo 0x4000, losers lo 0x8000; each loser gets the next battle-royal entrant (br_next_entrant, then lo 0x10) or, with none left, loses LEGAL (lo 0x200)."
+status = "likely"
 
 [[func]]
 addr = 0x80119328
@@ -659,8 +659,8 @@ status = "likely"
 [[func]]
 addr = 0x8012A308
 name = "double_team_slide"
-desc = "As Revenge double_team_slide (0x800CE2C8), matched by call graph (score 0.94). Revenge: Matches World Tour double_team_slide (0x800C4BC4), call-graph score 0.98."
-status = "guess"
+desc = "Checked against No Mercy's code 2026-11-02: the double-team partner slide (0x83 / 0x84): after 10 frames follows the opponent at the stored offset, moves by the slide vector, turns by angle_rel, keeps in bounds. As Revenge double_team_slide (0x800CE2C8), matched by call graph (score 0.94). Revenge: Matches World Tour double_team_slide (0x800C4BC4), call-graph score 0.98."
+status = "likely"
 
 [[func]]
 addr = 0x8012BF50
@@ -731,8 +731,8 @@ status = "likely"
 [[func]]
 addr = 0x8012D404
 name = "run_step_corner"
-desc = "As Revenge run_step_corner (0x800B6114), matched by constants (score 0.80). Revenge: Matches World Tour run_step_corner (0x800B92D4), call-graph score 1.11."
-status = "guess"
+desc = "Checked against No Mercy's code 2026-11-02: from keep_in_bounds: the distance of a point from a collision quad along its normal, pushing it back when inside (quad_contains_point) or near the first two corners; writes the depth into a4. As Revenge run_step_corner (0x800B6114), matched by constants (score 0.80). Revenge: Matches World Tour run_step_corner (0x800B92D4), call-graph score 1.11."
+status = "likely"
 
 [[func]]
 addr = 0x8012DF70
@@ -803,14 +803,14 @@ status = "likely"
 [[func]]
 addr = 0x8012FBD0
 name = "wrestler_floor_height"
-desc = "As Revenge wrestler_floor_height (0x800D4604), matched by call graph (score 0.96). Revenge: Matches World Tour wrestler_floor_height (0x800A13A4), call-graph score 1.46."
-status = "guess"
+desc = "Checked against No Mercy's code 2026-11-02: the lying wrestler's tilt (wrestlers_ground_contact): with flags8a 0x100 turns the body toward the holder's angle (8 units a frame, +-67.5) and the pitch (4 a frame, +-30); otherwise relaxes both. As Revenge wrestler_floor_height (0x800D4604), matched by call graph (score 0.96). Revenge: Matches World Tour wrestler_floor_height (0x800A13A4), call-graph score 1.46."
+status = "likely"
 
 [[func]]
 addr = 0x801301F4
 name = "dazed_turn_target"
-desc = "As Revenge dazed_turn_target (0x800A9208), matched by call graph (score 0.99). Revenge: For C-up on a dazed opponent: facing to use, adjusted by +872 when the opponent animation is in the table at 0x800E3270."
-status = "guess"
+desc = "Checked against No Mercy's code 2026-11-02: for the dazed animations listed at 0x8014DAC0 (0-ended): the facing plus the animation's turn (+0x2E8) into a2, else the facing. As Revenge dazed_turn_target (0x800A9208), matched by call graph (score 0.99). Revenge: For C-up on a dazed opponent: facing to use, adjusted by +872 when the opponent animation is in the table at 0x800E3270."
+status = "likely"
 
 [[func]]
 addr = 0x8013026C
@@ -839,8 +839,8 @@ status = "likely"
 [[func]]
 addr = 0x80131E08
 name = "walk_step"
-desc = "As Revenge walk_step (0x800D6658), matched by call graph (score 0.91). Revenge: Matches World Tour walk_step (0x800A2964), call-graph score 1.05."
-status = "guess"
+desc = "Checked against No Mercy's code 2026-11-02: the walk from standing and the rope / exit states: speeds walk_speed 2 / 3 (toward the opponent faster), world-axis d-pad, the apron line (11794 / 11745), then walk_move. As Revenge walk_step (0x800D6658), matched by call graph (score 0.91). Revenge: Matches World Tour walk_step (0x800A2964), call-graph score 1.05."
+status = "likely"
 
 [[func]]
 addr = 0x80132700
@@ -852,12 +852,6 @@ status = "likely"
 addr = 0x80132940
 name = "input_remap"
 desc = "As Revenge input_remap (0x800BC69C), matched by constants (score 0.86). Revenge: Matches World Tour input_remap (0x800B4C38), call-graph score 1.80."
-status = "likely"
-
-[[func]]
-addr = 0x80132C30
-name = "mash_count"
-desc = "As Revenge mash_count (0x800D7690), matched by call graph (score 1.23). Revenge: Matches World Tour mash_count (0x800A3B40), call-graph score 1.22."
 status = "likely"
 
 [[func]]
@@ -905,7 +899,7 @@ status = "likely"
 [[func]]
 addr = 0x80137D90
 name = "wrestler_may_act"
-desc = "As Revenge wrestler_may_act (0x800D8DF0), matched by call graph (score 1.25). Revenge: Matches World Tour wrestler_may_act (0x800DD200), call-graph score 1.45."
+desc = "Code 2026-11-02: 1 (may act) except in tag matches (g_match_type 0x2000) without rule 0x40, in the ring arenas, for a wrestler not in play (flags_e9 0x10 clear; the partner on the apron) when every wrestler in play who has not lost a fall is in the ring or on the apron (and +0x96 0xC0 is clear or 0x400 set): then 0. So the partner may only join in while a legal man is outside. As Revenge wrestler_may_act (0x800D8DF0), matched by call graph (score 1.25). Revenge: Matches World Tour wrestler_may_act (0x800DD200), call-graph score 1.45."
 status = "likely"
 
 [[func]]
@@ -929,8 +923,8 @@ status = "likely"
 [[func]]
 addr = 0x801384E4
 name = "tag_exchange"
-desc = "As Revenge tag_exchange (0x800D9E1C), matched by call graph (score 0.92). Revenge: Matches World Tour tag_exchange (0x800DE564), call-graph score 0.96."
-status = "guess"
+desc = "Checked against No Mercy's code 2026-11-02: the tag: the legal man into 0x94 (tag out) and the partner into 0x93 (tag received), flags80 0x01, the partner's flags88 0x02; a3 starts both at step 2. As Revenge tag_exchange (0x800D9E1C), matched by call graph (score 0.92). Revenge: Matches World Tour tag_exchange (0x800DE564), call-graph score 0.96."
+status = "likely"
 
 [[func]]
 addr = 0x80138994
@@ -947,8 +941,8 @@ status = "likely"
 [[func]]
 addr = 0x80138BE0
 name = "idle_check"
-desc = "As Revenge idle_check (0x800DA6DC), matched by call graph (score 0.91). Revenge: Calls sub_800D96A0 when the wrestler is not on the floor, has no +0x358 bits 0x6000 and may not act."
-status = "guess"
+desc = "Checked against No Mercy's code 2026-11-02: an illegal man (not flags_e9 0x10) not in a hold that may not act goes through may_stay_inside. As Revenge idle_check (0x800DA6DC), matched by call graph (score 0.91). Revenge: Calls sub_800D96A0 when the wrestler is not on the floor, has no +0x358 bits 0x6000 and may not act."
+status = "likely"
 
 [[func]]
 addr = 0x80138C54
@@ -971,26 +965,26 @@ status = "likely"
 [[func]]
 addr = 0x80138F54
 name = "dive_aim"
-desc = "As Revenge dive_aim (0x800DACE4), matched by call graph (score 0.95). Revenge: Matches World Tour dive_aim (0x800BC888), call-graph score 1.56."
-status = "guess"
+desc = "Checked against No Mercy's code 2026-11-02: aims a dive / aerial move: flight frames from the record (+0x2FA to +0x2FB), 6 turn frames, flags_ea 0x40 / 0xC0, the location by state (0x72 / 0x75 the floor, 0x76 / 0x77 the ring, 0x79-0x7D the floor / apron with the fall per frame), then the target (dive_aim_target). As Revenge dive_aim (0x800DACE4), matched by call graph (score 0.95). Revenge: Matches World Tour dive_aim (0x800BC888), call-graph score 1.56."
+status = "likely"
 
 [[func]]
 addr = 0x8013A1A4
 name = "dive_counter"
-desc = "As Revenge dive_counter (0x800DB72C), matched by call graph (score 0.93). Revenge: Matches World Tour dive_counter (0x800BD684), call-graph score 1.28."
-status = "guess"
+desc = "Checked against No Mercy's code 2026-11-02: the defender's counter to a dive: a timed press (op 2) catches it (state 0x68 dodge, or 0x4C step 3 with the roles swapped), sfx 21, stats table 1. As Revenge dive_counter (0x800DB72C), matched by call graph (score 0.93). Revenge: Matches World Tour dive_counter (0x800BD684), call-graph score 1.28."
+status = "likely"
 
 [[func]]
 addr = 0x8013A2F0
 name = "dive_land_hit"
-desc = "As Revenge dive_land_hit (0x800DB874), matched by call graph (score 0.99). Revenge: Matches World Tour dive_land_hit (0x800BD810), call-graph score 1.02."
-status = "guess"
+desc = "Checked against No Mercy's code 2026-11-02: a dive landing on a2: hit_move_copy (half damage with flags_ea 0x80), a climber knocked off the ladder (0xB2), a downed target 0x63, strike_flags 0x800, the reaction by its state (ropes 0x70, lying hit ...). As Revenge dive_land_hit (0x800DB874), matched by call graph (score 0.99). Revenge: Matches World Tour dive_land_hit (0x800BD810), call-graph score 1.02."
+status = "likely"
 
 [[func]]
 addr = 0x8013D630
 name = "input_apron_moves"
-desc = "As Revenge input_apron_moves (0x800DE9C0), matched by call graph (score 0.92). Revenge: Matches World Tour input_apron_moves (0x800B93F0), call-graph score 1.17."
-status = "guess"
+desc = "Checked against No Mercy's code 2026-11-02: from standing with the opponent on the apron / floor (0x44) at an exit segment: 0x72 (over the ropes), 0x75 with attrs +0x38 0x8000, 0xC0 at the ropes toward it; then apron_grapple_start (move 275) and the apron grapple 0x7F when the opponent is standing in the ring. As Revenge input_apron_moves (0x800DE9C0), matched by call graph (score 0.92). Revenge: Matches World Tour input_apron_moves (0x800B93F0), call-graph score 1.17."
+status = "likely"
 
 [[func]]
 addr = 0x8013E108
@@ -1019,13 +1013,13 @@ status = "likely"
 [[func]]
 addr = 0x8013E798
 name = "taunt_stir_opponent"
-desc = "As Revenge taunt_stir_opponent (0x800A7828), matched by call graph (score 0.93). Revenge: Matches World Tour taunt_stir_opponent (0x800A5DEC), call-graph score 0.97."
-status = "guess"
+desc = "Checked against No Mercy's code 2026-11-02: A from standing / the apron wait: on the turnbuckle (0x400) state 0xCF (0x8B armed); else input_stir (the stick ground move), or the taunt 0x50 (0x1B sets flags8a 0x80). As Revenge taunt_stir_opponent (0x800A7828), matched by call graph (score 0.93). Revenge: Matches World Tour taunt_stir_opponent (0x800A5DEC), call-graph score 0.97."
+status = "likely"
 
 [[func]]
 addr = 0x8013E9C4
-name = "input_strike"
-desc = "As Revenge input_strike (0x800DF3E4), matched by call graph (score 1.01). Revenge: Matches World Tour input_strike (0x800BA448), call-graph score 1.29."
+name = "input_r"
+desc = "R held from standing (buttons 0x10; code 2026-11-02, renamed from input_strike: it never tests B). In order: location 0x400 does nothing; on the apron state 0x09; holding a weapon 0x8B; at a downed opponent in the same place running_ground_attack_check gives 0x38 / 0x39; both in the ring within 120: an opponent slumped in the corner (frame_flags 0x01, not 0x02) gives 0x3A / 0x3B (pulling it out), frame_flags 0x08 gives 0x40 / 0x41; otherwise the block 0x4C. As Revenge input_strike (0x800DF3E4), matched by call graph (score 1.01). Revenge: Matches World Tour input_strike (0x800BA448), call-graph score 1.29."
 status = "likely"
 
 [[func]]
@@ -1055,7 +1049,7 @@ status = "likely"
 [[func]]
 addr = 0x80142AE4
 name = "wrestler_set_move_from"
-desc = "As Revenge wrestler_set_move_from (0x800A7D1C), matched by call graph (score 1.00). Revenge: Selects move slot a2 of the wrestler move set (+902) and unpacks its record (move_record_unpack, 24-byte table at 0x8007BD78) into +908."
+desc = "As Revenge wrestler_set_move_from (0x800A7D1C), matched by call graph (score 1.00). Revenge: Selects move slot a2 of the wrestler move set (+902) and unpacks its record (texture_stamp_by_class, 24-byte table at 0x8007BD78) into +908."
 status = "likely"
 
 [[func]]

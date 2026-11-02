@@ -10,32 +10,32 @@ status = "likely"
 [[func]]
 addr = 0x800FDA7C
 name = "ai_mode_2_grapple_approach"
-desc = "Presses A, then mode 1. From a profile of the mode's code: the buttons it writes to AI block +0x0C, the situation (+0x24) and states it checks, the modes it goes to (2026-11-02). AI mode 2 in No Mercy's table (0x80145A10). Not identified."
-status = "guess"
+desc = "Grapple (code 2026-11-02): step 0 detours first: a dazed opponent (situation 16) in the ring, in finisher mode, facing it, with attrs +0x3C bit 0x01 and not 0x02 -> mode 100 (saving 2 to come back to); opponent situation 20 in finisher mode with the finish plan 15% -> mode 94; a face-down opponent (flags8a 0x01) with attrs +0x3C 0x600000 == 0x200000, or face-up with == 0x400000 -> mode 94 (saved); step 1 presses A; step 2 holds A in the attempt (state 0x50) and goes to mode 1 once standing again."
+status = "likely"
 
 [[func]]
 addr = 0x800FDCD8
 name = "ai_mode_3_defend"
-desc = "Presses R, L, A or C-down by chance: block, counter, grapple or run. From a profile of the mode's code: the buttons it writes to AI block +0x0C, the situation (+0x24) and states it checks, the modes it goes to (2026-11-02). AI mode 3 in No Mercy's table (0x80145A10). Not identified."
-status = "guess"
+desc = "Run in and counter (code 2026-11-02): step 0 presses C-down (run) when in the ring; step 1 by its own situation: a rebound (4) -> mode 119, still running (2 / 5 / 11) stays; at run step 2 close to the opponent with a skill chance against a striking / grappling opponent (8 / 11) presses L; near an opponent in a move (flags80 0x03) or situation 15: with chance skill a roll under 200 R, under 600 L, else mode 119; otherwise presses A (the running grapple)."
+status = "likely"
 
 [[func]]
 addr = 0x800FDEB8
 name = "ai_mode_4_defend_b"
-desc = "Shared by 4 / 5; R, L or A by chance and distance. From a profile of the mode's code: the buttons it writes to AI block +0x0C, the situation (+0x24) and states it checks, the modes it goes to (2026-11-02). AI mode 4, 5 in No Mercy's table (0x80145A10). Not identified."
-status = "guess"
+desc = "Modes 4 / 5, line up on a side and run in (code 2026-11-02): step 0 picks the ring side facing the opponent (angle_to_side into +0x9C) and, when far from that side, walks toward it (the pad from word_80145C54 + 8 / + 16, 15 frames, step 1; blocked directions swapped); steps 2 / 3 align on the side's axis (d-pad until within 0x8014FC88); step 4 saves the mode (4 facing the opponent, 5 from behind) and presses C-down with the direction (the run); steps 5-6 wait for the run (situations 2 / 4); step 7 on arrival as mode 3: close with a skill chance L against a striking / grappling opponent, near an opponent in a move or situation 15 a roll under 200 R / 600 L / else mode 119, otherwise A; a rebound (4) -> 119. Mode 0 when standing again."
+status = "likely"
 
 [[func]]
 addr = 0x800FE508
 name = "ai_mode_6_strike"
-desc = "A strike (waits for its own situation 8, striking); afterwards, if the opponent is knocked back or off balance (situations 17-18) and close in the ring, a grapple at chance = skill. From code 2026-11-02. R, L, B or A by chance in situation 8, then mode 0. From a profile of the mode's code: the buttons it writes to AI block +0x0C, the situation (+0x24) and states it checks, the modes it goes to (2026-11-02). AI mode 6 in No Mercy's table (0x80145A10). Not identified."
-status = "guess"
+desc = "A strike (code 2026-11-02): step 0 presses B (R under rule 0x2000; against a carried opponent, situation 20, a move from ai_pick_grapple_move kind 4 / 5), then waits for its own striking situation (8); afterwards, standing again: a knocked-back / off-balance opponent (17 / 18) in the ring beyond 0x8014FCA0 -> ai_try_grapple(1) with a skill chance; close: 25% strike again, else unarmed with a skill chance R against a striker (8), or A / L 50 / 50 against 1 / 11 / 14; then mode 0."
+status = "likely"
 
 [[func]]
 addr = 0x800FEA94
-name = "ai_mode_7_weighted_pick"
-desc = "AI mode 7 in No Mercy's table (0x80145A10). Name from its Revenge match ai_weighted_pick (0x800ADF40), unchecked. As Revenge ai_weighted_pick (0x800ADF40), matched by call graph (score 1.37). Revenge: Walks a (threshold, value) table ended by -1 until the threshold reaches a random-pool value; call-graph matching had called it chance_check (wrong)."
-status = "guess"
+name = "ai_mode_7_hold_r"
+desc = "Code 2026-11-02: holds R (0x10) for 1, 5, 9 or 13 frames (rand & 12, + 1), then mode 0: a short R hold (block / counter window). AI mode 7 in No Mercy's table (0x80145A10). Name from its Revenge match ai_weighted_pick (0x800ADF40), unchecked. As Revenge ai_weighted_pick (0x800ADF40), matched by call graph (score 1.37). Revenge: Walks a (threshold, value) table ended by -1 until the threshold reaches a random-pool value; call-graph matching had called it chance_check (wrong)."
+status = "likely"
 
 [[func]]
 addr = 0x800FEB14
@@ -46,38 +46,38 @@ status = "likely"
 [[func]]
 addr = 0x800FEC98
 name = "ai_mode_9_strike_follow"
-desc = "In its own strike (state 0x22) presses B or R (chance): following up a strike. From a profile of the mode's code: the buttons it writes to AI block +0x0C, the situation (+0x24) and states it checks, the modes it goes to (2026-11-02). AI mode 9 in No Mercy's table (0x80145A10). Not identified."
-status = "guess"
+desc = "Following a strike (code 2026-11-02): step 0 presses B; step 1 in its own strike (situation 8) prepares the next input: B on a raised place (where 0x80), else a grapple move from ai_pick_grapple_move (kind 1 with the finish plan, 2 with +0x80 0x02) or B / R (rule 0x2000) when armed; step 2 holds it while still striking in state 0x22; afterwards, standing, a knocked-back / off-balance opponent (17 / 18) beyond 0x8014FCE8 gets ai_try_grapple(1) at 50%; then mode 0."
+status = "likely"
 
 [[func]]
 addr = 0x800FEE64
 name = "ai_mode_10_evade"
-desc = "R, L or C-down by chance. From a profile of the mode's code: the buttons it writes to AI block +0x0C, the situation (+0x24) and states it checks, the modes it goes to (2026-11-02). AI mode 10 in No Mercy's table (0x80145A10). Not identified."
-status = "guess"
+desc = "Evade and counter (code 2026-11-02): step 0 presses C-down with the direction from ai_evade_direction and prepares the follow-up in +0x10: B on a raised place, B / R when armed (no finish plan), else a grapple move (ai_pick_grapple_move kind 1 / 2, list 2 or 3); the reach (+0xA0) comes from the move's record; step 1 by its own situation: a rebound (4) -> 119, running (2 / 5 / 8) stays: at run step 2 close with a skill chance L (the C buttons 3840 when armed) against a striker / grappler (8 / 11), within reach of an opponent in a move (flags80 0x05) a skill roll under 200 R / 600 L / else 119, otherwise the prepared input; mode 0 when it ends."
+status = "likely"
 
 [[func]]
 addr = 0x800FF288
 name = "ai_mode_11_evade_b"
-desc = "Shared by 11 / 12; R, L or C-down by direction to the target in situation 1. From a profile of the mode's code: the buttons it writes to AI block +0x0C, the situation (+0x24) and states it checks, the modes it goes to (2026-11-02). AI mode 11, 12 in No Mercy's table (0x80145A10). Not identified."
-status = "guess"
+desc = "Modes 11 / 12, side-step and run (code 2026-11-02): step 0 picks the direction toward the opponent (dir8), turned a quarter turn at random when the opponent stands near the ropes (within 0x8014FD00 of the facing side), into +0x10; step 1 standing: when the opponent is out of reach (AI +0x68 beyond 0x8014FD08) presses C-down and prepares B (11) or A+B (12) with the move's reach; step 2 as mode 10's run step (L / R / the prepared input / 119)."
+status = "likely"
 
 [[func]]
 addr = 0x800FF5CC
 name = "ai_mode_13_block_counter"
-desc = "Shared by 13 / 14; R or L by chance and distance: block or counter. From a profile of the mode's code: the buttons it writes to AI block +0x0C, the situation (+0x24) and states it checks, the modes it goes to (2026-11-02). AI mode 13, 14 in No Mercy's table (0x80145A10). Not identified."
-status = "guess"
+desc = "Modes 13 / 14, line up on a side and run in with a strike (code 2026-11-02): like modes 4 / 5 (tables word_80145C54 + 96 / + 104 / + 208 for the sides) but the run (step 3) presses C-down with B (13) or A+B (14) and the reach from the move's record (+0x28 / +0x30); steps 4-6 as mode 4's arrival."
+status = "likely"
 
 [[func]]
 addr = 0x800FFB98
 name = "ai_mode_15_partner_decide"
 desc = "Tag / partner decisions (g_match_type 0x1000, AI block +0x80 0x40, attrs +0x34 bits 0x700000): picks mode 114 or 16 by chance and position. Read from code 2026-11-02 (quick pass). AI mode 15 in No Mercy's table (0x80145A10). Not identified."
-status = "guess"
+status = "likely"
 
 [[func]]
 addr = 0x80100174
 name = "ai_mode_16_meet_runner"
-desc = "AI mode 16, 17, 18 in No Mercy's table (0x80145A10). Name from its Revenge match ai_mode_9_meet_runner (0x800AEEC8), unchecked. As Revenge ai_mode_9_meet_runner (0x800AEEC8), matched by call graph (score 1.21). Revenge: AI mode 9; same mode as World Tour mode 9 (ai.md)."
-status = "guess"
+desc = "Modes 16 / 17 / 18, catching a runner (code 2026-11-02): step 0 waits while the opponent runs (situation 3) and the two face each other (158 degrees or more), then step 1: when the opponent is within 0x8014FD80 (16) or 0x8014FD78 (17) sets a timer of 3 (16) or 15 (17 / 18) and step 2 holds A (0x8000) for that long; 18 in finisher mode pushes the taunt stick (+0x13 = 80) instead (the special); step 3 keeps A while the situation is 11; mode 0 when the opponent stops running or the situation becomes 1."
+status = "likely"
 
 [[func]]
 addr = 0x80100398
@@ -88,26 +88,26 @@ status = "likely"
 [[func]]
 addr = 0x80100478
 name = "ai_mode_20_pickup"
-desc = "Presses R in situation 54 (the CPU in the pick-up 0x38). AI mode 20 in No Mercy's table (0x80145A10). Not identified."
-status = "guess"
+desc = "Picks a downed opponent up (code 2026-11-02): step 0 presses R (0x10); step 1 waits for situation 54 (the CPU in the pick-up 0x38), else clears the saved mode (+0x86) and ends; step 2, when the pick-up situation ends, goes to the saved mode (+0x86)."
+status = "likely"
 
 [[func]]
 addr = 0x8010051C
 name = "ai_mode_21_counter_l"
-desc = "Presses L (chance). From a profile of the mode's code: the buttons it writes to AI block +0x0C, the situation (+0x24) and states it checks, the modes it goes to (2026-11-02). AI mode 21 in No Mercy's table (0x80145A10). Not identified."
-status = "guess"
+desc = "Presses L, then (code 2026-11-02) standing and close (0x8014FD88) with a skill chance against a grappling opponent (situation 11): mode 21 again (1000, 500 in the ring), else 42 or 43; otherwise mode 0."
+status = "likely"
 
 [[func]]
 addr = 0x80100624
 name = "ai_mode_22_strike"
-desc = "Presses B: a strike. From a profile of the mode's code: the buttons it writes to AI block +0x0C, the situation (+0x24) and states it checks, the modes it goes to (2026-11-02). AI mode 22 in No Mercy's table (0x80145A10). Not identified."
-status = "guess"
+desc = "A strike (code 2026-11-02): step 0 presses B unless the opponent's situation is 15; step 1 waits for its own situation 9, else clears the saved mode (+0x86) and ends; step 2 when the strike situation ends goes to the saved mode."
+status = "likely"
 
 [[func]]
 addr = 0x801006E0
 name = "ai_mode_23_grapple_b"
-desc = "Shared by 23 / 24; presses A. From a profile of the mode's code: the buttons it writes to AI block +0x0C, the situation (+0x24) and states it checks, the modes it goes to (2026-11-02). AI mode 23, 24 in No Mercy's table (0x80145A10). Not identified."
-status = "guess"
+desc = "Modes 23 / 24, the grapple (code 2026-11-02): step 0 (23 only) ends with mode 19 when ai_behind_opponent; step 1 presses A (A+B for 23 in finisher mode against an opponent with perceived spirit below 10) while standing and waits for situation 57; step 2 on the floor with the count-out under 3 (no rule 0x4000) presses R; mode 0 when the situation changes."
+status = "likely"
 
 [[func]]
 addr = 0x801009B0
@@ -117,9 +117,9 @@ status = "likely"
 
 [[func]]
 addr = 0x80101590
-name = "ai_mode_26_lockup_wait"
-desc = "In situation 13 (the CPU in the lock-up 0x51), a chance roll, then mode 0. AI mode 26 in No Mercy's table (0x80145A10). Not identified."
-status = "guess"
+name = "ai_mode_26_lockup_press_move"
+desc = "In the lock-up (situation 13; code 2026-11-02): step 0 takes the list of (move, input) pairs from ai_lockup_wait_time; with the finish plan (0x8016B718) the finisher's input, else with chance 300 the first preferred move (record flags 0x8000), else a random one, into +0x10; step 1 presses and holds that input (+0x0C / +0x0E) while still in the lock-up, then mode 0."
+status = "likely"
 
 [[func]]
 addr = 0x801023CC
@@ -148,8 +148,8 @@ status = "likely"
 [[func]]
 addr = 0x80102660
 name = "ai_mode_31_ground_hold"
-desc = "While in the ground hold (state 0x49) decides by chance, then mode 0: holding / escaping a submission. From a profile of the mode's code: the buttons it writes to AI block +0x0C, the situation (+0x24) and states it checks, the modes it goes to (2026-11-02). AI mode 31 in No Mercy's table (0x80145A10). Not identified."
-status = "guess"
+desc = "In a hold (code 2026-11-02): step 0, in state 0x49 (the ground hold), stores the d-pad toward the nearest ring side (by the perceived zone +0x42) in +0x10; step 1 while held (situations 7 / 15 / 20 / 38 / 40 / 59-61): gives up (mode 0) against a holder in state 0xC6 with own spirit below 51, or in 0xC7; in 0x49 holds the stored d-pad (the crawl to the ropes) unless that direction is blocked; and mashes A+B+L+R (0xC030) with chance skill x ai_struggle_rate (1000 for a losing CPU, +0x1C 5-6, against a CPU-controlled opponent with 41 more health)."
+status = "likely"
 
 [[func]]
 addr = 0x801028F0
@@ -160,32 +160,32 @@ status = "likely"
 [[func]]
 addr = 0x80102C4C
 name = "ai_mode_33_apron"
-desc = "Shared by 33 / 34; apron_walk_dpad, R or L, opponent in state 0x20; set by ai_think. From a profile of the mode's code: the buttons it writes to AI block +0x0C, the situation (+0x24) and states it checks, the modes it goes to (2026-11-02). AI mode 33, 34 in No Mercy's table (0x80145A10). Not identified."
-status = "guess"
+desc = "Code 2026-11-02 (first read): heads for the ring. It holds the d-pad toward the ring centre (angle_dir8_back of the position's angle, d-pad bits 0x8014D258); mode 34 adds C-down (held 0x04), mode 33 presses C-up (pressed 0x08, at 35% when in play). With the standing / climbing rules (movement.md) that is: 33 gets back in (onto the apron, through the ropes), 34 climbs the corner from the apron. It gives up when its fall is lost. Shared by 33 / 34; apron_walk_dpad, R or L, opponent in state 0x20; set by ai_think. From a profile of the mode's code: the buttons it writes to AI block +0x0C, the situation (+0x24) and states it checks, the modes it goes to (2026-11-02). AI mode 33, 34 in No Mercy's table (0x80145A10). Not identified."
+status = "likely"
 
 [[func]]
 addr = 0x80103120
-name = "ai_mode_35_situation_49"
-desc = "In own situation 49 (states 0x6E / 0x9A): reacts to an opponent grappling or striking (situations 11 / 8) with L or R, else d-pad by zone and C-up. Read from code 2026-11-02 (quick pass). AI mode 35 in No Mercy's table (0x80145A10). Not identified."
-status = "guess"
+name = "ai_mode_35_drop_off_apron"
+desc = "Code 2026-11-02: gets down off the apron to the floor: gives up (mode 0) under the over-the-top rule, with count-outs on and fewer than 4 counts left, or when the opponent is in the ring; otherwise presses C-up with the d-pad by its ring zone (0x8014D218) until it is in situation 49 (0x6E / 0x9A, dropping down). While dropping, an opponent within 160 grappling (situation 11) or striking (8) gets, after a skill roll, L (against the grapple) or R (against the strike); otherwise it waits it out. In own situation 49 (states 0x6E / 0x9A): reacts to an opponent grappling or striking (situations 11 / 8) with L or R, else d-pad by zone and C-up. Read from code 2026-11-02 (quick pass). AI mode 35 in No Mercy's table (0x80145A10). Not identified."
+status = "likely"
 
 [[func]]
 addr = 0x80103310
 name = "ai_mode_36_leave_ring"
 desc = "C-down then C-up toward an area (sub_800FD5FC by the opponent's zone): going through the ropes; then runs (mode 119) or engages. Read from code 2026-11-02 (quick pass). AI mode 36 in No Mercy's table (0x80145A10). Not identified."
-status = "guess"
+status = "likely"
 
 [[func]]
 addr = 0x80103690
 name = "ai_mode_37_walk"
-desc = "D-pad toward the target (ai_dir8_to_target), then mode 0. From a profile of the mode's code: the buttons it writes to AI block +0x0C, the situation (+0x24) and states it checks, the modes it goes to (2026-11-02). AI mode 37 in No Mercy's table (0x80145A10). Not identified."
-status = "guess"
+desc = "Walk to the opponent (code 2026-11-02): mode 37 only in the ring with the opponent on the floor (not with the count-out below 4); step 0 holds the d-pad from ai_dir8_to_target while standing (on to step 1 when a blocked direction is hit); step 1 lines up on the opponent's zone axis (+0x54; 0x801500D0 / D8); step 2 presses A with the d-pad toward that zone (a grapple from the ring at the floor / apron, situation 26) unless the opponent is in a move; step 3 waits for situation 26; mode 0."
+status = "likely"
 
 [[func]]
 addr = 0x80103A5C
 name = "ai_mode_38_evade_unless_special"
 desc = "Runs ai_mode_11_evade unless the meter is in a mode (flags_ee & 6) or trait attrs +39 is 2, then mode 0. Read from code 2026-11-02 (quick pass). AI mode 38 in No Mercy's table (0x80145A10). Not identified."
-status = "guess"
+status = "likely"
 
 [[func]]
 addr = 0x80103AA8
@@ -196,8 +196,8 @@ status = "likely"
 [[func]]
 addr = 0x80103F4C
 name = "ai_mode_40_run"
-desc = "Presses C-down: run. From a profile of the mode's code: the buttons it writes to AI block +0x0C, the situation (+0x24) and states it checks, the modes it goes to (2026-11-02). AI mode 40 in No Mercy's table (0x80145A10). Not identified."
-status = "guess"
+desc = "Run (code 2026-11-02): step 0 presses C-down (with the direction to the opponent's zone when both are on the floor, where 0x100); step 1 while running (situation 2): when the opponent comes within 0x801500E8 presses the C buttons (3840, the stop) and goes to 119; a rebound (4) -> 119, else 0."
+status = "likely"
 
 [[func]]
 addr = 0x80104024
@@ -213,15 +213,15 @@ status = "likely"
 
 [[func]]
 addr = 0x80104428
-name = "ai_mode_43_vs_apron_to_floor"
-desc = "AI mode 43 in No Mercy's table (0x80145A10). Name from its Revenge match ai_vs_apron_to_floor (0x800AABA0), unchecked. As Revenge ai_vs_apron_to_floor (0x800AABA0), matched by call graph (score 1.07). Revenge: Matches World Tour ai_vs_apron_to_floor (0x800B6238), call-graph score 1.40."
-status = "guess"
+name = "ai_mode_43_wait_then_grapple"
+desc = "Waits ai_evade_timer frames, then presses A and goes to mode 1 (engage) (code 2026-11-02)."
+status = "likely"
 
 [[func]]
 addr = 0x801044B8
 name = "ai_mode_44_run_at"
-desc = "Runs at the opponent: counts down while its own situation is running (2); on a rebound (4) or time out goes to mode 119. From code 2026-11-02. AI mode 44 in No Mercy's table (0x80145A10). Not identified."
-status = "guess"
+desc = "Run at (code 2026-11-02): step 0 presses C-down toward the opponent (dir8, turned a quarter turn at random when it stands near the ropes) with an 8-15 frame timer; step 1 while running counts it down, then presses the C buttons (3840) and goes to 119; a rebound (4) -> 119, else 0."
+status = "likely"
 
 [[func]]
 addr = 0x80104648
@@ -231,15 +231,15 @@ status = "likely"
 
 [[func]]
 addr = 0x801047C4
-name = "ai_mode_46_block"
-desc = "Presses R in situation 14 (blocking: 0x09, 0x4C, 0x4D, 0x6B). AI mode 46 in No Mercy's table (0x80145A10). Not identified."
-status = "guess"
+name = "ai_mode_46_hold_block"
+desc = "Holds R (code 2026-11-02): pressed at step 0, kept at step 1 while blocking (situation 14), the opponent is still in the state it was seen in (AI +0x56) and its animation has 3 or more frames left (+0x2EC - 3 >= anim_frame); then mode 0."
+status = "likely"
 
 [[func]]
 addr = 0x80104860
 name = "ai_mode_47_block_dive"
 desc = "Blocking (own situation 14) against a diving opponent (25): holds R with a timer, reads the opponent's move record. Read from code 2026-11-02 (quick pass). AI mode 47 in No Mercy's table (0x80145A10). Not identified."
-status = "guess"
+status = "likely"
 
 [[func]]
 addr = 0x80104BB8
@@ -251,37 +251,37 @@ status = "likely"
 addr = 0x80104CDC
 name = "ai_mode_49_apron_wait_taunt"
 desc = "Shared by 49 / 50: waits up to 60 frames on the apron (own situation 43); mode 50 with SPECIAL (flags_ee 0x02) pushes the stick (+0x13 = 80) and evades: a taunt to start finisher mode. Read from code 2026-11-02 (quick pass). AI mode 49, 50 in No Mercy's table (0x80145A10). Not identified."
-status = "guess"
+status = "likely"
 
 [[func]]
 addr = 0x80104E18
 name = "ai_mode_51_grapple_move"
 desc = "C-down then a move chosen by ai_mode_50 (B or R by rules 0x2000); runs (119) on a rebound. Read from code 2026-11-02 (quick pass). AI mode 51 in No Mercy's table (0x80145A10). Not identified."
-status = "guess"
+status = "likely"
 
 [[func]]
 addr = 0x801050D0
 name = "ai_mode_52_c_left"
-desc = "Presses C-left: flip / drag a downed opponent or take a weapon. From a profile of the mode's code: the buttons it writes to AI block +0x0C, the situation (+0x24) and states it checks, the modes it goes to (2026-11-02). AI mode 52 in No Mercy's table (0x80145A10). Not identified."
-status = "guess"
+desc = "Presses C-left (2) at step 0 and holds it while in situation 53 (state 0x36, approaching a downed opponent), then mode 0 (code 2026-11-02)."
+status = "likely"
 
 [[func]]
 addr = 0x80105134
 name = "ai_mode_53_react_dazed"
 desc = "When the opponent is dazed / knocked back / off balance (situations 16-18): with a skill chance presses B, R, L or A by the opponent's situation (striking, grapple attempt, diving). Read from code 2026-11-02 (quick pass). AI mode 53 in No Mercy's table (0x80145A10). Not identified."
-status = "guess"
+status = "likely"
 
 [[func]]
 addr = 0x80105354
 name = "ai_mode_54_get_up"
-desc = "AI mode 54 in No Mercy's table (0x80145A10). Name from its Revenge match ai_mode_38_get_up (0x800B1E04), unchecked. As Revenge ai_mode_38_get_up (0x800B1E04), matched by call graph (score 1.11). Revenge: AI mode 38; same mode as World Tour mode 38 (ai.md)."
-status = "guess"
+desc = "The get-up (code 2026-11-02, first read): at step 0 while down at state_step 2: with the opponent far, in a tag match with the partner near on the same side presses R and ai_can_act; else with a skill chance and facing the opponent (within 15 degrees) presses R with B (opponent situations 1 / 8 / 11) or A (14) or by the finisher-move record (800 / 500) -> the get-up attack; without the chance a random roll 450-900 adds L (the roll); step 1 (situation 1 / 24): with a skill chance against a striking (8) or grappling (11) opponent modes 42 / 43, else R again; mode 0 otherwise."
+status = "likely"
 
 [[func]]
 addr = 0x801057BC
 name = "ai_mode_55_wait_long"
-desc = "Waits up to 150 frames while standing and the opponent is not dazed (situation 16). From code 2026-11-02. AI mode 55 in No Mercy's table (0x80145A10). Not identified."
-status = "guess"
+desc = "Waits up to 150 frames while standing and the opponent is not dazed (situation 16); then mode 0 (code 2026-11-02)."
+status = "likely"
 
 [[func]]
 addr = 0x80105854
@@ -293,55 +293,55 @@ status = "likely"
 addr = 0x80105934
 name = "ai_mode_57_move_from_corner"
 desc = "Shared by 57 / 58: walks out of a corner (direction by w+0xCC); runs (119) or stands. Read from code 2026-11-02 (quick pass). AI mode 57, 58 in No Mercy's table (0x80145A10). Not identified."
-status = "guess"
+status = "likely"
 
 [[func]]
 addr = 0x80105AD0
 name = "ai_mode_59_strike_facing"
-desc = "Presses B when facing the target (angle_diff). From a profile of the mode's code: the buttons it writes to AI block +0x0C, the situation (+0x24) and states it checks, the modes it goes to (2026-11-02). AI mode 59 in No Mercy's table (0x80145A10). Name from its World Tour match ai_mode_43 (0x800E4DE0), unchecked. As World Tour ai_mode_43 (0x800E4DE0), matched by call graph (score 1.17). World Tour: AI mode 43: strike a runner within learned reach (ai.md)."
-status = "guess"
+desc = "Strike when facing (code 2026-11-02): step 0, standing, presses B when the opponent faces away (facings 90 degrees or more apart) and is within the move's reach (record +0x50 + +0x54 x k), ending when the opponent is not standing / running (situations 2-3); step 1 holds through its own strike (8); mode 0."
+status = "likely"
 
 [[func]]
 addr = 0x80105BDC
 name = "ai_mode_60_walk_zone"
 desc = "Walks a random 25-42 frames in a d-pad direction chosen by its ring zone and slot. Read from code 2026-11-02 (quick pass). AI mode 60 in No Mercy's table (0x80145A10). Not identified."
-status = "guess"
+status = "likely"
 
 [[func]]
 addr = 0x80105D14
 name = "ai_mode_61_apron_walk"
-desc = "apron_walk_dpad toward a point (dist_to), then mode 0. From a profile of the mode's code: the buttons it writes to AI block +0x0C, the situation (+0x24) and states it checks, the modes it goes to (2026-11-02). AI mode 61 in No Mercy's table (0x80145A10). Not identified."
-status = "guess"
+desc = "Apron walk toward the partner (run-in / tag) (code 2026-11-02): step 0 (with the partner 0x8016B92C on the apron or walking it) stores the d-pad toward the partner and a 32-frame timer; step 1 holds it; a striking / grappling opponent (8 / 11) within 0x801501C0 with a skill chance -> ai_apron_react; when the timer runs out near the partner (0x801501C8) with it standing or in 0x95 presses C-up (the tag); mode 0."
+status = "likely"
 
 [[func]]
 addr = 0x80105FC8
 name = "ai_mode_62_go_outside"
 desc = "Toward an opponent on the floor: walks to the ropes by zone and presses C-down (and C-up), then follows. Read from code 2026-11-02 (quick pass). AI mode 62 in No Mercy's table (0x80145A10). Not identified."
-status = "guess"
+status = "likely"
 
 [[func]]
 addr = 0x80106438
 name = "ai_mode_63_walk_b"
-desc = "Shared by 63 / 64; d-pad walking, then mode 0. From a profile of the mode's code: the buttons it writes to AI block +0x0C, the situation (+0x24) and states it checks, the modes it goes to (2026-11-02). AI mode 63, 64 in No Mercy's table (0x80145A10). Not identified."
-status = "guess"
+desc = "Modes 63 / 64, walk to the opponent's zone edge and dive (code 2026-11-02): with the opponent on the floor (not situation 48): steps 0 / 1 walk to the ring edge of the opponent's zone (+0x54; limits 0x80150210-0x80150248); step 2 presses the d-pad toward the zone with C-down and prepares A (63) or the taunt stick 80 (64, the special); steps 3 / 4 hold it while running (the C buttons when the opponent is gone); step 5 waits for situation 26 / 43; mode 0."
+status = "likely"
 
 [[func]]
 addr = 0x801068AC
 name = "ai_mode_65_vs_runner"
-desc = "Shared by 65 / 66; the opponent is running (state 0x03): C-down by chance. From a profile of the mode's code: the buttons it writes to AI block +0x0C, the situation (+0x24) and states it checks, the modes it goes to (2026-11-02). AI mode 65, 66 in No Mercy's table (0x80145A10). Not identified."
-status = "guess"
+desc = "Modes 65 / 66, meeting a runner (code 2026-11-02): step 0 (in the ring, a runner found by ai_runner_target, not in a hold) presses C-down with the d-pad toward the perceived corner (+0x52 + 8) and saves the pad; step 1 holds it for 30 frames while standing / running; step 2 by its own state: a rebound (4) -> 119, 158-159 stay, 10 -> step 3 (C-down while flags_f4 0x02); step 4 in situation 25: against a down / lying / dazed opponent (15 / 16 / 19) 20% ai_mode_11_evade (not with trait byte_8016B9CE 2, SPECIAL or low spirit); otherwise C-down plus R when the opponent is within reach (record +0x60 + k) or running; mode 0."
+status = "likely"
 
 [[func]]
 addr = 0x80106D44
 name = "ai_mode_67_vs_carried"
-desc = "The opponent is being carried (state 0x82): d-pad (apron_walk_dpad). From a profile of the mode's code: the buttons it writes to AI block +0x0C, the situation (+0x24) and states it checks, the modes it goes to (2026-11-02). AI mode 67 in No Mercy's table (0x80145A10). Not identified."
-status = "guess"
+desc = "Modes 67 / 68 against a carried opponent (code 2026-11-02): step 0 stores the d-pad toward the opponent's zone with C-up + C-down (0x0C) when in the ring (not under rule 0x400); from the apron with a hurt partner (0x8016B92C / 0x8016B71C health below 128) 20% step 3; step 1 holds it while standing / running / situation 42, 119 on a rebound; step 2 presses d-pad down when flags_f8 0x400; step 3 on the apron lines up with the opponent's zone (within 30 degrees) and goes on when it is not in a move or is in 0x82 step 2; step 4 presses A with the d-pad toward the zone (the apron grapple, situation 26); step 5 waits; mode 0."
+status = "likely"
 
 [[func]]
 addr = 0x8010711C
 name = "ai_mode_68_run"
 desc = "Presses C-down (run) with a direction, and keeps it while standing; ends on a rebound (119). Read from code 2026-11-02 (quick pass). AI mode 68 in No Mercy's table (0x80145A10). Not identified."
-status = "guess"
+status = "likely"
 
 [[func]]
 addr = 0x8010735C
@@ -352,80 +352,80 @@ status = "likely"
 [[func]]
 addr = 0x801074E4
 name = "ai_mode_70_leg_caught"
-desc = "In situation 35 (the CPU's kick caught, 0x6A): a chance roll, then mode 0. AI mode 70 in No Mercy's table (0x80145A10). Not identified."
-status = "guess"
+desc = "With its kick caught (situation 35; code 2026-11-02): picks A or B 50 / 50 at step 0 and holds it while the situation lasts, then mode 0."
+status = "likely"
 
 [[func]]
 addr = 0x8010761C
 name = "ai_mode_71_walk_down"
 desc = "Holds d-pad down until its z is below a limit. Read from code 2026-11-02 (quick pass). AI mode 71 in No Mercy's table (0x80145A10). Not identified."
-status = "guess"
+status = "likely"
 
 [[func]]
 addr = 0x80107668
 name = "ai_mode_72_walk_to_centre"
 desc = "D-pad left / right by ring zone and quadrant toward the middle. Read from code 2026-11-02 (quick pass). AI mode 72 in No Mercy's table (0x80145A10). Not identified."
-status = "guess"
+status = "likely"
 
 [[func]]
 addr = 0x80107854
 name = "ai_mode_73_ground_a"
-desc = "Shared by 73-76; C-left in situation 53, i.e. while the CPU is in state 0x36 (approaching a downed opponent): flip or drag it. From a profile of the mode's code: the buttons it writes to AI block +0x0C, the situation (+0x24) and states it checks, the modes it goes to (2026-11-02). AI mode 73, 74, 75, 76 in No Mercy's table (0x80145A10). Not identified."
-status = "guess"
+desc = "Modes 73-76, C-left at a downed opponent (code 2026-11-02): step 0 presses C-left (2) when the opponent is face down (flags8a 0x01) for 75 / 76, face up for 73 / 74 (the other pair skips to step 3); steps 1-2 wait for situation 53 (0x36) and then standing / 47; step 3 with the opponent down (flags80 0x08), sitting (0x10) for 73 / 74: saves the mode and goes to 20 (the pick-up); step 4 presses B; step 5 waits for situation 9."
+status = "likely"
 
 [[func]]
 addr = 0x80107A64
 name = "ai_mode_77_ground_b"
-desc = "Shared by 77-81; C-left or B in situation 53 (the CPU in state 0x36, by a downed opponent), then mode 0. From a profile of the mode's code: the buttons it writes to AI block +0x0C, the situation (+0x24) and states it checks, the modes it goes to (2026-11-02). AI mode 77, 78, 79, 80, 81 in No Mercy's table (0x80145A10). Not identified."
-status = "guess"
+desc = "Modes 77-81, C-left or B at a downed opponent (code 2026-11-02): step 0 by mode: 77 -> step 4; 78 / 80 press C-left when the opponent is face up, 79 / 81 when face down, else step 3; steps 1-2 wait for situation 53 and standing; step 3 with the opponent down (and sitting for 78-79) saves the mode and goes to 20 (pick-up); step 4 stores the d-pad toward the opponent (turned a quarter turn near the ropes); step 5 standing, out of reach (+0x7C + k beyond +0x68) holds it (mode 0 when blocked); step 6 presses C-down; step 7 while running presses B when within reach, 119 on a rebound."
+status = "likely"
 
 [[func]]
 addr = 0x80107E4C
 name = "ai_mode_82_ground_c"
-desc = "Shared by 82-85; C-left, C-down or A in situation 53 (the CPU in state 0x36, by a downed opponent): flip, step away or a ground grapple. From a profile of the mode's code: the buttons it writes to AI block +0x0C, the situation (+0x24) and states it checks, the modes it goes to (2026-11-02). AI mode 82, 83, 84, 85 in No Mercy's table (0x80145A10). Not identified."
-status = "guess"
+desc = "Modes 82-85, approach a downed opponent and act (code 2026-11-02): step 0 saves the mode when the opponent sits (flags80 0x10), else prepares mode 22; step 1 presses C-left for 83 / 85 (face up) or 82 / 84 (face down), else step 4; steps 2-3 wait for situation 53 and standing; step 4 with the opponent in situation 15: when blocked for 16 frames presses A; by the angle between the perceived facing (+0x64) and the opponent's: 82 / 84 press A within 70 degrees, C-down toward the opponent's facing beyond 155 (step 6); 83 / 85 A beyond 70, C-down within 25; step 5 waits for situation 57, step 6 holds C-down until situation 42 / 1; mode 0."
+status = "likely"
 
 [[func]]
 addr = 0x80108238
 name = "ai_mode_86_approach_47"
-desc = "Walks toward the opponent; when close (not on the apron) a skill-scaled chance moves on to mode 47. From code 2026-11-02. AI mode 86 in No Mercy's table (0x80145A10). Name from its Revenge match ai_mode_61 (0x800B44B8), unchecked. As Revenge ai_mode_61 (0x800B44B8), matched by call graph (score 1.04). Revenge: New: standing close to the opponent, a skill roll gives the timed block (mode 32); else repositions."
-status = "guess"
+desc = "Walk round to the opponent's side, then block (code 2026-11-02): step 0 stores the d-pad a quarter turn (either way at random) off the opponent's facing; ends when the opponent leaves the state it was seen in (+0x56); step 1 standing holds it; close (0x801504A0), not on the apron, with a chance skill x k twice -> mode 47 (block a dive); mode 0 otherwise."
+status = "likely"
 
 [[func]]
 addr = 0x8010838C
 name = "ai_mode_87_walk_c"
-desc = "D-pad walking, then mode 0. From a profile of the mode's code: the buttons it writes to AI block +0x0C, the situation (+0x24) and states it checks, the modes it goes to (2026-11-02). AI mode 87 in No Mercy's table (0x80145A10). Not identified."
-status = "guess"
+desc = "Walk to the opponent's zone axis (code 2026-11-02): when the CPU's zone (+0x42) is not the opponent's (+0x54): step 1 walks along the axis until within 0x801504B0; step 2 presses A with the d-pad toward the opponent's zone unless it is in a move, on the apron or in situation 48 (a grapple at the apron / floor, situation 26); step 3 waits; mode 0."
+status = "likely"
 
 [[func]]
 addr = 0x801085D8
 name = "ai_mode_88_run_attack"
 desc = "Running (own situation 2): presses A when close enough, then C-down. Read from code 2026-11-02 (quick pass). AI mode 88 in No Mercy's table (0x80145A10). Not identified."
-status = "guess"
+status = "likely"
 
 [[func]]
 addr = 0x801086AC
 name = "ai_mode_89_vs_lying"
 desc = "Opponent lying (situation 19) or dazed (16): lines up along x / z before acting. Read from code 2026-11-02 (quick pass). AI mode 89 in No Mercy's table (0x80145A10). Not identified."
-status = "guess"
+status = "likely"
 
 [[func]]
 addr = 0x801088EC
 name = "ai_mode_90_run_to"
 desc = "Picks a target (sub_800F847C / sub_80108A34) and runs to it (C-down with a direction) while the opponent runs (situation 3). Read from code 2026-11-02 (quick pass). AI mode 90 in No Mercy's table (0x80145A10). Not identified."
-status = "guess"
+status = "likely"
 
 [[func]]
 addr = 0x80108B38
 name = "ai_mode_91_walk_to"
-desc = "D-pad toward the target in situation 27. From a profile of the mode's code: the buttons it writes to AI block +0x0C, the situation (+0x24) and states it checks, the modes it goes to (2026-11-02). AI mode 91 in No Mercy's table (0x80145A10). Not identified."
-status = "guess"
+desc = "Walk to the opponent and grapple it across the ropes (code 2026-11-02): step 0 stores the d-pad toward the opponent's zone (+0x54); step 1 holds it while the opponent is in situation 15; when blocked (flags_f8) for 16 frames or within reach presses A with C-down; step 2 lines up with the zone (within 30 degrees), blocked -> A; step 3 waits for situation 27; mode 0."
+status = "likely"
 
 [[func]]
 addr = 0x80108E28
 name = "ai_mode_92_go_to_corner"
 desc = "Walks to a ring corner (points at 0x8014D1A8) while the opponent is down; then acts (dives?). Read from code 2026-11-02 (quick pass). AI mode 92 in No Mercy's table (0x80145A10). Not identified."
-status = "guess"
+status = "likely"
 
 [[func]]
 addr = 0x80108FEC
@@ -435,63 +435,63 @@ status = "likely"
 
 [[func]]
 addr = 0x80109008
-name = "ai_mode_94_situation_21"
-desc = "Presses L in situation 21 (state 0x3C). AI mode 94 in No Mercy's table (0x80145A10). Not identified."
-status = "guess"
+name = "ai_mode_94_corner_set_up"
+desc = "Presses L (0x20) at step 0 (the L that sets a slumped opponent on the turnbuckle, state 0x3C; code 2026-11-02): step 1 waits for situation 21, else clears the saved mode; step 2 when it ends goes to the saved mode (+0x86; a saved mode 2 restarts at step 1)."
+status = "likely"
 
 [[func]]
 addr = 0x801090D4
 name = "ai_mode_95_vs_runner_reply"
 desc = "The opponent running at it: strike (6) at 30%, a trait-scaled chance of mode 44, else wait. Read from code 2026-11-02 (quick pass). AI mode 95 in No Mercy's table (0x80145A10). Not identified."
-status = "guess"
+status = "likely"
 
 [[func]]
 addr = 0x80109244
 name = "ai_mode_96_ground_d"
-desc = "Shared by 96-99; C-left, C-down or A in situation 53 (the CPU in state 0x36, by a downed opponent): flip, step away or a ground grapple. From a profile of the mode's code: the buttons it writes to AI block +0x0C, the situation (+0x24) and states it checks, the modes it goes to (2026-11-02). AI mode 96, 97, 98, 99 in No Mercy's table (0x80145A10). Not identified."
-status = "guess"
+desc = "Modes 96-99, like 82-85 (C-left by face up / down, then A or C-down by the angle: 96 / 98 A within 65 degrees, 97 / 99 A beyond 115, C-down within 25 / beyond 155) with the pick-up (mode 20) when the opponent sits, only while the opponent's flags80 are not 0x180000 (code 2026-11-02)."
+status = "likely"
 
 [[func]]
 addr = 0x80109650
-name = "ai_mode_100_situation_51"
-desc = "Presses L in situation 51 (state 0x97). AI mode 100 in No Mercy's table (0x80145A10). Not identified."
-status = "guess"
+name = "ai_mode_100_ropes_l_move"
+desc = "L at an opponent on the ropes (state 0x97, situation 51; code 2026-11-02): step 0 walks toward the target (ai_dir8_to_target) until within 0x80150508, giving up when the opponent leaves the state it was seen in (+0x56); step 1 presses L; step 2 waits for situation 51; step 3 when it ends goes to the saved mode (+0x86)."
+status = "likely"
 
 [[func]]
 addr = 0x801097A8
 name = "ai_mode_101_go_to_area"
 desc = "Walks to an area by zone (from ai_decide_change_area); with a crowd weapon chance (attrs +6) on the way. Read from code 2026-11-02 (quick pass). AI mode 101 in No Mercy's table (0x80145A10). Not identified."
-status = "guess"
+status = "likely"
 
 [[func]]
 addr = 0x80109980
 name = "ai_mode_102_lockup_direction"
 desc = "In the lock-up (situation 13): holds a direction by zone and presses C-up, or C-down under g_match_type 0x10000; ends on a whip (28). Read from code 2026-11-02 (quick pass). AI mode 102 in No Mercy's table (0x80145A10). Not identified."
-status = "guess"
+status = "likely"
 
 [[func]]
 addr = 0x80109BCC
 name = "ai_mode_103_walk_around"
-desc = "D-pad by angle (angle_add, vec_xz_angle): circling. From a profile of the mode's code: the buttons it writes to AI block +0x0C, the situation (+0x24) and states it checks, the modes it goes to (2026-11-02). AI mode 103 in No Mercy's table (0x80145A10). Not identified."
-status = "guess"
+desc = "Circle in the ring arenas (code 2026-11-02): step 0 stores the d-pad a half turn from the opponent's direction (walk away); step 1 holds it when neither wrestler is blocked, else sidesteps along the zone axis; when the CPU's zone changes presses C-up with the d-pad toward it; mode 0 when the lock-up (13) ends."
+status = "likely"
 
 [[func]]
 addr = 0x80109F50
 name = "ai_mode_104_circle"
 desc = "Walks a short random time (0-12 frames) left / right / up / down by zone: circling. Read from code 2026-11-02 (quick pass). AI mode 104 in No Mercy's table (0x80145A10). Not identified."
-status = "guess"
+status = "likely"
 
 [[func]]
 addr = 0x8010A1D0
 name = "ai_mode_105_running"
-desc = "Shared by 105-109; while running (state 0x03) C-down or L by chance (stop or dodge). From a profile of the mode's code: the buttons it writes to AI block +0x0C, the situation (+0x24) and states it checks, the modes it goes to (2026-11-02). AI mode 105, 106, 107, 108, 109 in No Mercy's table (0x80145A10). Not identified."
-status = "guess"
+desc = "Modes 105-109, run and stop (code 2026-11-02): step 0 prepares A (105) or the entry of the table word_80145C54 + 716 for the mode (a move and its input, the reach from the record); below 110 presses C-down toward the opponent (dir8 / 2 + 4), already running -> step 3; step 1 waits for the run; step 2 while running: at run step 2 close with a skill chance L against a striker / grappler, within the reach the prepared input; a rebound -> 119; step 3 waits for the rebound; mode 0."
+status = "likely"
 
 [[func]]
 addr = 0x8010A474
 name = "ai_mode_110_c_left_turn"
 desc = "Standing: presses C-left with the direction away from a point (angle + 180 degrees). Read from code 2026-11-02 (quick pass). AI mode 110 in No Mercy's table (0x80145A10). Not identified."
-status = "guess"
+status = "likely"
 
 [[func]]
 addr = 0x8010A9F4
@@ -503,37 +503,37 @@ status = "likely"
 addr = 0x8010AA5C
 name = "ai_mode_113_special_move"
 desc = "With SPECIAL or finisher mode and by the current animation's style (13090 + ... in 17287-17290): presses C-down by ring corner distance. Read from code 2026-11-02 (quick pass). AI mode 113 in No Mercy's table (0x80145A10). Not identified."
-status = "guess"
+status = "likely"
 
 [[func]]
 addr = 0x8010AC3C
-name = "ai_mode_114_situation_58"
-desc = "L in situation 58 (state 0x1D) or 1. AI mode 114 in No Mercy's table (0x80145A10). Not identified."
-status = "guess"
+name = "ai_mode_114_l_vs_runner"
+desc = "L against a runner (code 2026-11-02): step 0 picks the d-pad side away from the opponent (+0x9C; with +0x80 0x40 near that side 70% into +0x10); step 1, standing (situation 1) with the opponent not facing it (over 90 degrees) and within 0x801505A0: presses L (+0x20), with attrs +0x34 0x100000 together with the stored direction, with 0x400000 at 50% the side; else holds the stored d-pad in states 2-3 of +0x48 unless the pad already has it; step 2 waits for situation 58 (0x1D, L against a runner); step 3 ends with mode 15 unless the situation is 47 / 58."
+status = "likely"
 
 [[func]]
 addr = 0x8010AEDC
 name = "ai_mode_115_strike_follow_b"
-desc = "In its own strike (state 0x22) presses B toward the target. From a profile of the mode's code: the buttons it writes to AI block +0x0C, the situation (+0x24) and states it checks, the modes it goes to (2026-11-02). AI mode 115 in No Mercy's table (0x80145A10). Not identified."
-status = "guess"
+desc = "Follow-up strike timed on the opponent's recovery (code 2026-11-02): step 0, standing, when the opponent is in situation 41 sets a timer from its countdown (+0xA2) minus 6 minus the move record's +4; step 1 counts it down holding the d-pad toward the target when far, then presses B; step 2 holds B while in its own strike (state 0x22); mode 0."
+status = "likely"
 
 [[func]]
 addr = 0x8010B004
 name = "ai_mode_116_run_ropes"
 desc = "Runs (C-down) and rebounds off the ropes (situations 2 / 4), then mode 119. Read from code 2026-11-02 (quick pass). AI mode 116 in No Mercy's table (0x80145A10). Not identified."
-status = "guess"
+status = "likely"
 
 [[func]]
 addr = 0x8010B1C4
 name = "ai_mode_117_lockup_react"
 desc = "In the lock-up or whip (situations 13 / 28): holds a direction, and reacts to the opponent's situations 20-31. Read from code 2026-11-02 (quick pass). AI mode 117 in No Mercy's table (0x80145A10). Not identified."
-status = "guess"
+status = "likely"
 
 [[func]]
 addr = 0x8010B544
 name = "ai_mode_118_apron_walk_b"
-desc = "apron_walk_dpad and ai_can_act. From a profile of the mode's code: the buttons it writes to AI block +0x0C, the situation (+0x24) and states it checks, the modes it goes to (2026-11-02). AI mode 118 in No Mercy's table (0x80145A10). Not identified."
-status = "guess"
+desc = "Apron walk to the partner's side and tag (code 2026-11-02): step 0 presses C-down (4) with the apron pad for its ring zone (word_80145C54 + 772) and sets the target point at +-265 beside the partner (0x8016B71C), timer 100; step 1 in situation 2 within 0x80150610 of it presses the C buttons (3840), then with the opponent flags_e9 0x10 ai_can_act, else mode 68 (run) when far or 0; step 2 counts the timer down, near the point (0x80150618) presses the C buttons and step 3; step 3 presses C-up with the d-pad toward its zone (apron_walk_dpad) when the timer runs out; mode 0."
+status = "likely"
 
 [[func]]
 addr = 0x8010B8B0
@@ -544,74 +544,74 @@ status = "likely"
 [[func]]
 addr = 0x8010B8F8
 name = "ai_mode_120_lockup"
-desc = "In the lock-up (state 0x51): picks the grapple move by direction (angle_dir8), then mode 0. From a profile of the mode's code: the buttons it writes to AI block +0x0C, the situation (+0x24) and states it checks, the modes it goes to (2026-11-02). AI mode 120 in No Mercy's table (0x80145A10). Not identified."
-status = "guess"
+desc = "In the lock-up (state 0x51) (code 2026-11-02): step 0: with the opponent close (0x80150648) or straight across, step 2 (hold the facing's d-pad while spirit_timer >= 31 and the pair is far, step 3); else step 1: holds the pad from word_80145C54 + 780 / + 796 (by the opponent's side parity) toward it when it is straight across; otherwise, when the zones differ and the CPU faces neither its own nor the opponent's side (within 45 degrees), stores the direction a half turn from the opponent and holds it 10 frames (step 6, then back to 1); step 4 ai_lockup_dir_move with C-down; step 5 presses the stored pad while in the lock-up (13); mode 0 outside 0x51."
+status = "likely"
 
 [[func]]
 addr = 0x8010BCC4
-name = "ai_mode_121_switch_target"
-desc = "Shared by 121 / 122; presses C-right (change focus) and C-up. From a profile of the mode's code: the buttons it writes to AI block +0x0C, the situation (+0x24) and states it checks, the modes it goes to (2026-11-02). AI mode 121, 122 in No Mercy's table (0x80145A10). Not identified."
-status = "guess"
+name = "ai_mode_121_cage_climb"
+desc = "Modes 121 / 122, the cage climb from the run (code 2026-11-02): step 0 presses C-down with the d-pad toward the opponent's zone (+0x64); step 1 in the run (state 0x03) presses C-up (121) or C-right (122); a rebound (0x04) -> step 2 (the C buttons, 3840); state 0x6E -> mode 0."
+status = "likely"
 
 [[func]]
 addr = 0x8010BE00
 name = "ai_mode_123_walk_d"
-desc = "D-pad walking, then mode 0. From a profile of the mode's code: the buttons it writes to AI block +0x0C, the situation (+0x24) and states it checks, the modes it goes to (2026-11-02). AI mode 123 in No Mercy's table (0x80145A10). Not identified."
-status = "guess"
+desc = "Walk to the opponent's zone edge, then C-right (code 2026-11-02): standing, holds the d-pad until within the limits (0x80150660-0x80150678) of the opponent's zone (+0x64); step 1 presses C-right (1) with the d-pad toward the zone (the focus switch / cage whip input); mode 0."
+status = "likely"
 
 [[func]]
 addr = 0x8010BFC8
 name = "ai_mode_124_walk_dir"
 desc = "Shared by 124-126: walks for a timer in a direction (d-pad up / down), stopping at zones with flags at zone_info +0x26 / +0x28. Read from code 2026-11-02 (quick pass). AI mode 124, 125, 126 in No Mercy's table (0x80145A10). Not identified."
-status = "guess"
+status = "likely"
 
 [[func]]
 addr = 0x8010C188
 name = "ai_mode_127_walk_e"
-desc = "Shared by 127-129; d-pad walking. From a profile of the mode's code: the buttons it writes to AI block +0x0C, the situation (+0x24) and states it checks, the modes it goes to (2026-11-02). AI mode 127, 128, 129 in No Mercy's table (0x80145A10). Not identified."
-status = "guess"
+desc = "Modes 127 / 128, walk to a zone edge and climb out (code 2026-11-02): step 0 (SPECIAL -> mode 50): 127 by the CPU's own zone (+0x42), 128 by the opponent's (+0x64) stores the d-pad for that zone; step 1 standing walks until within the zone's limits (0x80150680-0x80150698); step 2 presses C-up with the stored pad; mode 0."
+status = "likely"
 
 [[func]]
 addr = 0x8010C434
 name = "ai_mode_130_c_up_down"
 desc = "Standing: presses C-up with d-pad down, expecting state 0x6F. Read from code 2026-11-02 (quick pass). AI mode 130 in No Mercy's table (0x80145A10). Not identified."
-status = "guess"
+status = "likely"
 
 [[func]]
 addr = 0x8010C48C
 name = "ai_mode_131_block_b"
 desc = "Presses R when the height difference (+0x90) is small, expecting the block state 0x4C. Read from code 2026-11-02 (quick pass). AI mode 131 in No Mercy's table (0x80145A10). Not identified."
-status = "guess"
+status = "likely"
 
 [[func]]
 addr = 0x8010C51C
 name = "ai_mode_132_strike_b"
-desc = "Presses B, then mode 0. From a profile of the mode's code: the buttons it writes to AI block +0x0C, the situation (+0x24) and states it checks, the modes it goes to (2026-11-02). AI mode 132 in No Mercy's table (0x80145A10). Not identified."
-status = "guess"
+desc = "Holds B while in state 0xCC (idle on the cage top), then mode 0 (code 2026-11-02)."
+status = "likely"
 
 [[func]]
 addr = 0x8010C58C
 name = "ai_mode_133_ladder_match_a"
 desc = "Ladder-match logic around object 6 (its holder and position): heads for it. Read from code 2026-11-02 (quick pass). AI mode 133 in No Mercy's table (0x80145A10). Not identified."
-status = "guess"
+status = "likely"
 
 [[func]]
 addr = 0x8010C9D8
 name = "ai_mode_134_drag_or_flip"
 desc = "Standing: presses C-left (twice) after measuring a perceived distance: dragging or flipping. Read from code 2026-11-02 (quick pass). AI mode 134 in No Mercy's table (0x80145A10). Not identified."
-status = "guess"
+status = "likely"
 
 [[func]]
 addr = 0x8010CC0C
 name = "ai_mode_135_ladder_match_climb"
 desc = "Object 6 flags 0x100: goes to it and climbs (counts frames in states 0x9E / 0x9F). Read from code 2026-11-02 (quick pass). AI mode 135 in No Mercy's table (0x80145A10). Not identified."
-status = "guess"
+status = "likely"
 
 [[func]]
 addr = 0x8010D57C
 name = "ai_mode_136_strike_from_behind"
 desc = "Holds d-pad right; presses B (50%) when within 80 of an opponent or its partner seen from behind, in the ring. Read from code 2026-11-02 (quick pass). AI mode 136 in No Mercy's table (0x80145A10). Name from its World Tour match ai_mode_21 (0x800E2324), unchecked. As World Tour ai_mode_21 (0x800E2324), matched by call graph (score 1.03). World Tour: AI mode 21: C-up toward the ring (climb in) (ai.md)."
-status = "guess"
+status = "likely"
 
 [[func]]
 addr = 0x8010D6F0
@@ -622,14 +622,14 @@ status = "likely"
 [[func]]
 addr = 0x8010D70C
 name = "ai_mode_138_ladder_top"
-desc = "On the ladder (states 0xB1 / 0xBD): R, up or B by chance: climbing on and grabbing the prize. From a profile of the mode's code: the buttons it writes to AI block +0x0C, the situation (+0x24) and states it checks, the modes it goes to (2026-11-02). AI mode 138 in No Mercy's table (0x80145A10). Not identified."
-status = "guess"
+desc = "On the ladder against an opponent on one (its location 0x10) (code 2026-11-02): a striking opponent (8) with a skill chance -> block R for ai_block_timer frames (step 1); 1/15 of skill chance B; holds d-pad down (2048); mashes A+B+L+R (0xC030) with chance skill x ai_struggle_rate (1000 for a losing CPU against a CPU-controlled opponent 41 health ahead); in state 0xBD past step 0 prepares A, added in state 0xB1; mode 0 otherwise."
+status = "likely"
 
 [[func]]
 addr = 0x8010D93C
 name = "ai_mode_139_ladder_match_b"
 desc = "Object 6 free: goes for it by x / z, else mode 9. Read from code 2026-11-02 (quick pass). AI mode 139 in No Mercy's table (0x80145A10). Not identified."
-status = "guess"
+status = "likely"
 
 [[func]]
 addr = 0x8010DED4
@@ -641,7 +641,7 @@ status = "likely"
 addr = 0x8010DEF0
 name = "ai_mode_141_after_crowd_weapon"
 desc = "Around a crowd-weapon grab (own situation 50) out on the floor: walks by quadrant. Read from code 2026-11-02 (quick pass). AI mode 141 in No Mercy's table (0x80145A10). Not identified."
-status = "guess"
+status = "likely"
 
 [[func]]
 addr = 0x8010E250
@@ -653,13 +653,13 @@ status = "likely"
 addr = 0x8010E26C
 name = "ai_mode_143_tag_assist"
 desc = "Tag / handicap (g_match_type 0x1000 / 0x2000): when the opponent runs, checks the partner's slot and helps. Read from code 2026-11-02 (quick pass). AI mode 143 in No Mercy's table (0x80145A10). Not identified."
-status = "guess"
+status = "likely"
 
 [[func]]
 addr = 0x8010E3F4
 name = "ai_mode_144_chase_last"
 desc = "With g_match_type 0x4000 and its end_flags 0x01: goes after the remaining wrestler without 0x01 (an elimination match?). Read from code 2026-11-02 (quick pass). AI mode 144 in No Mercy's table (0x80145A10). Not identified."
-status = "guess"
+status = "likely"
 
 [[enum]]
 name = "AiSituation"

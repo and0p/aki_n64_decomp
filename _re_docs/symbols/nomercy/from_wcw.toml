@@ -10,8 +10,8 @@ status = "likely"
 [[func]]
 addr = 0x80003BD0
 name = "file_lookup"
-desc = "As World Tour file_lookup (0x80004D24), matched by call graph (score 0.92). World Tour: Fills info with ROM start/end, unpacked size and packed length of archive file 1..5498."
-status = "guess"
+desc = "Checked against No Mercy's code 2026-11-02: fills (start, end, size, compressed size) for archive file a2 from the tables at 0x80062C10 / 0x80062C14 (ROM base 0x1BD150 = 1823056; bit 0 marks a compressed file). As World Tour file_lookup (0x80004D24), matched by call graph (score 0.92). World Tour: Fills info with ROM start/end, unpacked size and packed length of archive file 1..5498."
+status = "likely"
 
 [[func]]
 addr = 0x800054E0
@@ -34,8 +34,8 @@ status = "likely"
 [[func]]
 addr = 0x8000B354
 name = "text_load"
-desc = "As World Tour text_load (0x80028E90), matched by call graph (score 0.93). World Tour: Loads a text/font resource (heap_alloc + copy) for the HUD, results and pause menu."
-status = "guess"
+desc = "Checked against No Mercy's code 2026-11-02: loads the 18 x 4 attire text / palette resources (attire_load from file 2817 on) into two heap buffers; no caller. As World Tour text_load (0x80028E90), matched by call graph (score 0.93). World Tour: Loads a text/font resource (heap_alloc + copy) for the HUD, results and pause menu."
+status = "likely"
 
 [[func]]
 addr = 0x8000C4FC
@@ -76,8 +76,8 @@ status = "likely"
 [[func]]
 addr = 0x80012F48
 name = "model_blend_prev"
-desc = "As World Tour model_blend_prev (0x8000A7F0), matched by call graph (score 0.98). World Tour: Blends the new animation's first frames toward the previous pose (weights at 0x8002D410)."
-status = "guess"
+desc = "Checked against No Mercy's code 2026-11-02: blends the previous pose into the new one for slot a1 by the weight table 0x80047FF8[a2] over the 19 joints (flags a3 0x04 / 0x08 keep the root offset). As World Tour model_blend_prev (0x8000A7F0), matched by call graph (score 0.98). World Tour: Blends the new animation's first frames toward the previous pose (weights at 0x8002D410)."
+status = "likely"
 
 [[func]]
 addr = 0x800132D8
@@ -124,8 +124,8 @@ status = "likely"
 [[func]]
 addr = 0x80035F28
 name = "camera_manual"
-desc = "As World Tour camera_manual (0x8009D474), matched by call graph (score 0.98). World Tour: Camera moved by player 1's stick (dead zone 5)."
-status = "guess"
+desc = "Checked against No Mercy's code 2026-11-02: builds a camera matrix from two angles (sin / cos, 0x80053770 = the angle unit); no caller. As World Tour camera_manual (0x8009D474), matched by call graph (score 0.98). World Tour: Camera moved by player 1's stick (dead zone 5)."
+status = "likely"
 
 [[func]]
 addr = 0x800DB560
@@ -154,8 +154,8 @@ status = "likely"
 [[func]]
 addr = 0x800DC260
 name = "hud_sprite_alloc"
-desc = "As World Tour hud_sprite_alloc (0x800926E8), matched by call graph (score 0.92). World Tour: Allocates a HUD sprite node (two 64-byte and one 512-byte buffers)."
-status = "guess"
+desc = "Checked against No Mercy's code 2026-11-02: allocates a HUD sprite (dl_alloc 4 x 16 + 24 + 24 bytes) and writes its texture-load display list (a2 picks the format words). As World Tour hud_sprite_alloc (0x800926E8), matched by call graph (score 0.92). World Tour: Allocates a HUD sprite node (two 64-byte and one 512-byte buffers)."
+status = "likely"
 
 [[func]]
 addr = 0x800DC6A4
@@ -172,8 +172,8 @@ status = "likely"
 [[func]]
 addr = 0x800DC85C
 name = "hud_text"
-desc = "As World Tour hud_text (0x80092AE4), matched by call graph (score 0.92). World Tour: Draws a HUD text / number string at a position with a colour (used by the bars, count and messages)."
-status = "guess"
+desc = "Checked against No Mercy's code 2026-11-02: writes a HUD text quad (position, scale, colour from a3) into the node's vertex data. As World Tour hud_text (0x80092AE4), matched by call graph (score 0.92). World Tour: Draws a HUD text / number string at a position with a colour (used by the bars, count and messages)."
+status = "likely"
 
 [[func]]
 addr = 0x800DDB10
@@ -190,14 +190,14 @@ status = "likely"
 [[func]]
 addr = 0x800EB970
 name = "running_ground_attack_check"
-desc = "As World Tour running_ground_attack_check (0x800B9E44), matched by call graph (score 0.94). World Tour: Run + B next to a lying opponent in the ring: starts the running ground attack (0x4F) when within reach."
-status = "guess"
+desc = "Checked against No Mercy's code 2026-11-02: whether a1 is within a3 of a2's lying body (lying_body_axis when down / flags8a 0x2000 / a11, else the point) and returns the angle into a4. As World Tour running_ground_attack_check (0x800B9E44), matched by call graph (score 0.94). World Tour: Run + B next to a lying opponent in the ring: starts the running ground attack (0x4F) when within reach."
+status = "likely"
 
 [[func]]
 addr = 0x800FD7C0
 name = "ai_pick_dpad"
-desc = "As World Tour ai_pick_dpad (0x800DF948), matched by call graph (score 0.99). World Tour: Weighted pick of d-pad bits from (bound, bits) pairs, e.g. 0x800E7BA0: Up / Down / none, a third each."
-status = "guess"
+desc = "Checked against No Mercy's code 2026-11-02: weighted pick from a (threshold, value) list by rand_pool_next; no caller. As World Tour ai_pick_dpad (0x800DF948), matched by call graph (score 0.99). World Tour: Weighted pick of d-pad bits from (bound, bits) pairs, e.g. 0x800E7BA0: Up / Down / none, a third each."
+status = "likely"
 
 [[func]]
 addr = 0x8011723C
@@ -226,8 +226,8 @@ status = "likely"
 [[func]]
 addr = 0x80127DCC
 name = "grapple_anim_defender"
-desc = "As World Tour grapple_anim_defender (0x800C421C), matched by call graph (score 0.99). World Tour: Defender's grapple-lock animation, the attacker's id + 1 (2937, 2941, 2945, 2949, 2953, 2958, 2935)."
-status = "guess"
+desc = "Checked against No Mercy's code 2026-11-02: the defender's lock-up animation by the attempt flags78: 11905 / 11909 (rear) normal, 11913 / 11917 at a staggered target, 11921 across the ropes, 11925 from the apron, 11937 the clash; places it with slide_vector over 6 frames. As World Tour grapple_anim_defender (0x800C421C), matched by call graph (score 0.99). World Tour: Defender's grapple-lock animation, the attacker's id + 1 (2937, 2941, 2945, 2949, 2953, 2958, 2935)."
+status = "likely"
 
 [[func]]
 addr = 0x8012E040
@@ -238,8 +238,8 @@ status = "likely"
 [[func]]
 addr = 0x8012E434
 name = "lying_body_dist"
-desc = "As World Tour lying_body_dist (0x800A0100), matched by call graph (score 0.98). World Tour: Distance from a point to a lying wrestler's body (an ellipse along its facing), used to decide whether a downed opponent is within reach."
-status = "guess"
+desc = "Checked against No Mercy's code 2026-11-02: distance from a point to the lying body's ellipse (half axes +0 / +8, angle +0x18) along the line to its centre. As World Tour lying_body_dist (0x800A0100), matched by call graph (score 0.98). World Tour: Distance from a point to a lying wrestler's body (an ellipse along its facing), used to decide whether a downed opponent is within reach."
+status = "likely"
 
 [[func]]
 addr = 0x8012F83C

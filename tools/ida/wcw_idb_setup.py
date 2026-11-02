@@ -29,6 +29,7 @@ import symdb  # noqa: E402
 EXPORT = os.environ.get("WCW_EXPORT") or os.path.join(os.path.dirname(idc.get_idb_path()), "export.json")
 
 GAME = os.environ.get("AKI_GAME", "wcw")
+OVERLAY = os.environ.get("AKI_OVERLAY", "e")  # nomercy only: e (the match) or c (the menus)
 
 if GAME == "revenge":
     # From the recomp's splat config (disasm/revenge.yaml): main is code with data pockets,
@@ -43,6 +44,35 @@ if GAME == "revenge":
         (0x800FAFA0, 0x80100000, "heap_hi", "BSS"),
     ]
     TEXT = []  # main mixes code and data, so functions come only from the recomp's list
+elif GAME == "nomercy" and OVERLAY == "b":
+    # Main plus the story overlay ovl_b (second slot); main-segment symbols only, as for ovl_c.
+    SEGMENTS = [
+        (0x80000000, 0x80000400, "lowmem", "BSS"),
+        (0x80000400, 0x80040380, "main_text", "CODE"),
+        (0x80040380, 0x80056670, "main_data", "DATA"),
+        (0x80056670, 0x800BD960, "main_bss", "BSS"),
+        (0x800BD960, 0x80106760, "heap_lo", "BSS"),
+        (0x80106760, 0x8011EBD0, "ovlb_text", "CODE"),
+        (0x8011EBD0, 0x801338E0, "ovlb_data", "DATA"),
+        (0x801338E0, 0x8016CDD0, "ovlb_bss", "BSS"),
+        (0x8016CDD0, 0x80170000, "heap_hi", "BSS"),
+    ]
+    TEXT = []
+elif GAME == "nomercy" and OVERLAY == "c":
+    # Main plus the menu overlay ovl_c (second slot). Only the main-segment symbols apply: ovl_e's
+    # addresses overlap ovl_c's, so they are filtered out in main().
+    SEGMENTS = [
+        (0x80000000, 0x80000400, "lowmem", "BSS"),
+        (0x80000400, 0x80040380, "main_text", "CODE"),
+        (0x80040380, 0x80056670, "main_data", "DATA"),
+        (0x80056670, 0x800BD960, "main_bss", "BSS"),
+        (0x800BD960, 0x80106760, "heap_lo", "BSS"),
+        (0x80106760, 0x80147EE0, "ovlc_text", "CODE"),
+        (0x80147EE0, 0x80155620, "ovlc_data", "DATA"),
+        (0x80155620, 0x8015BA00, "ovlc_bss", "BSS"),
+        (0x8015BA00, 0x80170000, "heap_hi", "BSS"),
+    ]
+    TEXT = []
 elif GAME == "nomercy":
     # From the recomp's splat config (disasm/nomercy.yaml, Rev 1): main text and data, then the
     # match overlay ovl_e, which spans both overlay slots (ovl_a-ovl_d are left out).
@@ -299,6 +329,11 @@ def export(sym):
 
 def main():
     sym = symdb.Symbols(GAME)
+    if GAME == "nomercy" and OVERLAY in ("b", "c"):
+        # keep the main-segment names only; the match overlay's addresses are ovl_c's here
+        sym.funcs = [f for f in sym.funcs if f["addr"] < 0x800D9960]
+        sym.data = [d for d in sym.data if d["addr"] < 0x800D9960]
+        log("ovl_c build: %d main functions, %d globals kept" % (len(sym.funcs), len(sym.data)))
     ida_auto.set_ida_state(ida_auto.st_Work)
     setup_segments()
     find_functions(sym)

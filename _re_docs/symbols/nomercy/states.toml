@@ -4,80 +4,80 @@
 
 [[func]]
 addr = 0x800E5DA0
-name = "state_00"
-proto = "void state_00(struct WrestlerCtx *ctx)"
-desc = "Handler for state 0x00 in No Mercy's table (0x80144CF0). Not identified."
-status = "likely"
+name = "state_00_pre_bell"
+proto = "void state_00_pre_bell(struct WrestlerCtx *ctx)"
+desc = "Confirmed 2026-11-02: the setter read from code and Andrew's animation tags agree. Code 2026-11-02: every wrestler's state before the bell. Step 0 plays its idle (the apron idle 11745 on the apron, else anim_pick 7); step 1 waits for the start bit 0x8016B598 0x01, then the guest referee's slot (flags_e9 0x04) plays 12959 (Andrew's tag: bringing two heads together) and goes to 0x1B with flags84 4, everyone else stands (0x01). Slams two wrestlers' heads together (12959) (Andrew's viewer tags, 2026-11-02). Handler for state 0x00 in No Mercy's table (0x80144CF0)."
+status = "confirmed"
 
 [[func]]
 addr = 0x800E5EB8
 name = "state_01_stand"
 proto = "void state_01_stand(struct WrestlerCtx *ctx)"
-desc = "Handler for state 0x01 in No Mercy's table (0x80144CF0). Name from its Revenge match state_01_stand (0x8009DD60), unchecked. As Revenge state_01_stand (0x8009DD60), matched by call graph (score 0.94). Revenge: Matches World Tour state_01_stand (0x800A7EE4), call-graph score 1.28. Entered through the state setters from: match_init_wrestlers, state_00, state_03_run, state_04, state_05, state_09, state_1B_taunt, state_33_recover_bent, state_6F, state_95, state_AA, state_CC, state_D2_stance_turn_anim."
-status = "guess"
+desc = "Checked 2026-11-02: runs every standing input (input_l, input_r, input_c_up, input_leapfrog, taunts, the apron inputs), walk_step, health_regen and spirit_update op 1. Handler for state 0x01 in No Mercy's table (0x80144CF0). Name from its Revenge match state_01_stand (0x8009DD60), unchecked. As Revenge state_01_stand (0x8009DD60), matched by call graph (score 0.94). Revenge: Matches World Tour state_01_stand (0x800A7EE4), call-graph score 1.28. Entered through the state setters from: match_init_wrestlers, state_00, state_03_run, state_04, state_05, state_09, state_1B_taunt, state_33_recover_bent, state_6F, state_95, state_AA, state_CC, state_D2_stance_turn_anim."
+status = "confirmed"
 
 [[func]]
 addr = 0x8010E550
-name = "state_02"
-proto = "void state_02(struct WrestlerCtx *ctx)"
-desc = "Handler for state 0x02 in No Mercy's table (0x80144CF0). Not identified. Entered through the state setters from: sub_8013D8BC."
-status = "likely"
+name = "state_02_apron_corner_walk"
+proto = "void state_02_apron_corner_walk(struct WrestlerCtx *ctx)"
+desc = "Confirmed 2026-11-02: the setter read from code and Andrew's animation tags agree. On the apron, sliding round the outer corner to the next side while holding the ropes (11795, 11796 the other way round): the apron corner walk new in No Mercy (Andrew's viewer tags, 2026-11-02). Handler for state 0x02 in No Mercy's table (0x80144CF0). Entered through the state setters from: sub_8013D8BC."
+status = "confirmed"
 
 [[func]]
 addr = 0x8010EFB0
 name = "state_03_run"
 proto = "void state_03_run(struct WrestlerCtx *ctx)"
-desc = "Handler for state 0x03 in No Mercy's table (0x80144CF0). Name from its Revenge match state_03_run (0x8009E624), unchecked. As Revenge state_03_run (0x8009E624), matched by call graph (score 1.11). Revenge: Matches World Tour state_03_run (0x800A888C), call-graph score 0.91. Entered through the state setters from: input_leapfrog, run_collide, run_step, state_04, state_0C_whip_runner, state_9F, state_A5, sub_800E76D0."
-status = "guess"
+desc = "Checked 2026-11-02: run_start, run_inputs, run_step, run_exit_check; set from standing by the run control. Handler for state 0x03 in No Mercy's table (0x80144CF0). Name from its Revenge match state_03_run (0x8009E624), unchecked. As Revenge state_03_run (0x8009E624), matched by call graph (score 1.11). Revenge: Matches World Tour state_03_run (0x800A888C), call-graph score 0.91. Entered through the state setters from: input_leapfrog, run_collide, run_step, state_04, state_0C_whip_runner, state_9F, state_A5, sub_800E76D0."
+status = "confirmed"
 
 [[func]]
 addr = 0x8010F624
 name = "state_04_run_rebound"
 proto = "void state_04_run_rebound(struct WrestlerCtx *ctx)"
-desc = "Bouncing off the ropes while running (from run_step / 0x03; rope_rebound_slide, run_collide_check; A during it); back to the run. From a profile of the handler's setters, animations and calls (2026-11-02). Handler for state 0x04 in No Mercy's table (0x80144CF0). Not identified. Entered through the state setters from: run_step, state_03_run."
-status = "likely"
+desc = "Confirmed 2026-11-02: the setter read from code and Andrew's animation tags agree. Bouncing off the ropes while running (from run_step / 0x03; rope_rebound_slide, run_collide_check; A during it); back to the run. From a profile of the handler's setters, animations and calls (2026-11-02). Handler for state 0x04 in No Mercy's table (0x80144CF0). Entered through the state setters from: run_step, state_03_run."
+status = "confirmed"
 
 [[func]]
 addr = 0x8010FB2C
 name = "state_05_run_collide_hit"
 proto = "void state_05_run_collide_hit(struct WrestlerCtx *ctx)"
-desc = "Knocked by a running collision (set by run_collide; strike_reaction_anim, a chance roll); goes on to 0x35. From a profile of the handler's setters, animations and calls (2026-11-02). Handler for state 0x05 in No Mercy's table (0x80144CF0). Not identified. Entered through the state setters from: run_collide."
-status = "guess"
+desc = "Knocked by a running collision (set by run_collide; strike_reaction_anim, a chance roll); goes on to 0x35. From a profile of the handler's setters, animations and calls (2026-11-02). Handler for state 0x05 in No Mercy's table (0x80144CF0). Entered through the state setters from: run_collide."
+status = "likely"
 
 [[func]]
 addr = 0x8010FCDC
-name = "state_06"
-proto = "void state_06(struct WrestlerCtx *ctx)"
-desc = "Handler for state 0x06 in No Mercy's table (0x80144CF0). Not identified."
+name = "state_06_run_r_move"
+proto = "void state_06_run_r_move(struct WrestlerCtx *ctx)"
+desc = "Checked 2026-11-02: run_inputs tests R (buttons 0x10) before L and B; the handler only starts move 208 and runs move_event, with no hit test of its own (any contact would come from the move's frame events). R held while running (run_inputs, somewhere it can act): the wrestler's own running move 208 from its move set (code 2026-11-02). Handler for state 0x06 in No Mercy's table (0x80144CF0)."
 status = "likely"
 
 [[func]]
 addr = 0x80122D24
-name = "state_07"
-proto = "void state_07(struct WrestlerCtx *ctx)"
-desc = "Handler for state 0x07 in No Mercy's table (0x80144CF0). Not identified."
-status = "likely"
+name = "state_07_running_shoulder_block"
+proto = "void state_07_running_shoulder_block(struct WrestlerCtx *ctx)"
+desc = "Confirmed 2026-11-02: the code read and a RAM observation agree. Running shoulder block (animation 15256, Andrew 2026-11-02). RAM 2026-11-02 (4-CPU match, 600 frames sampled): entered from the run (prev 0x03), animation 15256 for 52 frames. Handler for state 0x07 in No Mercy's table (0x80144CF0)."
+status = "confirmed"
 
 [[func]]
 addr = 0x801240F4
-name = "state_08"
-proto = "void state_08(struct WrestlerCtx *ctx)"
-desc = "Generic move 109. Handler for state 0x08 in No Mercy's table (0x80144CF0). Not identified."
-status = "likely"
+name = "state_08_run_weapon_strike"
+proto = "void state_08_run_weapon_strike(struct WrestlerCtx *ctx)"
+desc = "Confirmed 2026-11-02: setter conditions (state_22_strike / run_inputs / run_step / state_4F / strike_land, read from code) and the handler (its move and hit test) agree. B held while running with a weapon (run_inputs): the running strike with generic move 109; without a weapon B gives 0x07, the shoulder block (code 2026-11-02). Generic move 109. Handler for state 0x08 in No Mercy's table (0x80144CF0)."
+status = "confirmed"
 
 [[func]]
 addr = 0x800E638C
-name = "state_09"
-proto = "void state_09(struct WrestlerCtx *ctx)"
-desc = "Handler for state 0x09 in No Mercy's table (0x80144CF0). Name from its Revenge match state_09 (0x8009F774), unchecked. As Revenge state_09 (0x8009F774), matched by call graph (score 1.28). Revenge: Handler for Revenge state 0x09; World Tour state 0x08 (state_08) by the state-table alignment (README)."
-status = "guess"
+name = "state_09_apron_dodge"
+proto = "void state_09_apron_dodge(struct WrestlerCtx *ctx)"
+desc = "Confirmed 2026-11-02: the setter read from code and Andrew's animation tags agree. On the apron, dodging back while holding the ropes (11876) (Andrew's viewer tags, 2026-11-02). Handler for state 0x09 in No Mercy's table (0x80144CF0). Name from its Revenge match state_09 (0x8009F774), unchecked. As Revenge state_09 (0x8009F774), matched by call graph (score 1.28). Revenge: Handler for Revenge state 0x09; World Tour state 0x08 (state_08) by the state-table alignment (README)."
+status = "confirmed"
 
 [[func]]
 addr = 0x8013A9D4
-name = "state_0A"
-proto = "void state_0A(struct WrestlerCtx *ctx)"
-desc = "Handler for state 0x0A in No Mercy's table (0x80144CF0). Not identified. Entered through the state setters from: run_step, state_30, state_93, state_95."
-status = "likely"
+name = "state_0A_turnbuckle_perch"
+proto = "void state_0A_turnbuckle_perch(struct WrestlerCtx *ctx)"
+desc = "Confirmed 2026-11-02: the setter read from code and Andrew's animation tags agree. Perched up on the turnbuckle (code 2026-11-02): input_climb_turnbuckle starts it with C-down and the d-pad toward a free corner (nearest_corner, corner_free, climb_check gives the move), from the ring or from the apron (also 0x95, the apron partner); 12092 is the crouch on the corner (Andrew's tag). Waiting crouched up on the corner, ready to pounce (12092) (Andrew's viewer tags, 2026-11-02). Handler for state 0x0A in No Mercy's table (0x80144CF0). Entered through the state setters from: run_step, state_30, state_93, state_95."
+status = "confirmed"
 
 [[func]]
 addr = 0x8011A580
@@ -97,106 +97,106 @@ status = "confirmed"
 addr = 0x8011B5B0
 name = "state_0D_shove"
 proto = "void state_0D_shove(struct WrestlerCtx *ctx)"
-desc = "Shared by 0x0D and 0x0F: 0x0D is set by lockup_place_move, a shove (0x0F is putting the opponent onto the table). From a profile of the handler's setters, animations and calls (2026-11-02). Shared by 0x0D and 0x0F. 0x0F is the attacker putting the opponent onto the announce table (the opponent goes 0x10, then lies on the table in 0x31); lockup_place_move sets 0x0D / 0x0F. RAM 2026-11-01 (Andrew's save states: table spots and a rear grapple). Handler for state 0x0D, 0x0F in No Mercy's table (0x80144CF0). Not identified. Entered through the state setters from: lockup_place_move."
-status = "guess"
+desc = "Checked 2026-11-02: lockup_place_move (the lock-up's C-up placement) pairs 0x0D / 0x0E or 0x0F / 0x10 by where the pair ends up (0x0F / 0x10 onto the table). Shared by 0x0D and 0x0F: 0x0D is set by lockup_place_move, a shove (0x0F is putting the opponent onto the table). From a profile of the handler's setters, animations and calls (2026-11-02). Shared by 0x0D and 0x0F. 0x0F is the attacker putting the opponent onto the announce table (the opponent goes 0x10, then lies on the table in 0x31); lockup_place_move sets 0x0D / 0x0F. RAM 2026-11-01 (Andrew's save states: table spots and a rear grapple). Handler for state 0x0D, 0x0F in No Mercy's table (0x80144CF0). Entered through the state setters from: lockup_place_move."
+status = "likely"
 
 [[func]]
 addr = 0x8011B934
 name = "state_0E_shoved"
 proto = "void state_0E_shoved(struct WrestlerCtx *ctx)"
-desc = "Shared by 0x0E and 0x10: the receiver of 0x0D / 0x0F. From a profile of the handler's setters, animations and calls (2026-11-02). Shared by 0x0E and 0x10. 0x10 is being put onto the announce table (then 0x31 on the table). RAM 2026-11-01 (Andrew's save states: table spots and a rear grapple). Handler for state 0x0E, 0x10 in No Mercy's table (0x80144CF0). Not identified."
-status = "guess"
+desc = "Checked 2026-11-02: the receiver of lockup_place_move's 0x0D / 0x0F. Shared by 0x0E and 0x10: the receiver of 0x0D / 0x0F. From a profile of the handler's setters, animations and calls (2026-11-02). Shared by 0x0E and 0x10. 0x10 is being put onto the announce table (then 0x31 on the table). RAM 2026-11-01 (Andrew's save states: table spots and a rear grapple). Handler for state 0x0E, 0x10 in No Mercy's table (0x80144CF0)."
+status = "likely"
 
 [[func]]
 addr = 0x8011BAC4
-name = "state_11_whip_ctx_attacker"
-proto = "void state_11_whip_ctx_attacker(struct WrestlerCtx *ctx)"
-desc = "Handler for state 0x11, 0x13 in No Mercy's table (0x80144CF0). Name from its Revenge match state_0C_whip_ctx_attacker_body (0x800BE4E0), unchecked. As Revenge state_0C_whip_ctx_attacker_body (0x800BE4E0), matched by call graph (score 0.92). Revenge: Matches World Tour state_0C_whip_ctx_attacker_body (0x800D5AF0), call-graph score 1.52."
-status = "guess"
+name = "state_11_apron_lockup_c_down"
+proto = "void state_11_apron_lockup_c_down(struct WrestlerCtx *ctx)"
+desc = "C-down in a lock-up across the ropes (lockup_input, flags78 0x600 set): 0x11 / 0x12 when the defender is on the apron (0x200), 0x13 / 0x14 otherwise (the attacker on the apron); the attacker steers with the d-pad (whip_ctx_steer, dpad_to_side, walk) and whip_push_check decides the push. In the same branch A / B start apron grapple moves 145 / 146 / 149 / 150 (code 2026-11-02). Handler for state 0x11, 0x13 in No Mercy's table (0x80144CF0). Name from its Revenge match state_0C_whip_ctx_attacker_body (0x800BE4E0), unchecked. As Revenge state_0C_whip_ctx_attacker_body (0x800BE4E0), matched by call graph (score 0.92). Revenge: Matches World Tour state_0C_whip_ctx_attacker_body (0x800D5AF0), call-graph score 1.52."
+status = "likely"
 
 [[func]]
 addr = 0x8011BDD8
-name = "state_12"
-proto = "void state_12(struct WrestlerCtx *ctx)"
-desc = "Handler for state 0x12, 0x14 in No Mercy's table (0x80144CF0). Not identified."
+name = "state_12_apron_lockup_pushed"
+proto = "void state_12_apron_lockup_pushed(struct WrestlerCtx *ctx)"
+desc = "The defender of 0x11 / 0x13 (C-down in a lock-up across the ropes); shared by 0x12 and 0x14; whip_push_check (code 2026-11-02). Handler for state 0x12, 0x14 in No Mercy's table (0x80144CF0)."
 status = "likely"
 
 [[func]]
 addr = 0x800E6424
-name = "state_15"
-proto = "void state_15(struct WrestlerCtx *ctx)"
-desc = "Handler for state 0x15 in No Mercy's table (0x80144CF0). Not identified. Entered through the state setters from: run_step."
-status = "likely"
+name = "state_15_run_into_corner"
+proto = "void state_15_run_into_corner(struct WrestlerCtx *ctx)"
+desc = "Confirmed 2026-11-02: the setter read from code and Andrew's animation tags agree. Running into a wall or corner and being knocked back (12003, 12005); entered from run_step (Andrew's viewer tags, 2026-11-02). Handler for state 0x15 in No Mercy's table (0x80144CF0). Entered through the state setters from: run_step."
+status = "confirmed"
 
 [[func]]
 addr = 0x8010E9AC
-name = "state_16"
-proto = "void state_16(struct WrestlerCtx *ctx)"
-desc = "Handler for state 0x16 in No Mercy's table (0x80144CF0). Not identified. Entered through the state setters from: run_step."
-status = "likely"
+name = "state_16_run_knockout_fall"
+proto = "void state_16_run_knockout_fall(struct WrestlerCtx *ctx)"
+desc = "Confirmed 2026-11-02: the setter read from code and Andrew's animation tags agree. Checked 2026-11-02: set from run_step only; plays 12625. Smacked hard and falling onto the back as if knocked out (12625); entered from run_step (Andrew's viewer tags, 2026-11-02). Handler for state 0x16 in No Mercy's table (0x80144CF0). Entered through the state setters from: run_step."
+status = "confirmed"
 
 [[func]]
 addr = 0x800E6638
-name = "state_17"
-proto = "void state_17(struct WrestlerCtx *ctx)"
-desc = "Handler for state 0x17 in No Mercy's table (0x80144CF0). Not identified. Entered through the state setters from: state_35, strike_land."
-status = "likely"
+name = "state_17_on_ropes"
+proto = "void state_17_on_ropes(struct WrestlerCtx *ctx)"
+desc = "Confirmed 2026-11-02: the setter read from code and Andrew's animation tags agree. Knocked back onto the ropes and dazed there with the arms hanging over them (12147, 12148), getting up (12149), hit while there (12150) (Andrew's viewer tags, 2026-11-02). Handler for state 0x17 in No Mercy's table (0x80144CF0). Entered through the state setters from: state_35, strike_land."
+status = "confirmed"
 
 [[func]]
 addr = 0x8010E9E8
 name = "state_18_corner_slump"
 proto = "void state_18_corner_slump(struct WrestlerCtx *ctx)"
-desc = "Handler for state 0x18 in No Mercy's table (0x80144CF0). Name from its Revenge match state_14_corner_slump (0x8009FCBC), unchecked. As Revenge state_14_corner_slump (0x8009FCBC), matched by call graph (score 0.93). Revenge: Handler for Revenge state 0x14; matches World Tour state 0x13 (state_13_corner_slump) by shared animations and constants and its place in the table. Entered through the state setters from: state_35, sub_800ED6E8."
-status = "guess"
+desc = "Checked 2026-11-02: corner_place, sets frame_flags 0x01 (slumped in the corner, which input_l / input_r test), escape_time / mash_count / recover_tick to get out; entered from run_step for a whipped runner in a free corner. Handler for state 0x18 in No Mercy's table (0x80144CF0). Name from its Revenge match state_14_corner_slump (0x8009FCBC), unchecked. As Revenge state_14_corner_slump (0x8009FCBC), matched by call graph (score 0.93). Revenge: Handler for Revenge state 0x14; matches World Tour state 0x13 (state_13_corner_slump) by shared animations and constants and its place in the table. Entered through the state setters from: state_35, sub_800ED6E8."
+status = "confirmed"
 
 [[func]]
 addr = 0x8010EC90
-name = "state_19"
-proto = "void state_19(struct WrestlerCtx *ctx)"
-desc = "Handler for state 0x19 in No Mercy's table (0x80144CF0). Not identified."
+name = "state_19_run_stop_turn"
+proto = "void state_19_run_stop_turn(struct WrestlerCtx *ctx)"
+desc = "Checked 2026-11-02: run_step sends a whipped runner (flags86 0xA0) reaching a corner here when flags86 0x400 is set: the stop and turn in the corner (12055). A quick deliberate running turn, stopping (12055) (Andrew's viewer tags, 2026-11-02). Handler for state 0x19 in No Mercy's table (0x80144CF0)."
 status = "likely"
 
 [[func]]
 addr = 0x80122B6C
-name = "state_1A"
-proto = "void state_1A(struct WrestlerCtx *ctx)"
-desc = "Own move 207. Handler for state 0x1A in No Mercy's table (0x80144CF0). Not identified."
-status = "likely"
+name = "state_1A_corner_rebound_strike"
+proto = "void state_1A_corner_rebound_strike(struct WrestlerCtx *ctx)"
+desc = "Confirmed 2026-11-02: setter conditions (state_22_strike / run_inputs / run_step / state_4F / strike_land, read from code) and the handler (its move and hit test) agree. A whipped runner (flags86 0xA0) reaching a corner (run_step, nearest_corner): flags86 0x400 gives 0x19, 0x800 gives this state, own move 207 struck out of the corner (corner_place, strike_hit_test); with neither, a free corner goes on to the slump path (0x18) (code 2026-11-02). Own move 207. Handler for state 0x1A in No Mercy's table (0x80144CF0)."
+status = "confirmed"
 
 [[func]]
 addr = 0x800E67F0
-name = "state_1B_taunt"
-proto = "void state_1B_taunt(struct WrestlerCtx *ctx)"
-desc = "Handler for state 0x1B in No Mercy's table (0x80144CF0). Name from its Revenge match state_17_taunt (0x800A01B0), unchecked. As Revenge state_17_taunt (0x800A01B0), matched by call graph (score 0.98). Revenge: Handler for Revenge state 0x17; World Tour state 0x16 (state_16_taunt) by the state-table alignment (README). Legal men's partners on the apron alternate between 0x01 and this state, so the Revenge name (taunt) may be the apron wait or cheer. Seen in RAM 2026-11-01 (4-CPU tag match, 30 s sampled every second). Entered through the state setters from: guest_referee_call, state_00, state_01_stand, state_4E, state_4F, sub_8013F538."
-status = "guess"
+name = "state_1B_apron_wait"
+proto = "void state_1B_apron_wait(struct WrestlerCtx *ctx)"
+desc = "Confirmed 2026-11-02: the code read and a RAM observation agree. The partner's idle on the apron (11745), or crouching (12168); in RAM the waiting partners alternate between 0x01 and this state, so it is the apron wait rather than a taunt (Andrew's viewer tags, 2026-11-02). Handler for state 0x1B in No Mercy's table (0x80144CF0). Name from its Revenge match state_17_taunt (0x800A01B0), unchecked. As Revenge state_17_taunt (0x800A01B0), matched by call graph (score 0.98). Revenge: Handler for Revenge state 0x17; World Tour state 0x16 (state_16_taunt) by the state-table alignment (README). Legal men's partners on the apron alternate between 0x01 and this state, so the Revenge name (taunt) may be the apron wait or cheer. Seen in RAM 2026-11-01 (4-CPU tag match, 30 s sampled every second). Entered through the state setters from: guest_referee_call, state_00, state_01_stand, state_4E, state_4F, sub_8013F538."
+status = "confirmed"
 
 [[func]]
 addr = 0x800E7380
-name = "state_1C"
-proto = "void state_1C(struct WrestlerCtx *ctx)"
-desc = "Handler for state 0x1C in No Mercy's table (0x80144CF0). Not identified. Entered through the state setters from: run_step."
-status = "likely"
+name = "state_1C_corner_taunt"
+proto = "void state_1C_corner_taunt(struct WrestlerCtx *ctx)"
+desc = "Confirmed 2026-11-02: setter conditions and the handler's steps both read from code, and they agree. Checked 2026-11-02: a taunt. It calls spirit_update op 5 (the taunt rule: SPECIAL turns into finisher mode) and taunt_hold_opponent, which adds the taunt animation's length to a downed or rope-draped opponent's escape timer (states 0x31 / 0x32), so the opponent stays down while it plays; then spirit_exchange from move 232's record. Running into the corner it is heading for (run_step: nearest_corner matches dir, corner_free) with the stick pushed (in_byte) and no weapon: the wrestler's own move 232 (per wrestler), paired and placed (pair_scripted_place) with spirit_exchange, so probably a corner taunt or corner move; C-down there climbs instead (climb_check, 0x0A) (code 2026-11-02). Handler for state 0x1C in No Mercy's table (0x80144CF0). Entered through the state setters from: run_step."
+status = "confirmed"
 
 [[func]]
 addr = 0x800E7498
-name = "state_1D"
-proto = "void state_1D(struct WrestlerCtx *ctx)"
-desc = "Handler for state 0x1D in No Mercy's table (0x80144CF0). Not identified."
+name = "state_1D_l_vs_runner"
+proto = "void state_1D_l_vs_runner(struct WrestlerCtx *ctx)"
+desc = "L pressed (input_l) while the opponent runs at the wrestler (its flags80 0x20, flags86 0x20) and is roughly facing it: the L response to a runner (setters read from code, 2026-11-02). Handler for state 0x1D in No Mercy's table (0x80144CF0)."
 status = "likely"
 
 [[func]]
 addr = 0x800E7658
-name = "state_1E"
-proto = "void state_1E(struct WrestlerCtx *ctx)"
-desc = "Handler for state 0x1E in No Mercy's table (0x80144CF0). Not identified. Entered through the state setters from: sub_800E74B8."
-status = "likely"
+name = "state_1E_run_hop_over"
+proto = "void state_1E_run_hop_over(struct WrestlerCtx *ctx)"
+desc = "Confirmed 2026-11-02: the setter read from code and Andrew's animation tags agree. A small leap over something while running (11978), e.g. a lying wrestler (Andrew's viewer tags, 2026-11-02). Handler for state 0x1E in No Mercy's table (0x80144CF0). Entered through the state setters from: sub_800E74B8."
+status = "confirmed"
 
 [[func]]
 addr = 0x80123058
-name = "state_1F"
-proto = "void state_1F(struct WrestlerCtx *ctx)"
-desc = "Handler for state 0x1F, 0x20, 0x21 in No Mercy's table (0x80144CF0). Name from its Revenge match state_1B_body (0x800C5190), unchecked. As Revenge state_1B_body (0x800C5190), matched by call graph (score 1.19). Revenge: Body of state_1B (the handler only calls it)."
-status = "guess"
+name = "state_1F_apron_strike"
+proto = "void state_1F_apron_strike(struct WrestlerCtx *ctx)"
+desc = "Confirmed 2026-11-02: setter conditions and the handler's steps both read from code, and they agree. A strike started on the apron (state_22_strike -> strike_across_ropes): 0x1F into the ring (the d-pad toward the ring, by ring zone from 0x8014D220, or an opponent in the ring), 0x20 down at the floor or a raised place (0x8014D218, or the opponent's location & 0x3C4), 0x21 along the apron at an opponent on the apron (flags8a 0x04 by facing). Shared by 0x1F-0x21 (code 2026-11-02). Handler for state 0x1F, 0x20, 0x21 in No Mercy's table (0x80144CF0). Name from its Revenge match state_1B_body (0x800C5190), unchecked. As Revenge state_1B_body (0x800C5190), matched by call graph (score 1.19). Revenge: Body of state_1B (the handler only calls it)."
+status = "confirmed"
 
 [[func]]
 addr = 0x80123288
@@ -216,77 +216,77 @@ status = "confirmed"
 addr = 0x8012394C
 name = "state_24"
 proto = "void state_24(struct WrestlerCtx *ctx)"
-desc = "Own move 205. Strike at an opponent from behind (opponent flags80 0x20, facing away), from state_22_strike. From code (state_22_strike, 2026-11-01). Handler for state 0x24 in No Mercy's table (0x80144CF0). Not identified. Entered through the state setters from: state_22_strike."
-status = "likely"
+desc = "Confirmed 2026-11-02: setter conditions (state_22_strike / run_inputs / run_step / state_4F / strike_land, read from code) and the handler (its move and hit test) agree. Own move 205. Strike at an opponent from behind (opponent flags80 0x20, facing away), from state_22_strike. From code (state_22_strike, 2026-11-01). Handler for state 0x24 in No Mercy's table (0x80144CF0). Entered through the state setters from: state_22_strike."
+status = "confirmed"
 
 [[func]]
 addr = 0x80123A78
 name = "state_25_getup_attack"
 proto = "void state_25_getup_attack(struct WrestlerCtx *ctx)"
-desc = "Own move 217. A strike started from the get-up 0x4F (strike_hit_test / strike_land): the get-up attack. From a profile of the handler's setters, animations and calls (2026-11-02). Handler for state 0x25 in No Mercy's table (0x80144CF0). Not identified. Entered through the state setters from: state_4F."
-status = "guess"
+desc = "Confirmed 2026-11-02: setter conditions (state_22_strike / run_inputs / run_step / state_4F / strike_land, read from code) and the handler (its move and hit test) agree. Own move 217. A strike started from the get-up 0x4F (strike_hit_test / strike_land): the get-up attack. From a profile of the handler's setters, animations and calls (2026-11-02). Handler for state 0x25 in No Mercy's table (0x80144CF0). Entered through the state setters from: state_4F."
+status = "confirmed"
 
 [[func]]
 addr = 0x80123FDC
 name = "state_26_weapon_swing"
 proto = "void state_26_weapon_swing(struct WrestlerCtx *ctx)"
-desc = "Shared by 0x26 and 0x27. 0x27 is swinging a held weapon (the ring steps): entered from the strike 0x22 while held_obj is set; the opponent went to 0x2D (knocked down), then 0x30 and stand. RAM 2026-11-01. 0x26 is probably another weapon attack. Handler for state 0x26, 0x27 in No Mercy's table (0x80144CF0). Not identified. Entered through the state setters from: state_22_strike."
-status = "guess"
+desc = "Confirmed 2026-11-02: the code read and a RAM observation agree. Checked 2026-11-02: state_22_strike sends a tap with a weapon to 0x26 and a held (strong) press to 0x27, so both are weapon swings, weak and strong. Shared by 0x26 and 0x27. 0x27 is swinging a held weapon (the ring steps): entered from the strike 0x22 while held_obj is set; the opponent went to 0x2D (knocked down), then 0x30 and stand. RAM 2026-11-01. 0x26 is probably another weapon attack. Handler for state 0x26, 0x27 in No Mercy's table (0x80144CF0). Entered through the state setters from: state_22_strike."
+status = "confirmed"
 
 [[func]]
 addr = 0x80123BD4
 name = "state_28_weapon_ground_attack"
 proto = "void state_28_weapon_ground_attack(struct WrestlerCtx *ctx)"
-desc = "Generic moves 104 / 110. Hitting a downed opponent with a held weapon (held_obj 5, the ring steps): from standing, twice in a row; the opponent goes 0x31 -> 0x63 at step 2. RAM 2026-11-01 (P1 hitting P2 repeatedly with the ring steps on the floor). Handler for state 0x28, 0x61, 0x62 in No Mercy's table (0x80144CF0). Not identified. Entered through the state setters from: sub_801109D8."
-status = "guess"
+desc = "Confirmed 2026-11-02: the code read and a RAM observation agree. Checked 2026-11-02: input_cup_opponent (C-up) at a downed opponent with a weapon held (flags_ef 0x01) gives 0x28; without one, 0x61. Generic moves 104 / 110. Hitting a downed opponent with a held weapon (held_obj 5, the ring steps): from standing, twice in a row; the opponent goes 0x31 -> 0x63 at step 2. RAM 2026-11-01 (P1 hitting P2 repeatedly with the ring steps on the floor). Handler for state 0x28, 0x61, 0x62 in No Mercy's table (0x80144CF0). Entered through the state setters from: sub_801109D8."
+status = "confirmed"
 
 [[func]]
 addr = 0x801241E0
 name = "state_29_break_up"
 proto = "void state_29_break_up(struct WrestlerCtx *ctx)"
-desc = "Handler for state 0x29, 0x2A in No Mercy's table (0x80144CF0). Name from its Revenge match state_25_break_up_body (0x800C6D54), unchecked. As Revenge state_25_break_up_body (0x800C6D54), matched by call graph (score 0.91). Revenge: Body of state_25_break_up (the handler only calls it)."
-status = "guess"
+desc = "Confirmed 2026-11-02: setter conditions and the handler's steps both read from code, and they agree. Checked 2026-11-02: set by input_cup_opponent (C-up) at a downed opponent within 120 and within 512 angle units who is being counted (stay_flags 0x05) or held (flags80 0x40 without 0x200): breaking up a pin or hold; 0x2A is the running version from run_inputs (B, same test). Handler for state 0x29, 0x2A in No Mercy's table (0x80144CF0). Name from its Revenge match state_25_break_up_body (0x800C6D54), unchecked. As Revenge state_25_break_up_body (0x800C6D54), matched by call graph (score 0.91). Revenge: Body of state_25_break_up (the handler only calls it)."
+status = "confirmed"
 
 [[func]]
 addr = 0x801244C0
 name = "state_2B"
 proto = "void state_2B(struct WrestlerCtx *ctx)"
-desc = "Own moves 176 / 177 (with a direction). Strike at an opponent slumped in the corner (its frame_flags 0x01), from state_22_strike. From code (state_22_strike, 2026-11-01). Handler for state 0x2B in No Mercy's table (0x80144CF0). Not identified. Entered through the state setters from: state_22_strike."
-status = "likely"
+desc = "Confirmed 2026-11-02: setter conditions (state_22_strike / run_inputs / run_step / state_4F / strike_land, read from code) and the handler (its move and hit test) agree. Own moves 176 / 177 (with a direction). Strike at an opponent slumped in the corner (its frame_flags 0x01), from state_22_strike. From code (state_22_strike, 2026-11-01). Handler for state 0x2B in No Mercy's table (0x80144CF0). Entered through the state setters from: state_22_strike."
+status = "confirmed"
 
 [[func]]
 addr = 0x801245F0
 name = "state_2C"
 proto = "void state_2C(struct WrestlerCtx *ctx)"
-desc = "Own moves 178 / 179. Strike at an opponent whose frame_flags has 0x08 (set by state_34), from state_22_strike. From code (state_22_strike, 2026-11-01). Handler for state 0x2C in No Mercy's table (0x80144CF0). Not identified. Entered through the state setters from: state_22_strike."
-status = "likely"
+desc = "Confirmed 2026-11-02: setter conditions (state_22_strike / run_inputs / run_step / state_4F / strike_land, read from code) and the handler (its move and hit test) agree. Own moves 178 / 179. Strike at an opponent whose frame_flags has 0x08 (set by state_34), from state_22_strike. From code (state_22_strike, 2026-11-01). Handler for state 0x2C in No Mercy's table (0x80144CF0). Entered through the state setters from: state_22_strike."
+status = "confirmed"
 
 [[func]]
 addr = 0x80124AE4
 name = "state_2D_knocked_down"
 proto = "void state_2D_knocked_down(struct WrestlerCtx *ctx)"
-desc = "Picks its fall: after a ring-steps swing it played 12579 and the wrestler ended in 0x31 sitting slouched (anim 12202, flags80 0x10 set); other knockdowns played 12565 and ended lying (12877). What picks the slouch is open. RAM 2026-11-01 (P1 hitting P2 repeatedly with the ring steps on the floor). Also the reaction to a ring-steps swing (from standing, RAM). Hit by the counter strike while off balance (from 0x33), anim 12565; then 0x31 (down) and 0x4F (get up). RAM 2026-11-01 (Andrew's save states: caught kick, R counter of a punch, L deflection of a grapple). Handler for state 0x2D in No Mercy's table (0x80144CF0). Not identified. Entered through the state setters from: run_collide."
-status = "guess"
+desc = "Confirmed 2026-11-02: the fall comes from strike_reaction_anim: 12565-12574 by the hit's reaction bits (hit_flags), plus 14 when health is below 100, so 12565 becomes 12579, the slouched fall that ends sitting (flags80 0x10). Health below 100 is what picks the slouch. Picks its fall: after a ring-steps swing it played 12579 and the wrestler ended in 0x31 sitting slouched (anim 12202, flags80 0x10 set); other knockdowns played 12565 and ended lying (12877).  RAM 2026-11-01 (P1 hitting P2 repeatedly with the ring steps on the floor). Also the reaction to a ring-steps swing (from standing, RAM). Hit by the counter strike while off balance (from 0x33), anim 12565; then 0x31 (down) and 0x4F (get up). RAM 2026-11-01 (Andrew's save states: caught kick, R counter of a punch, L deflection of a grapple). Handler for state 0x2D in No Mercy's table (0x80144CF0). Entered through the state setters from: run_collide."
+status = "confirmed"
 
 [[func]]
 addr = 0x800E7778
 name = "state_2E_tko_check"
 proto = "void state_2E_tko_check(struct WrestlerCtx *ctx)"
-desc = "Handler for state 0x2E in No Mercy's table (0x80144CF0). Name from its Revenge match state_25_tko_check (0x800A164C), unchecked. As Revenge state_25_tko_check (0x800A164C), matched by call graph (score 0.96). Revenge: Matches World Tour state_25_tko_check (0x800AB260), call-graph score 0.97."
-status = "guess"
+desc = "Confirmed 2026-11-02: the setter read from code and Andrew's animation tags agree. Code 2026-11-02: the stagger (12602 / 12603 + the move's reaction kind), down, the meter emptied (spirit_update op 4), then 60 frames (count_timer) in which each A / B / L / R press rolls chance_roll kind 6 to recover (tko_flags +0x92 0x10; a 50% roll first when tko_flags 0x20); recovered → 12617 / 12618 and up, otherwise 12615 / 12616 and end_flags 0x40 (the TKO; a counted fall under g_match_rules 0x80000). See wwf_no_mercy/pins_and_holds.md. Starting to get up from lying face up (12611) / face down (12612) and failing, twitching (12613-12616): fits a TKO check (Andrew's viewer tags, 2026-11-02). Handler for state 0x2E in No Mercy's table (0x80144CF0). Name from its Revenge match state_25_tko_check (0x800A164C), unchecked. As Revenge state_25_tko_check (0x800A164C), matched by call graph (score 0.96). Revenge: Matches World Tour state_25_tko_check (0x800AB260), call-graph score 0.97."
+status = "confirmed"
 
 [[func]]
 addr = 0x800E7AD4
 name = "state_2F_ropes_step_through"
 proto = "void state_2F_ropes_step_through(struct WrestlerCtx *ctx)"
-desc = "Handler for state 0x2F in No Mercy's table (0x80144CF0). Name from its Revenge match ropes_step_through (0x800C278C), unchecked. As Revenge ropes_step_through (0x800C278C), matched by call graph (score 0.97). Revenge: Step through the ropes: turns by 768 or 3072 (side bit +0x3E) while moving (states 0x60, 0x55, 0x86)."
-status = "guess"
+desc = "Checked 2026-11-02: set from state_31_down, input_c_up and objects_wrestler_contact; only keep_in_bounds_self and its own steps, consistent with going through the ropes. Handler for state 0x2F in No Mercy's table (0x80144CF0). Name from its Revenge match ropes_step_through (0x800C278C), unchecked. As Revenge ropes_step_through (0x800C278C), matched by call graph (score 0.97). Revenge: Step through the ropes: turns by 768 or 3072 (side bit +0x3E) while moving (states 0x60, 0x55, 0x86)."
+status = "likely"
 
 [[func]]
 addr = 0x800E7CA0
 name = "state_30_settle"
 proto = "void state_30_settle(struct WrestlerCtx *ctx)"
-desc = "Picks the state that follows a move or animation from end_pose (+0xE2) (cases 0, 1, 0x0D, 0x31 -> stand or 0x50 step 5 with flags8e 0x40, 2, ...); location 0x08 sends it to 0xAE / 0xB1 instead. Seen for 2 VIs after moves. wrestler_set_state does not record it as prev_state. From code (state_22_strike, 2026-11-01). Seen for 2 VIs between a finished grapple move (0x55) and 0x4E. wrestler_set_state never records 0x30 as prev_state, so it reads as a pass-through after a move; many hold and pin states set it too. RAM 2026-11-01 (Andrew's save states: table spots and a rear grapple). Handler for state 0x30 in No Mercy's table (0x80144CF0). Not identified. Entered through the state setters from: state_1B_taunt, state_38_pickup_attacker, state_39_pickup_defender, state_44, state_45_pin_defender, state_47, state_48, state_49_hold_defender, state_70_stagger_ropes, state_71, state_72, state_73, state_75, state_77, state_78, state_79, state_C5, sub_8012F660, sub_8013FE48."
+desc = "Picks the state that follows a move or animation from end_pose (+0xE2) (cases 0, 1, 0x0D, 0x31 -> stand or 0x50 step 5 with flags8e 0x40, 2, ...); location 0x08 sends it to 0xAE / 0xB1 instead. Seen for 2 VIs after moves. wrestler_set_state does not record it as prev_state. From code (state_22_strike, 2026-11-01). Seen for 2 VIs between a finished grapple move (0x55) and 0x4E. wrestler_set_state never records 0x30 as prev_state, so it reads as a pass-through after a move; many hold and pin states set it too. RAM 2026-11-01 (Andrew's save states: table spots and a rear grapple). Handler for state 0x30 in No Mercy's table (0x80144CF0). Entered through the state setters from: state_1B_taunt, state_38_pickup_attacker, state_39_pickup_defender, state_44, state_45_pin_defender, state_47, state_48, state_49_hold_defender, state_70_stagger_ropes, state_71, state_72, state_73, state_75, state_77, state_78, state_79, state_C5, sub_8012F660, sub_8013FE48."
 status = "confirmed"
 
 [[func]]
@@ -298,129 +298,129 @@ status = "confirmed"
 
 [[func]]
 addr = 0x800E848C
-name = "state_32_dazed"
-proto = "void state_32_dazed(struct WrestlerCtx *ctx)"
-desc = "Handler for state 0x32 in No Mercy's table (0x80144CF0). Name from its Revenge match state_2D_dazed (0x800A26AC), unchecked. As Revenge state_2D_dazed (0x800A26AC), matched by call graph (score 1.05). Revenge: Handler for Revenge state 0x2D; matches World Tour state 0x29 (state_29_dazed) by shared animations and constants and its place in the table."
-status = "guess"
+name = "state_32_ropes_lean"
+proto = "void state_32_ropes_lean(struct WrestlerCtx *ctx)"
+desc = "Confirmed 2026-11-02: the setter read from code and Andrew's animation tags agree. Leaning on the ropes hurt (12558), shaking the daze off with a slap to the head (12557), getting up (12559) (Andrew's viewer tags, 2026-11-02). Handler for state 0x32 in No Mercy's table (0x80144CF0). Name from its Revenge match state_2D_dazed (0x800A26AC), unchecked. As Revenge state_2D_dazed (0x800A26AC), matched by call graph (score 1.05). Revenge: Handler for Revenge state 0x2D; matches World Tour state 0x29 (state_29_dazed) by shared animations and constants and its place in the table."
+status = "confirmed"
 
 [[func]]
 addr = 0x800E866C
 name = "state_33_off_balance"
 proto = "void state_33_off_balance(struct WrestlerCtx *ctx)"
-desc = "Off balance after being countered: after an L deflection (from 0x6D, ~50 VIs, then stand) and after an R counter (from 0x65, then hit by the counter strike into 0x2D). Anims 12562 / 12563. RAM 2026-11-01 (Andrew's save states: caught kick, R counter of a punch, L deflection of a grapple). Handler for state 0x33 in No Mercy's table (0x80144CF0). Name from its Revenge match state_2E_recover_bent (0x800A297C), unchecked. As Revenge state_2E_recover_bent (0x800A297C), matched by call graph (score 1.15). Revenge: Handler for Revenge state 0x2E; World Tour state 0x2A (state_2A_recover_bent) by the state-table alignment (README). Seen in a CPU vs CPU emulator run (2026-11-01). Entered through the state setters from: state_30."
-status = "guess"
+desc = "Confirmed 2026-11-02: the code read and a RAM observation agree. Off balance after being countered: after an L deflection (from 0x6D, ~50 VIs, then stand) and after an R counter (from 0x65, then hit by the counter strike into 0x2D). Anims 12562 / 12563. RAM 2026-11-01 (Andrew's save states: caught kick, R counter of a punch, L deflection of a grapple). Handler for state 0x33 in No Mercy's table (0x80144CF0). Name from its Revenge match state_2E_recover_bent (0x800A297C), unchecked. As Revenge state_2E_recover_bent (0x800A297C), matched by call graph (score 1.15). Revenge: Handler for Revenge state 0x2E; World Tour state 0x2A (state_2A_recover_bent) by the state-table alignment (README). Seen in a CPU vs CPU emulator run (2026-11-01). Entered through the state setters from: state_30."
+status = "confirmed"
 
 [[func]]
 addr = 0x8010ED30
-name = "state_34"
-proto = "void state_34(struct WrestlerCtx *ctx)"
-desc = "Handler for state 0x34 in No Mercy's table (0x80144CF0). Not identified. Entered through the state setters from: state_3F, sub_800ED6E8."
-status = "likely"
+name = "state_34_held_upside_down"
+proto = "void state_34_held_upside_down(struct WrestlerCtx *ctx)"
+desc = "Confirmed 2026-11-02: the setter read from code and Andrew's animation tags agree. Held upside down (12076), dropped and landing awkwardly (12081); escape_time op 7 is its mash-out time (Andrew's viewer tags, 2026-11-02). Handler for state 0x34 in No Mercy's table (0x80144CF0). Entered through the state setters from: state_3F, sub_800ED6E8."
+status = "confirmed"
 
 [[func]]
 addr = 0x800E873C
 name = "state_35_knocked_back"
 proto = "void state_35_knocked_back(struct WrestlerCtx *ctx)"
-desc = "Knocked back into something after 0x05 / 0x2D (corner_free, apply_damage); continues to 0x17, 0x18 (corner slump), 0x70 or 0xC1. From a profile of the handler's setters, animations and calls (2026-11-02). Handler for state 0x35 in No Mercy's table (0x80144CF0). Not identified. Entered through the state setters from: state_05, state_2D."
-status = "guess"
+desc = "Confirmed 2026-11-02: the setter read from code and Andrew's animation tags agree. Knocked back into something after 0x05 / 0x2D (corner_free, apply_damage); continues to 0x17, 0x18 (corner slump), 0x70 or 0xC1. From a profile of the handler's setters, animations and calls (2026-11-02). Handler for state 0x35 in No Mercy's table (0x80144CF0). Entered through the state setters from: state_05, state_2D."
+status = "confirmed"
 
 [[func]]
 addr = 0x80111AF0
 name = "state_36_cover_approach"
 proto = "void state_36_cover_approach(struct WrestlerCtx *ctx)"
-desc = "Stepping to a downed opponent's side to cover it (from 0x46; cover_side_pick, ground_approach_plan). From a profile of the handler's setters, animations and calls (2026-11-02). Handler for state 0x36 in No Mercy's table (0x80144CF0). Not identified. Entered through the state setters from: state_46."
-status = "guess"
+desc = "Stepping to a downed opponent's side to cover it (from 0x46; cover_side_pick, ground_approach_plan). From a profile of the handler's setters, animations and calls (2026-11-02). Handler for state 0x36 in No Mercy's table (0x80144CF0). Entered through the state setters from: state_46."
+status = "likely"
 
 [[func]]
 addr = 0x80111DA8
 name = "state_37_flipped"
 proto = "void state_37_flipped(struct WrestlerCtx *ctx)"
-desc = "Handler for state 0x37 in No Mercy's table (0x80144CF0). Name from its Revenge match state_31_flipped_body (0x800C858C), unchecked. As Revenge state_31_flipped_body (0x800C858C), matched by call graph (score 1.06). Revenge: Body of state_31_flipped (the handler only calls it)."
-status = "guess"
+desc = "Checked 2026-11-02: paired by state_46_ground_grapple_approach and the C-left code beside guest_referee_call (which flips or drags a downed opponent): the downed wrestler being flipped over. Handler for state 0x37 in No Mercy's table (0x80144CF0). Name from its Revenge match state_31_flipped_body (0x800C858C), unchecked. As Revenge state_31_flipped_body (0x800C858C), matched by call graph (score 1.06). Revenge: Body of state_31_flipped (the handler only calls it)."
+status = "likely"
 
 [[func]]
 addr = 0x80133CC0
 name = "state_38_pickup_attacker"
 proto = "void state_38_pickup_attacker(struct WrestlerCtx *ctx)"
-desc = "Handler for state 0x38 in No Mercy's table (0x80144CF0). Name from its Revenge match state_2D_pickup_attacker_body (0x800C78F0), unchecked. As Revenge state_2D_pickup_attacker_body (0x800C78F0), matched by call graph (score 0.99). Revenge: Matches World Tour state_2D_pickup_attacker_body (0x800DA440), call-graph score 1.55."
-status = "guess"
+desc = "Confirmed 2026-11-02: the setter read from code and Andrew's animation tags agree. A squatting rear grapple (11909): picking a downed opponent up from behind (Andrew's viewer tags, 2026-11-02). Handler for state 0x38 in No Mercy's table (0x80144CF0). Name from its Revenge match state_2D_pickup_attacker_body (0x800C78F0), unchecked. As Revenge state_2D_pickup_attacker_body (0x800C78F0), matched by call graph (score 0.99). Revenge: Matches World Tour state_2D_pickup_attacker_body (0x800DA440), call-graph score 1.55."
+status = "confirmed"
 
 [[func]]
 addr = 0x80134114
 name = "state_39_pickup_defender"
 proto = "void state_39_pickup_defender(struct WrestlerCtx *ctx)"
-desc = "Handler for state 0x39 in No Mercy's table (0x80144CF0). Name from its Revenge match state_33_pickup_defender_body (0x800C7E6C), unchecked. As Revenge state_33_pickup_defender_body (0x800C7E6C), matched by call graph (score 0.90). Revenge: Body of state_33_pickup_defender (the handler only calls it)."
-status = "guess"
+desc = "Confirmed 2026-11-02: the setter read from code and Andrew's animation tags agree. Checked 2026-11-02: the receiver of 0x38 (input_r at a downed opponent, running_ground_attack_check), with chance_roll / chance_check for resisting. Handler for state 0x39 in No Mercy's table (0x80144CF0). Name from its Revenge match state_33_pickup_defender_body (0x800C7E6C), unchecked. As Revenge state_33_pickup_defender_body (0x800C7E6C), matched by call graph (score 0.90). Revenge: Body of state_33_pickup_defender (the handler only calls it)."
+status = "confirmed"
 
 [[func]]
 addr = 0x8010E5C8
-name = "state_3A"
-proto = "void state_3A(struct WrestlerCtx *ctx)"
-desc = "Handler for state 0x3A in No Mercy's table (0x80144CF0). Not identified."
+name = "state_3A_pull_down"
+proto = "void state_3A_pull_down(struct WrestlerCtx *ctx)"
+desc = "R at an opponent slumped in the corner, both in the ring, within 120 (input_r, code 2026-11-02): pulling it out of the corner. Pulling something back from head level (12066), pulling it down from head / chest level (12068) (Andrew's viewer tags, 2026-11-02). Handler for state 0x3A in No Mercy's table (0x80144CF0)."
 status = "likely"
 
 [[func]]
 addr = 0x8010E660
-name = "state_3B"
-proto = "void state_3B(struct WrestlerCtx *ctx)"
-desc = "Handler for state 0x3B, 0x3D, 0x41 in No Mercy's table (0x80144CF0). Not identified."
+name = "state_3B_pair_receiver"
+proto = "void state_3B_pair_receiver(struct WrestlerCtx *ctx)"
+desc = "The receiver of the small paired moves 0x3A / 0x3C / 0x40 (shared by 0x3B, 0x3D, 0x41): plays the attacker's animation + 1 and settles by the end pose (move_event 0x200) (code 2026-11-02). Handler for state 0x3B, 0x3D, 0x41 in No Mercy's table (0x80144CF0)."
 status = "likely"
 
 [[func]]
 addr = 0x8010E6D0
-name = "state_3C"
-proto = "void state_3C(struct WrestlerCtx *ctx)"
-desc = "Handler for state 0x3C in No Mercy's table (0x80144CF0). Not identified."
-status = "likely"
+name = "state_3C_place_up"
+proto = "void state_3C_place_up(struct WrestlerCtx *ctx)"
+desc = "Confirmed 2026-11-02: the setter read from code and Andrew's animation tags agree. Checked 2026-11-02: L at an opponent slumped in the corner (input_l and the C-button code beside guest_referee_call): setting it up on the top turnbuckle (12070 / 12072). Arranging / placing someone chest high (12070, 12072): setting the opponent up on something (Andrew's viewer tags, 2026-11-02). Handler for state 0x3C in No Mercy's table (0x80144CF0)."
+status = "confirmed"
 
 [[func]]
 addr = 0x8010E768
-name = "state_3E"
-proto = "void state_3E(struct WrestlerCtx *ctx)"
-desc = "Handler for state 0x3E in No Mercy's table (0x80144CF0). Not identified. Entered through the state setters from: state_3F."
-status = "likely"
+name = "state_3E_corner_hang_flip"
+proto = "void state_3E_corner_hang_flip(struct WrestlerCtx *ctx)"
+desc = "Confirmed 2026-11-02: the setter read from code and Andrew's animation tags agree. L in a front lock-up (lockup_input, paired with 0x3F): flipping the held opponent upside down into the corner, hung by the legs (12074; Andrew's viewer tags and code, 2026-11-02). With the opponent's flags_f0 0x02 / 0x04 it is the reversed version: being flipped and swapped round (12083). Earlier tag reading: being lifted up onto something chest high (12074); also being flipped and swapped round in the corner (12083) (Andrew's viewer tags, 2026-11-02). Handler for state 0x3E in No Mercy's table (0x80144CF0). Entered through the state setters from: state_3F."
+status = "confirmed"
 
 [[func]]
 addr = 0x8010E7F4
-name = "state_3F"
-proto = "void state_3F(struct WrestlerCtx *ctx)"
-desc = "Handler for state 0x3F in No Mercy's table (0x80144CF0). Not identified."
-status = "likely"
+name = "state_3F_corner_reversal"
+proto = "void state_3F_corner_reversal(struct WrestlerCtx *ctx)"
+desc = "Confirmed 2026-11-02: the setter read from code and Andrew's animation tags agree. The opponent's side of L in a front lock-up (lockup_input pairs 0x3E / 0x3F; code 2026-11-02): plays the attacker's animation + 1 (12075, from the corner to hanging head down by the legs) and goes to 0x34 (held upside down); with its own flags_f0 0x02 / 0x04 it reverses instead (12082) and re-pairs 0x3E / 0x3F the other way round. Stuck against the corner, reversing and throwing the other wrestler there instead (12082) (Andrew's viewer tags, 2026-11-02). Handler for state 0x3F in No Mercy's table (0x80144CF0)."
+status = "confirmed"
 
 [[func]]
 addr = 0x8010E928
-name = "state_40"
-proto = "void state_40(struct WrestlerCtx *ctx)"
-desc = "Handler for state 0x40 in No Mercy's table (0x80144CF0). Not identified. Entered through the state setters from: grapple_attempt_resolve."
-status = "likely"
+name = "state_40_yank_down"
+proto = "void state_40_yank_down(struct WrestlerCtx *ctx)"
+desc = "Confirmed 2026-11-02: the setter read from code and Andrew's animation tags agree. Checked 2026-11-02: L or R (input_l / input_r) at an opponent with frame_flags 0x08, which 0x34 (hung upside down in the corner) and 0x2D set, and grapple_attempt_resolve on a defender in 0x34: pulling the hanging opponent down out of the corner. Yanking something down from chest level and throwing it to the ground (12077) (Andrew's viewer tags, 2026-11-02). Handler for state 0x40 in No Mercy's table (0x80144CF0). Entered through the state setters from: grapple_attempt_resolve."
+status = "confirmed"
 
 [[func]]
 addr = 0x80112FE0
 name = "state_42_cover_approach_b"
 proto = "void state_42_cover_approach_b(struct WrestlerCtx *ctx)"
 desc = "Same calls as 0x36 (cover_side_pick, ground_approach_plan): another approach to a downed opponent. From a profile of the handler's setters, animations and calls (2026-11-02). Handler for state 0x42 in No Mercy's table (0x80144CF0). Name from its Revenge match state_2B_body (0x800C8188), unchecked. As Revenge state_2B_body (0x800C8188), matched by call graph (score 1.13). Revenge: Matches World Tour state_2B_body (0x800DAF50), call-graph score 1.15."
-status = "guess"
+status = "likely"
 
 [[func]]
 addr = 0x80113308
 name = "state_43_pin_start"
 proto = "void state_43_pin_start(struct WrestlerCtx *ctx)"
-desc = "Starting a pin on a lying opponent (pose_is_lying, anim_is_dazed_like) and pairing into 0x44. From a profile of the handler's setters, animations and calls (2026-11-02). Handler for state 0x43 in No Mercy's table (0x80144CF0). Not identified."
+desc = "Starting a pin on a lying opponent (pose_is_lying, anim_is_dazed_like) and pairing into 0x44. From a profile of the handler's setters, animations and calls (2026-11-02). Handler for state 0x43 in No Mercy's table (0x80144CF0)."
 status = "likely"
 
 [[func]]
 addr = 0x80113474
 name = "state_44_pin_attacker"
 proto = "void state_44_pin_attacker(struct WrestlerCtx *ctx)"
-desc = "Holding a pin (from code 2026-11-02): starts the pin move 292 + a per-move pin variant (byte table 0x800A5720 + 548 * slot, indexed by the move just done), so each move has its own cover; flags80 0x140 while held. R (pressed 0x10) or match_can_interrupt lets go (state_flags 0x01, the defender gets 0x40); a lost fall (the defender's end_flags 0x01) marks the count done (state_flags 0x08). The end animation is the pin's +2 (let go), +4 (count done) or +6 (kicked out, 0x10); then 0x30 or wrestler_settle_pose. Shared by 0x44 and 0x4A: holding the pin (R releases it, pressed 0x10); paired with 0x45 / 0x4B (state_45_pin_defender); ends through 0x30. From a profile of the handler's setters, animations and calls (2026-11-02). Handler for state 0x44, 0x4A in No Mercy's table (0x80144CF0). Not identified. Entered through the state setters from: state_43, state_79."
-status = "likely"
+desc = "Confirmed 2026-11-02: the code read and a RAM observation agree. Holding a pin (from code 2026-11-02): starts the pin move 292 + a per-move pin variant (byte table 0x800A5720 + 548 * slot, indexed by the move just done), so each move has its own cover; flags80 0x140 while held. R (pressed 0x10) or match_can_interrupt lets go (state_flags 0x01, the defender gets 0x40); a lost fall (the defender's end_flags 0x01) marks the count done (state_flags 0x08). The end animation is the pin's +2 (let go), +4 (count done) or +6 (kicked out, 0x10); then 0x30 or wrestler_settle_pose. Shared by 0x44 and 0x4A: holding the pin (R releases it, pressed 0x10); paired with 0x45 / 0x4B (state_45_pin_defender); ends through 0x30. From a profile of the handler's setters, animations and calls (2026-11-02). Handler for state 0x44, 0x4A in No Mercy's table (0x80144CF0). Entered through the state setters from: state_43, state_79."
+status = "confirmed"
 
 [[func]]
 addr = 0x80113860
 name = "state_45_pin_defender"
 proto = "void state_45_pin_defender(struct WrestlerCtx *ctx)"
-desc = "Handler for state 0x45, 0x4B in No Mercy's table (0x80144CF0). Name from its Revenge match state_32_pin_defender_body (0x800CA758), unchecked. As Revenge state_32_pin_defender_body (0x800CA758), matched by call graph (score 0.91). Revenge: Matches World Tour state_32_pin_defender_body (0x800CFE44), call-graph score 1.67. Entered through the state setters from: state_79."
-status = "guess"
+desc = "Checked 2026-11-02: escape_time op 1, pin_count, end_flags (the fall), hud_submission_message (0x4B is the hold side). Handler for state 0x45, 0x4B in No Mercy's table (0x80144CF0). Name from its Revenge match state_32_pin_defender_body (0x800CA758), unchecked. As Revenge state_32_pin_defender_body (0x800CA758), matched by call graph (score 0.91). Revenge: Matches World Tour state_32_pin_defender_body (0x800CFE44), call-graph score 1.67. Entered through the state setters from: state_79."
+status = "confirmed"
 
 [[func]]
 addr = 0x80136240
@@ -440,7 +440,7 @@ status = "confirmed"
 addr = 0x80137044
 name = "state_48_ground_hold"
 proto = "void state_48_ground_hold(struct WrestlerCtx *ctx)"
-desc = "Ground grapple / hold, attacker (from 0x46; anim 15911, flags80 0x40); paired with 0x49. RAM 2026-11-01 (Andrew's save states: light grapple, running grapple, ground grapple at the head). Handler for state 0x48 in No Mercy's table (0x80144CF0). Not identified."
+desc = "Ground grapple / hold, attacker (from 0x46; anim 15911, flags80 0x40); paired with 0x49. RAM 2026-11-01 (Andrew's save states: light grapple, running grapple, ground grapple at the head). Handler for state 0x48 in No Mercy's table (0x80144CF0)."
 status = "confirmed"
 
 [[func]]
@@ -454,29 +454,29 @@ status = "confirmed"
 addr = 0x800E8A70
 name = "state_4C_block"
 proto = "void state_4C_block(struct WrestlerCtx *ctx)"
-desc = "Blocking with R; a kick that hits the block is caught: the blocker goes to 0x69, the kicker (in 0x22) to 0x6A. RAM 2026-11-01 (Andrew's save states: caught kick, R counter of a punch, L deflection of a grapple). Handler for state 0x4C in No Mercy's table (0x80144CF0). Name from its Revenge match state_39_block (0x800A2E68), unchecked. As Revenge state_39_block (0x800A2E68), matched by call graph (score 1.03). Revenge: Matches World Tour state_39_block (0x800ACF6C), call-graph score 1.20. Entered through the state setters from: dive_counter, state_4D, state_AE."
+desc = "Code 2026-11-02: turns toward the opponent each frame and counts count_timer up from 0 (cap 100); holds at least 5 frames, then releasing R ends it; a hit within the first 3 frames can be countered (strike_counter_check). Steps 5-7 are the ladder version (12989 / 12990, ends when the ladder falls). Blocking with R; a kick that hits the block is caught: the blocker goes to 0x69, the kicker (in 0x22) to 0x6A. RAM 2026-11-01 (Andrew's save states: caught kick, R counter of a punch, L deflection of a grapple). Handler for state 0x4C in No Mercy's table (0x80144CF0). Name from its Revenge match state_39_block (0x800A2E68), unchecked. As Revenge state_39_block (0x800A2E68), matched by call graph (score 1.03). Revenge: Matches World Tour state_39_block (0x800ACF6C), call-graph score 1.20. Entered through the state setters from: dive_counter, state_4D, state_AE."
 status = "confirmed"
 
 [[func]]
 addr = 0x800E8D28
 name = "state_4D_block_hit"
 proto = "void state_4D_block_hit(struct WrestlerCtx *ctx)"
-desc = "Hit while blocking (set by strike_land and run_collide; anims 12990 / 12991; returns to the block 0x4C). From a profile of the handler's setters, animations and calls (2026-11-02). Handler for state 0x4D in No Mercy's table (0x80144CF0). Not identified. Entered through the state setters from: run_collide, strike_land."
-status = "guess"
+desc = "12990 / 12991 belong to its ladder branch (state_4C steps 5-7 use the same poses), so this is the block hit on the ground and on a ladder. The constants it passes, 12990 / 12991, are ladder poses (idle near the top with a hand up, twitching): probably the ladder variant of being hit while blocking (Andrew's viewer tags, 2026-11-02). Hit while blocking (set by strike_land and run_collide; anims 12990 / 12991; returns to the block 0x4C). From a profile of the handler's setters, animations and calls (2026-11-02). Handler for state 0x4D in No Mercy's table (0x80144CF0). Entered through the state setters from: run_collide, strike_land."
+status = "likely"
 
 [[func]]
 addr = 0x8013F9DC
 name = "state_4E"
 proto = "void state_4E(struct WrestlerCtx *ctx)"
-desc = "The attacker after a grapple move (via 0x30), anim 12153; paired in numbering with 0x4F (anim 12154). RAM 2026-11-01 (Andrew's save states: table spots and a rear grapple). Handler for state 0x4E in No Mercy's table (0x80144CF0). Not identified. Paired with 0x4F; entered from 0x5B. Seen in RAM 2026-11-01 (4-CPU tag match, 30 s sampled every second). Entered through the state setters from: state_30."
-status = "guess"
+desc = "Confirmed 2026-11-02: the setter read from code and Andrew's animation tags agree. Steps (code 2026-11-02): 0 get_up_anim (mode 6); 1 at the end, anim_end_apply and the crouch 12171; 3 one decision frame: match_can_interrupt nonzero stands at once, else input_stir (taunt / stir the opponent, flags8a 0x08), the stick (in_byte) goes to 0x1B, input_c_left (drag or flip a downed opponent) keeps it, and otherwise 12157 stands up turning toward the opponent spread over the animation (angle_rel = angle_diff / anim_player+4); 4 turns each frame and move_event(0) ends it. So 0x4E is the attacker's get-up after a grapple move with a one-frame window for a taunt, the stick or C-left. Standing up from a crouch (12157), idling crouched and ready (12171) (Andrew's viewer tags, 2026-11-02). The attacker after a grapple move (via 0x30), anim 12153; paired in numbering with 0x4F (anim 12154). RAM 2026-11-01 (Andrew's save states: table spots and a rear grapple). Handler for state 0x4E in No Mercy's table (0x80144CF0). Paired with 0x4F; entered from 0x5B. Seen in RAM 2026-11-01 (4-CPU tag match, 30 s sampled every second). Entered through the state setters from: state_30."
+status = "confirmed"
 
 [[func]]
 addr = 0x8013FBB8
 name = "state_4F_get_up"
 proto = "void state_4F_get_up(struct WrestlerCtx *ctx)"
-desc = "Getting up from 0x31 (down), anim 12154, flags8a 0x6000. RAM 2026-11-01 (Andrew's save states: table spots and a rear grapple). Handler for state 0x4F in No Mercy's table (0x80144CF0). Not identified. Paired with 0x4E; the 0x4F side was entered from 0x31. Seen in RAM 2026-11-01 (4-CPU tag match, 30 s sampled every second). Entered through the state setters from: state_30, state_31_down."
-status = "guess"
+desc = "Confirmed 2026-11-02: the setter read from code and Andrew's animation tags agree. Code 2026-11-02: the get-up animation, then holding R keeps the wrestler in a crouch (12171) for up to 60 frames, from which A starts a grapple attempt (0x50), B the get-up strike (0x25) and L a backward roll (12172); releasing R stands (12157) and get_up_finish reads A / B held. Standing from a crouch (12157), crouched ready (12171), a dodge roll backwards from the crouch (12172) (Andrew's viewer tags, 2026-11-02). Getting up from 0x31 (down), anim 12154, flags8a 0x6000. RAM 2026-11-01 (Andrew's save states: table spots and a rear grapple). Handler for state 0x4F in No Mercy's table (0x80144CF0). Paired with 0x4E; the 0x4F side was entered from 0x31. Seen in RAM 2026-11-01 (4-CPU tag match, 30 s sampled every second). Entered through the state setters from: state_30, state_31_down."
+status = "confirmed"
 
 [[func]]
 addr = 0x80125900
@@ -503,84 +503,84 @@ status = "confirmed"
 addr = 0x800E8F1C
 name = "state_55_move_attacker"
 proto = "void state_55_move_attacker(struct WrestlerCtx *ctx)"
-desc = "Grapple move, attacker: entered from 0x51 (the lock-up); in the slam through the announce table it ran ~180 VIs, both wrestlers linked as a pair, then the attacker went 0x30 -> 0x4E. RAM 2026-11-01 (Andrew's save states: table spots and a rear grapple). Handler for state 0x55 in No Mercy's table (0x80144CF0). Not identified. Paired with 0x56 (0x55 entered from 0x51, 0x56 from 0x52): a grapple move, attacker side. Seen in RAM 2026-11-01 (4-CPU tag match, 30 s sampled every second). Entered through the state setters from: state_51_grapple_attacker, state_52_grapple_defender, state_56, state_5A."
+desc = "Grapple move, attacker: entered from 0x51 (the lock-up); in the slam through the announce table it ran ~180 VIs, both wrestlers linked as a pair, then the attacker went 0x30 -> 0x4E. RAM 2026-11-01 (Andrew's save states: table spots and a rear grapple). Handler for state 0x55 in No Mercy's table (0x80144CF0). Paired with 0x56 (0x55 entered from 0x51, 0x56 from 0x52): a grapple move, attacker side. Seen in RAM 2026-11-01 (4-CPU tag match, 30 s sampled every second). Entered through the state setters from: state_51_grapple_attacker, state_52_grapple_defender, state_56, state_5A."
 status = "confirmed"
 
 [[func]]
 addr = 0x800E9174
 name = "state_56_move_defender"
 proto = "void state_56_move_defender(struct WrestlerCtx *ctx)"
-desc = "Grapple move, defender (entered from 0x52), paired with 0x55; after the table slam it went to 0x31 (down). RAM 2026-11-01 (Andrew's save states: table spots and a rear grapple). Handler for state 0x56 in No Mercy's table (0x80144CF0). Not identified. Paired with 0x55, defender side (entered from 0x52). Seen in RAM 2026-11-01 (4-CPU tag match, 30 s sampled every second). Entered through the state setters from: state_52_grapple_defender, state_56, state_59_move_walk_attacker."
+desc = "Grapple move, defender (entered from 0x52), paired with 0x55; after the table slam it went to 0x31 (down). RAM 2026-11-01 (Andrew's save states: table spots and a rear grapple). Handler for state 0x56 in No Mercy's table (0x80144CF0). Paired with 0x55, defender side (entered from 0x52). Seen in RAM 2026-11-01 (4-CPU tag match, 30 s sampled every second). Entered through the state setters from: state_52_grapple_defender, state_56, state_59_move_walk_attacker."
 status = "confirmed"
 
 [[func]]
 addr = 0x80129128
 name = "state_59_move_walk_attacker"
 proto = "void state_59_move_walk_attacker(struct WrestlerCtx *ctx)"
-desc = "Handler for state 0x59 in No Mercy's table (0x80144CF0). Name from its Revenge match state_46_move_walk_attacker_body (0x800D1014), unchecked. As Revenge state_46_move_walk_attacker_body (0x800D1014), matched by call graph (score 1.15). Revenge: Matches World Tour state_46_move_walk_attacker_body (0x800C83F4), call-graph score 0.92. Entered through the state setters from: sub_800ED5AC."
-status = "guess"
+desc = "Checked 2026-11-02: move_walk_target / move_walk_step / keep_in_bounds_pair: walking while carrying out a move. Handler for state 0x59 in No Mercy's table (0x80144CF0). Name from its Revenge match state_46_move_walk_attacker_body (0x800D1014), unchecked. As Revenge state_46_move_walk_attacker_body (0x800D1014), matched by call graph (score 1.15). Revenge: Matches World Tour state_46_move_walk_attacker_body (0x800C83F4), call-graph score 0.92. Entered through the state setters from: sub_800ED5AC."
+status = "likely"
 
 [[func]]
 addr = 0x801297E0
 name = "state_5A"
 proto = "void state_5A(struct WrestlerCtx *ctx)"
-desc = "Handler for state 0x5A in No Mercy's table (0x80144CF0). Not identified."
+desc = "The receiver of a move follow-up: move_follow_up pairs 0x59 (attacker) / 0x5A after a move with a follow-up (move +4), starting the follow-up move from move_anim_offset (setters read from code, 2026-11-02). Handler for state 0x5A in No Mercy's table (0x80144CF0)."
 status = "likely"
 
 [[func]]
 addr = 0x800E93D8
-name = "state_5B"
-proto = "void state_5B(struct WrestlerCtx *ctx)"
-desc = "Handler for state 0x5B in No Mercy's table (0x80144CF0). Not identified. Paired with 0x5C; entered from 0x50. Seen in RAM 2026-11-01 (4-CPU tag match, 30 s sampled every second). Entered through the state setters from: grapple_attempt_resolve."
-status = "confirmed"
+name = "state_5B_counter_runner"
+proto = "void state_5B_counter_runner(struct WrestlerCtx *ctx)"
+desc = "Counter against a running grapple, the counterer: grapple_attempt_resolve pairs 0x5B / 0x5C (with move 90) when a defender meets a running grapple, and on a staggered target (flags78 0x08) (setters read from code, 2026-11-02). Handler for state 0x5B in No Mercy's table (0x80144CF0). Paired with 0x5C; entered from 0x50. Seen in RAM 2026-11-01 (4-CPU tag match, 30 s sampled every second). Entered through the state setters from: grapple_attempt_resolve."
+status = "likely"
 
 [[func]]
 addr = 0x800E9480
-name = "state_5C"
-proto = "void state_5C(struct WrestlerCtx *ctx)"
-desc = "Handler for state 0x5C in No Mercy's table (0x80144CF0). Not identified. Paired with 0x5B. Seen in RAM 2026-11-01 (4-CPU tag match, 30 s sampled every second)."
-status = "confirmed"
+name = "state_5C_runner_countered"
+proto = "void state_5C_runner_countered(struct WrestlerCtx *ctx)"
+desc = "The runner whose running grapple was countered (paired with 0x5B) (setters read from code, 2026-11-02). Handler for state 0x5C in No Mercy's table (0x80144CF0). Paired with 0x5B. Seen in RAM 2026-11-01 (4-CPU tag match, 30 s sampled every second)."
+status = "likely"
 
 [[func]]
 addr = 0x800E9534
-name = "state_5D"
-proto = "void state_5D(struct WrestlerCtx *ctx)"
-desc = "Handler for state 0x5D in No Mercy's table (0x80144CF0). Not identified. Entered through the state setters from: state_5E."
+name = "state_5D_chain_move"
+proto = "void state_5D_chain_move(struct WrestlerCtx *ctx)"
+desc = "A grapple move that chains into another (move_chain_check: the follow-up from move_anim_offset), attacker; paired with 0x5E (setters read from code, 2026-11-02). Handler for state 0x5D in No Mercy's table (0x80144CF0). Entered through the state setters from: state_5E."
 status = "likely"
 
 [[func]]
 addr = 0x800E95E0
-name = "state_5E"
-proto = "void state_5E(struct WrestlerCtx *ctx)"
-desc = "Handler for state 0x5E in No Mercy's table (0x80144CF0). Not identified. Entered through the state setters from: state_5E."
+name = "state_5E_chain_move_defender"
+proto = "void state_5E_chain_move_defender(struct WrestlerCtx *ctx)"
+desc = "The receiver of a chained grapple move (paired with 0x5D); it also re-pairs 0x5D / 0x5E itself (setters read from code, 2026-11-02). Handler for state 0x5E in No Mercy's table (0x80144CF0). Entered through the state setters from: state_5E."
 status = "likely"
 
 [[func]]
 addr = 0x800E9680
-name = "state_5F"
-proto = "void state_5F(struct WrestlerCtx *ctx)"
-desc = "Handler for state 0x5F in No Mercy's table (0x80144CF0). Not identified. Entered through the state setters from: state_39_pickup_defender, state_82."
+name = "state_5F_carry_move"
+proto = "void state_5F_carry_move(struct WrestlerCtx *ctx)"
+desc = "A move started from a carry or pick-up, attacker: move_chain_check, state_82_carried and state_39_pickup_defender pair 0x5F / 0x60 with the move's animation (anim_style part 0 / 1) (setters read from code, 2026-11-02). Handler for state 0x5F in No Mercy's table (0x80144CF0). Entered through the state setters from: state_39_pickup_defender, state_82."
 status = "likely"
 
 [[func]]
 addr = 0x800E9724
-name = "state_60"
-proto = "void state_60(struct WrestlerCtx *ctx)"
-desc = "Handler for state 0x60 in No Mercy's table (0x80144CF0). Not identified."
+name = "state_60_carry_move_defender"
+proto = "void state_60_carry_move_defender(struct WrestlerCtx *ctx)"
+desc = "The receiver of a move from a carry or pick-up (paired with 0x5F) (setters read from code, 2026-11-02). Handler for state 0x60 in No Mercy's table (0x80144CF0)."
 status = "likely"
 
 [[func]]
 addr = 0x800E97B8
 name = "state_63_hit_while_down"
 proto = "void state_63_hit_while_down(struct WrestlerCtx *ctx)"
-desc = "Hit while lying down (0x31): by the weapon ground attack 0x28 (anims 12204, 12901), also set by dive_land_hit; back to 0x31 about 35 VIs later. RAM 2026-11-01 (P1 hitting P2 repeatedly with the ring steps on the floor). Handler for state 0x63 in No Mercy's table (0x80144CF0). Not identified. Entered through the state setters from: dive_land_hit, state_28, state_79."
+desc = "Hit while lying down (0x31): by the weapon ground attack 0x28 (anims 12204, 12901), also set by dive_land_hit; back to 0x31 about 35 VIs later. RAM 2026-11-01 (P1 hitting P2 repeatedly with the ring steps on the floor). Handler for state 0x63 in No Mercy's table (0x80144CF0). Entered through the state setters from: dive_land_hit, state_28, state_79."
 status = "confirmed"
 
 [[func]]
 addr = 0x800E9A54
 name = "state_64_counter_strike"
 proto = "void state_64_counter_strike(struct WrestlerCtx *ctx)"
-desc = "Countering a strike with a timed R: the counterer then strikes back through 0x23 while the opponent sits in 0x33 (the R counter new in No Mercy). RAM 2026-11-01 (Andrew's save states: caught kick, R counter of a punch, L deflection of a grapple). Handler for state 0x64 in No Mercy's table (0x80144CF0). Not identified."
+desc = "Countering a strike with a timed R: the counterer then strikes back through 0x23 while the opponent sits in 0x33 (the R counter new in No Mercy). RAM 2026-11-01 (Andrew's save states: caught kick, R counter of a punch, L deflection of a grapple). Handler for state 0x64 in No Mercy's table (0x80144CF0)."
 status = "confirmed"
 
 [[func]]
@@ -592,72 +592,72 @@ status = "confirmed"
 
 [[func]]
 addr = 0x800E9DA8
-name = "state_66_special_pose"
-proto = "void state_66_special_pose(struct WrestlerCtx *ctx)"
-desc = "Handler for state 0x66 in No Mercy's table (0x80144CF0). Name from its Revenge match state_18_special_pose (0x800A0FFC), unchecked. As Revenge state_18_special_pose (0x800A0FFC), matched by call graph (score 1.04). Revenge: Handler for Revenge state 0x18; World Tour state 0x17 (state_17_special_pose) by the state-table alignment (README)."
-status = "guess"
+name = "state_66_counter_b"
+proto = "void state_66_counter_b(struct WrestlerCtx *ctx)"
+desc = "Second kind of strike counter, the counterer: strike_counter_check pairs 0x66 / 0x67 for strikes with flags 0x3800. The carried-over special-pose name did not fit (setters read from code, 2026-11-02). Handler for state 0x66 in No Mercy's table (0x80144CF0). Name from its Revenge match state_18_special_pose (0x800A0FFC), unchecked. As Revenge state_18_special_pose (0x800A0FFC), matched by call graph (score 1.04). Revenge: Handler for Revenge state 0x18; World Tour state 0x17 (state_17_special_pose) by the state-table alignment (README)."
+status = "likely"
 
 [[func]]
 addr = 0x800E9EC8
 name = "state_67"
 proto = "void state_67(struct WrestlerCtx *ctx)"
-desc = "Handler for state 0x67 in No Mercy's table (0x80144CF0). Not identified."
+desc = "Second kind of strike counter: strike_counter_check pairs 0x66 / 0x67 when the strike's flags have 0x3800 (and 0x86 / 0x87 for 0x4400); 0x64 / 0x65 is the usual R counter (setters read from code, 2026-11-02). Handler for state 0x67 in No Mercy's table (0x80144CF0)."
 status = "likely"
 
 [[func]]
 addr = 0x800E9F90
-name = "state_68"
-proto = "void state_68(struct WrestlerCtx *ctx)"
-desc = "Handler for state 0x68 in No Mercy's table (0x80144CF0). Not identified. Entered through the state setters from: dive_counter."
-status = "likely"
+name = "state_68_dive_dodge"
+proto = "void state_68_dive_dodge(struct WrestlerCtx *ctx)"
+desc = "Confirmed 2026-11-02: the setter read from code and Andrew's animation tags agree. Dodging with a roll and a turn (11887); set by dive_counter, so dodging a dive (Andrew's viewer tags, 2026-11-02). Handler for state 0x68 in No Mercy's table (0x80144CF0). Entered through the state setters from: dive_counter."
+status = "confirmed"
 
 [[func]]
 addr = 0x800EA01C
 name = "state_69_catch_holder"
 proto = "void state_69_catch_holder(struct WrestlerCtx *ctx)"
-desc = "From code: in step 2, A starts move 183 and B move 184 before count_timer runs out; state_flags 0x10 gives move 185; when time is up state_flags 0x04 is set and the caught wrestler reverses. Holding a caught kick (entered from the block 0x4C); the camera turns and the game waits for input. With no input the held wrestler reversed: at step 3 the two swapped 0x69 / 0x6A and played 15454 / 15455. RAM 2026-11-01 (Andrew's save states: caught kick, R counter of a punch, L deflection of a grapple). Handler for state 0x69 in No Mercy's table (0x80144CF0). Not identified. Entered through the state setters from: state_6A."
+desc = "From code: in step 2, A starts move 183 and B move 184 before count_timer runs out; state_flags 0x10 gives move 185; when time is up state_flags 0x04 is set and the caught wrestler reverses. Holding a caught kick (entered from the block 0x4C); the camera turns and the game waits for input. With no input the held wrestler reversed: at step 3 the two swapped 0x69 / 0x6A and played 15454 / 15455. RAM 2026-11-01 (Andrew's save states: caught kick, R counter of a punch, L deflection of a grapple). Handler for state 0x69 in No Mercy's table (0x80144CF0). Entered through the state setters from: state_6A."
 status = "confirmed"
 
 [[func]]
 addr = 0x800EA1E4
 name = "state_6A_catch_held"
 proto = "void state_6A_catch_held(struct WrestlerCtx *ctx)"
-desc = "Leg caught by the opponent (entered from the strike 0x22), paired with 0x69; it sets both 0x69 and 0x6A, so the reversal swap is done here. RAM 2026-11-01 (Andrew's save states: caught kick, R counter of a punch, L deflection of a grapple). Handler for state 0x6A in No Mercy's table (0x80144CF0). Not identified. Entered through the state setters from: state_6A."
+desc = "Leg caught by the opponent (entered from the strike 0x22), paired with 0x69; it sets both 0x69 and 0x6A, so the reversal swap is done here. RAM 2026-11-01 (Andrew's save states: caught kick, R counter of a punch, L deflection of a grapple). Handler for state 0x6A in No Mercy's table (0x80144CF0). Entered through the state setters from: state_6A."
 status = "confirmed"
 
 [[func]]
 addr = 0x800EA3CC
 name = "state_6B_grapple_evade"
 proto = "void state_6B_grapple_evade(struct WrestlerCtx *ctx)"
-desc = "L against a grapple attempt: the state before a successful deflection 0x6C (prev of 0x6C). RAM 2026-11-01 (Andrew's save states: caught kick, R counter of a punch, L deflection of a grapple). Handler for state 0x6B in No Mercy's table (0x80144CF0). Not identified."
-status = "guess"
+desc = "Confirmed 2026-11-02: the setter read from code and Andrew's animation tags agree. L against a grapple attempt: the state before a successful deflection 0x6C (prev of 0x6C). RAM 2026-11-01 (Andrew's save states: caught kick, R counter of a punch, L deflection of a grapple). Handler for state 0x6B in No Mercy's table (0x80144CF0)."
+status = "confirmed"
 
 [[func]]
 addr = 0x800EA474
 name = "state_6C_grapple_deflect"
 proto = "void state_6C_grapple_deflect(struct WrestlerCtx *ctx)"
-desc = "Deflecting a grapple attempt with L (entered from 0x6B; the grappler in 0x50 goes to 0x6D); ~8 VIs, then 0x30 and stand. RAM 2026-11-01 (Andrew's save states: caught kick, R counter of a punch, L deflection of a grapple). Handler for state 0x6C in No Mercy's table (0x80144CF0). Not identified. Entered through the state setters from: grapple_attempt_resolve."
+desc = "Deflecting a grapple attempt with L (entered from 0x6B; the grappler in 0x50 goes to 0x6D); ~8 VIs, then 0x30 and stand. RAM 2026-11-01 (Andrew's save states: caught kick, R counter of a punch, L deflection of a grapple). Handler for state 0x6C in No Mercy's table (0x80144CF0). Entered through the state setters from: grapple_attempt_resolve."
 status = "confirmed"
 
 [[func]]
 addr = 0x800EA4F0
 name = "state_6D_grapple_deflected"
 proto = "void state_6D_grapple_deflected(struct WrestlerCtx *ctx)"
-desc = "The grappler whose attempt (0x50) was deflected by L; then 0x33 for ~50 VIs (anims 12562 / 12563) and stand. RAM 2026-11-01 (Andrew's save states: caught kick, R counter of a punch, L deflection of a grapple). Handler for state 0x6D in No Mercy's table (0x80144CF0). Not identified."
+desc = "The grappler whose attempt (0x50) was deflected by L; then 0x33 for ~50 VIs (anims 12562 / 12563) and stand. RAM 2026-11-01 (Andrew's save states: caught kick, R counter of a punch, L deflection of a grapple). Handler for state 0x6D in No Mercy's table (0x80144CF0)."
 status = "confirmed"
 
 [[func]]
 addr = 0x8011E748
-name = "state_6E_cheap_shot"
-proto = "void state_6E_cheap_shot(struct WrestlerCtx *ctx)"
-desc = "An attack by a wrestler who is not the legal man: the ally who ran in had come through it (prev 0x6E) and P1 had been hit (prev 0x8F); in a tag match a waiting partner did it and the opponent went to 0x70. RAM 2026-11-01 (an ally ran in to help P2). Handler for state 0x6E in No Mercy's table (0x80144CF0). Not identified. The opponent went to 0x70 (stagger into the ropes) at the same time. Seen in RAM 2026-11-01 (4-CPU tag match, 30 s sampled every second). Entered through the state setters from: state_01_stand, state_92, state_96, state_A4."
-status = "guess"
+name = "state_6E_drop_down"
+proto = "void state_6E_drop_down(struct WrestlerCtx *ctx)"
+desc = "Confirmed 2026-11-02: the setter read from code and Andrew's animation tags agree. Dropping down off the apron from a rope hold (12128) or off something else (13017): getting down from the apron or a raised place. The cheap-shot reading was wrong; the run-in passed through it when it came down off the apron (Andrew's viewer tags, 2026-11-02). An attack by a wrestler who is not the legal man: the ally who ran in had come through it (prev 0x6E) and P1 had been hit (prev 0x8F); in a tag match a waiting partner did it and the opponent went to 0x70. RAM 2026-11-01 (an ally ran in to help P2). Handler for state 0x6E in No Mercy's table (0x80144CF0). The opponent went to 0x70 (stagger into the ropes) at the same time. Seen in RAM 2026-11-01 (4-CPU tag match, 30 s sampled every second). Entered through the state setters from: state_01_stand, state_92, state_96, state_A4."
+status = "confirmed"
 
 [[func]]
 addr = 0x8011EBC0
-name = "state_6F"
-proto = "void state_6F(struct WrestlerCtx *ctx)"
-desc = "Handler for state 0x6F in No Mercy's table (0x80144CF0). Not identified. Both wrestlers sat in 0x6F at once, or one after another; then standing. Seen in RAM 2026-11-01 (4-CPU tag match, 30 s sampled every second). Entered through the state setters from: state_01_stand, state_7E, sub_8013DA8C."
+name = "state_6F_climb_onto"
+proto = "void state_6F_climb_onto(struct WrestlerCtx *ctx)"
+desc = "Confirmed 2026-11-02: the setter read from code and Andrew's animation tags agree. Climbing onto something (13016), starting the long climb onto the ring steps in the corner (11824; 11825 / 11826 are the climb), climbing down and dropping off the cage (12805); it picks the raised place (location 0x40-0x200) from flags84 (Andrew's viewer tags, 2026-11-02). Handler for state 0x6F in No Mercy's table (0x80144CF0). Both wrestlers sat in 0x6F at once, or one after another; then standing. Seen in RAM 2026-11-01 (4-CPU tag match, 30 s sampled every second). Entered through the state setters from: state_01_stand, state_7E, sub_8013DA8C."
 status = "confirmed"
 
 [[func]]
@@ -669,332 +669,332 @@ status = "confirmed"
 
 [[func]]
 addr = 0x8013BB78
-name = "state_71"
-proto = "void state_71(struct WrestlerCtx *ctx)"
-desc = "Handler for state 0x71 in No Mercy's table (0x80144CF0). Not identified."
+name = "state_71_running_target_move"
+proto = "void state_71_running_target_move(struct WrestlerCtx *ctx)"
+desc = "From the run (run_inputs): a running move started within 390 units of its target, with the move number set first (setters read from code, 2026-11-02). Handler for state 0x71 in No Mercy's table (0x80144CF0)."
 status = "likely"
 
 [[func]]
 addr = 0x8013B0B4
-name = "state_72"
-proto = "void state_72(struct WrestlerCtx *ctx)"
-desc = "Handler for state 0x72 in No Mercy's table (0x80144CF0). Not identified."
-status = "likely"
+name = "state_72_rope_taunt"
+proto = "void state_72_rope_taunt(struct WrestlerCtx *ctx)"
+desc = "Confirmed 2026-11-02: the setter read from code and Andrew's animation tags agree. Stepping up onto the ropes and taunting someone outside the ring (12104) (Andrew's viewer tags, 2026-11-02). Handler for state 0x72 in No Mercy's table (0x80144CF0)."
+status = "confirmed"
 
 [[func]]
 addr = 0x8013B34C
-name = "state_73"
-proto = "void state_73(struct WrestlerCtx *ctx)"
-desc = "Handler for state 0x73, 0x74 in No Mercy's table (0x80144CF0). Not identified."
+name = "state_73_apron_move"
+proto = "void state_73_apron_move(struct WrestlerCtx *ctx)"
+desc = "Shared with 0x74: input_climb_turnbuckle starts 0x74 when A is pressed with trait attrs +0x38 0x4000 at an opponent down in the ring (flags80 0x08), so moves 269 / 270 are the aerial attacks from the apron / turnbuckle (setters read from code, 2026-11-02). A move from the apron: input_apron_moves (weapon dropped first) starts it; the handler starts moves 269 / 270 (springboard / apron attacks?) (setters read from code, 2026-11-02). Handler for state 0x73, 0x74 in No Mercy's table (0x80144CF0)."
 status = "likely"
 
 [[func]]
 addr = 0x8013B538
 name = "state_75"
 proto = "void state_75(struct WrestlerCtx *ctx)"
-desc = "Handler for state 0x75, 0x76, 0xC0 in No Mercy's table (0x80144CF0). Not identified."
+desc = "Needs RAM (2026-11-02): the shared apron-dive handler; which of its states (0x75 / 0x76) plays which dive needs a match. Shared by 0x75, 0x76 and 0xC0. 0x76: running on the apron, A at an opponent on the floor (location 0x04 / 0x40) with trait attrs +0x38 0x10000: a dive from the apron to the floor (run_inputs). 0x75: from input_apron_moves after dropping a weapon (setters read from code, 2026-11-02). Handler for state 0x75, 0x76, 0xC0 in No Mercy's table (0x80144CF0)."
 status = "likely"
 
 [[func]]
 addr = 0x8013B704
-name = "state_77"
-proto = "void state_77(struct WrestlerCtx *ctx)"
-desc = "Handler for state 0x77 in No Mercy's table (0x80144CF0). Not identified."
+name = "state_77_apron_to_ring_move"
+proto = "void state_77_apron_to_ring_move(struct WrestlerCtx *ctx)"
+desc = "From the apron (input_apron_moves): A with the d-pad toward an opponent in the ring, when the wrestler may act; sets the move number first: an apron attack into the ring (setters read from code, 2026-11-02). Handler for state 0x77 in No Mercy's table (0x80144CF0)."
 status = "likely"
 
 [[func]]
 addr = 0x8013B9E0
 name = "state_78_running_move"
 proto = "void state_78_running_move(struct WrestlerCtx *ctx)"
-desc = "A move from the run (set by run_inputs; corner_run_step, wrestler_start_move), then 0x30. From a profile of the handler's setters, animations and calls (2026-11-02). Handler for state 0x78 in No Mercy's table (0x80144CF0). Not identified. Entered through the state setters from: run_inputs."
-status = "guess"
+desc = "A move from the run (set by run_inputs; corner_run_step, wrestler_start_move), then 0x30. From a profile of the handler's setters, animations and calls (2026-11-02). Handler for state 0x78 in No Mercy's table (0x80144CF0). Entered through the state setters from: run_inputs."
+status = "likely"
 
 [[func]]
 addr = 0x8013C164
 name = "state_79_dive"
 proto = "void state_79_dive(struct WrestlerCtx *ctx)"
-desc = "Shared by 0x79-0x7D: dives (dive_aim, dive_counter, apply_damage); landing goes to 0x30, 0x31, 0x44 (a pin), 0x45 or 0x63. From a profile of the handler's setters, animations and calls (2026-11-02). Handler for state 0x79, 0x7A, 0x7B, 0x7C, 0x7D in No Mercy's table (0x80144CF0). Not identified."
+desc = "Shared by 0x79-0x7D: dives (dive_aim, dive_counter, apply_damage); landing goes to 0x30, 0x31, 0x44 (a pin), 0x45 or 0x63. From a profile of the handler's setters, animations and calls (2026-11-02). Handler for state 0x79, 0x7A, 0x7B, 0x7C, 0x7D in No Mercy's table (0x80144CF0)."
 status = "likely"
 
 [[func]]
 addr = 0x8011F2D0
-name = "state_7E"
-proto = "void state_7E(struct WrestlerCtx *ctx)"
-desc = "Handler for state 0x7E in No Mercy's table (0x80144CF0). Not identified."
-status = "likely"
+name = "state_7E_walk_to_climb"
+proto = "void state_7E_walk_to_climb(struct WrestlerCtx *ctx)"
+desc = "Needs RAM (2026-11-02): no setter with a constant; something sets it with a computed state number. No setter with a constant found. Drops any weapon, takes the direction from the ring centre (vec_xz_angle of x / z, angle_dir8_back), walks that way facing the opponent (walk_step with the d-pad mask from 0x8014D258) and climbs onto the raised place when it gets there (0x6F) (code 2026-11-02). Handler for state 0x7E in No Mercy's table (0x80144CF0). Not identified."
+status = "guess"
 
 [[func]]
 addr = 0x80119E00
-name = "state_7F"
-proto = "void state_7F(struct WrestlerCtx *ctx)"
-desc = "Grapple from the apron, attacker (paired 0x80): the attacker is on the apron and the opponent staggered (frame_flags & 6) or flags78 0x80. From code (grapple_start_pair), 2026-11-01. Handler for state 0x7F in No Mercy's table (0x80144CF0). Not identified. Entered through the state setters from: grapple_start_pair."
-status = "likely"
+name = "state_7F_rear_lift"
+proto = "void state_7F_rear_lift(struct WrestlerCtx *ctx)"
+desc = "Confirmed 2026-11-02: the setter read from code and Andrew's animation tags agree. Lifting the opponent from behind: lockup_input pairs 0x7F / 0x80 (0x81 / 0x82 the carry with the other button), grapple_start_pair also from the apron; the shoulder lift from a rear grapple new in No Mercy (0x80's animations: struggling when held from behind, breaking out) (setters read from code, 2026-11-02). Grapple from the apron, attacker (paired 0x80): the attacker is on the apron and the opponent staggered (frame_flags & 6) or flags78 0x80. From code (grapple_start_pair), 2026-11-01. Handler for state 0x7F in No Mercy's table (0x80144CF0). Entered through the state setters from: grapple_start_pair."
+status = "confirmed"
 
 [[func]]
 addr = 0x8011A06C
 name = "state_80_carried_escape"
 proto = "void state_80_carried_escape(struct WrestlerCtx *ctx)"
-desc = "Mashing out of a carry (escape_time, mash_count, recover_tick; anim 12642). From a profile of the handler's setters, animations and calls (2026-11-02). Handler for state 0x80 in No Mercy's table (0x80144CF0). Not identified."
-status = "guess"
+desc = "Confirmed 2026-11-02: the setter read from code and Andrew's animation tags agree. Struggling when held from behind (12642), breaking out (12646) (Andrew's viewer tags, 2026-11-02). Mashing out of a carry (escape_time, mash_count, recover_tick; anim 12642). From a profile of the handler's setters, animations and calls (2026-11-02). Handler for state 0x80 in No Mercy's table (0x80144CF0)."
+status = "confirmed"
 
 [[func]]
 addr = 0x80125190
 name = "state_81_carry"
 proto = "void state_81_carry(struct WrestlerCtx *ctx)"
-desc = "Carrying the opponent (carry_walk, anims 12653 / 12655 / 12657; R lets go; chance_roll, apply_damage): the lift onto the shoulders. From a profile of the handler's setters, animations and calls (2026-11-02). Handler for state 0x81 in No Mercy's table (0x80144CF0). Not identified."
+desc = "Carrying the opponent (carry_walk, anims 12653 / 12655 / 12657; R lets go; chance_roll, apply_damage): the lift onto the shoulders. From a profile of the handler's setters, animations and calls (2026-11-02). Handler for state 0x81 in No Mercy's table (0x80144CF0)."
 status = "likely"
 
 [[func]]
 addr = 0x801254C4
 name = "state_82_carried"
 proto = "void state_82_carried(struct WrestlerCtx *ctx)"
-desc = "Being carried (anims 12654 / 12656 / 12658, escape_time / mash_count to get out), paired with 0x81. From a profile of the handler's setters, animations and calls (2026-11-02). Handler for state 0x82 in No Mercy's table (0x80144CF0). Not identified."
+desc = "Being carried (anims 12654 / 12656 / 12658, escape_time / mash_count to get out), paired with 0x81. From a profile of the handler's setters, animations and calls (2026-11-02). Handler for state 0x82 in No Mercy's table (0x80144CF0)."
 status = "likely"
 
 [[func]]
 addr = 0x800EA574
 name = "state_83_double_team_a"
 proto = "void state_83_double_team_a(struct WrestlerCtx *ctx)"
-desc = "Double-team grapple, first attacker (double_team_grapple_start / grapple_attempt_resolve; double_team_place / double_team_slide, wrestler_start_move). From a profile of the handler's setters, animations and calls (2026-11-02). Handler for state 0x83 in No Mercy's table (0x80144CF0). Not identified. Entered through the state setters from: double_team_grapple_start, grapple_attempt_resolve."
-status = "likely"
+desc = "Confirmed 2026-11-02: setter conditions and the handler's steps both read from code, and they agree. Double-team grapple, first attacker: the move from its own move set, slot 163 / 164 / 165 by the position bit 0x1000 / 0x2000 / 0x4000 (grapples.md, code 2026-11-02) (double_team_grapple_start / grapple_attempt_resolve; double_team_place / double_team_slide, wrestler_start_move). From a profile of the handler's setters, animations and calls (2026-11-02). Handler for state 0x83 in No Mercy's table (0x80144CF0). Entered through the state setters from: double_team_grapple_start, grapple_attempt_resolve."
+status = "confirmed"
 
 [[func]]
 addr = 0x800EA6E4
 name = "state_84_double_team_b"
 proto = "void state_84_double_team_b(struct WrestlerCtx *ctx)"
-desc = "Double-team grapple, second attacker (same setters, wrestler_add_spirit). From a profile of the handler's setters, animations and calls (2026-11-02). Handler for state 0x84 in No Mercy's table (0x80144CF0). Not identified. Entered through the state setters from: double_team_grapple_start, grapple_attempt_resolve."
-status = "likely"
+desc = "Confirmed 2026-11-02: setter conditions and the handler's steps both read from code, and they agree. Double-team grapple, the partner who joined the lock-up (gains spirit by the move record +0x07) (same setters, wrestler_add_spirit). From a profile of the handler's setters, animations and calls (2026-11-02). Handler for state 0x84 in No Mercy's table (0x80144CF0). Entered through the state setters from: double_team_grapple_start, grapple_attempt_resolve."
+status = "confirmed"
 
 [[func]]
 addr = 0x800EA814
 name = "state_85_double_team_victim"
 proto = "void state_85_double_team_victim(struct WrestlerCtx *ctx)"
-desc = "Double-team grapple, the wrestler taking it. From a profile of the handler's setters, animations and calls (2026-11-02). Handler for state 0x85 in No Mercy's table (0x80144CF0). Not identified. Entered through the state setters from: double_team_grapple_start, grapple_attempt_resolve."
-status = "likely"
+desc = "Confirmed 2026-11-02: setter conditions and the handler's steps both read from code, and they agree. Double-team grapple, the wrestler taking it. From a profile of the handler's setters, animations and calls (2026-11-02). Handler for state 0x85 in No Mercy's table (0x80144CF0). Entered through the state setters from: double_team_grapple_start, grapple_attempt_resolve."
+status = "confirmed"
 
 [[func]]
 addr = 0x801332F0
 name = "state_86_chain_received"
 proto = "void state_86_chain_received(struct WrestlerCtx *ctx)"
 desc = "Grapple from the floor at an opponent in the ring / up on something (location 0x3C1), attacker (paired 0x87); flags78 0x40000. From code (grapple_start_pair), 2026-11-01. Handler for state 0x86 in No Mercy's table (0x80144CF0). Name from its World Tour match state_4D_chain_received (0x800AE524), unchecked. As World Tour state_4D_chain_received (0x800AE524), matched by call graph (score 1.05). World Tour: Receiver of a chained move. Entered through the state setters from: sub_8012201C."
-status = "guess"
+status = "likely"
 
 [[func]]
 addr = 0x801333E4
-name = "state_87"
-proto = "void state_87(struct WrestlerCtx *ctx)"
-desc = "Handler for state 0x87 in No Mercy's table (0x80144CF0). Not identified."
+name = "state_87_pulled_from_above"
+proto = "void state_87_pulled_from_above(struct WrestlerCtx *ctx)"
+desc = "The opponent of 0x86: up in the ring or on a raised place while grabbed from the floor (grapple_start_pair, floor to ring, flags78 0x40000); also paired 0x86 / 0x87 by strike_counter_check for counter bits 0x4400 (moves 219 and 73, the strike from a raised place at the floor) (chain_move_anim / chain_move_slide; code 2026-11-02). Handler for state 0x87 in No Mercy's table (0x80144CF0)."
 status = "likely"
 
 [[func]]
 addr = 0x800EA8FC
-name = "state_88"
-proto = "void state_88(struct WrestlerCtx *ctx)"
-desc = "Handler for state 0x88 in No Mercy's table (0x80144CF0). Not identified."
+name = "state_88_catch_flyer"
+proto = "void state_88_catch_flyer(struct WrestlerCtx *ctx)"
+desc = "Catching an opponent in the air (grapple_attempt_resolve pairs 0x88 / 0x89 for a defender in states 121-125 or a dive); then the caught move: move 142 when the two face more than about 90 degrees apart, else 141 (wrestler_start_move; an earlier note read these as states 0x8D / 0x8E, corrected 2026-11-02). Handler for state 0x88 in No Mercy's table (0x80144CF0)."
 status = "likely"
 
 [[func]]
 addr = 0x800EAA08
-name = "state_89"
-proto = "void state_89(struct WrestlerCtx *ctx)"
-desc = "Handler for state 0x89 in No Mercy's table (0x80144CF0). Not identified."
+name = "state_89_caught_flying"
+proto = "void state_89_caught_flying(struct WrestlerCtx *ctx)"
+desc = "Caught in the air (paired with 0x88) (setters read from code, 2026-11-02). Handler for state 0x89 in No Mercy's table (0x80144CF0)."
 status = "likely"
 
 [[func]]
 addr = 0x8014310C
 name = "state_8A_crowd_weapon_grab"
 proto = "void state_8A_crowd_weapon_grab(struct WrestlerCtx *ctx)"
-desc = "Taking a weapon from the crowd: set by input_weapon_grab (C-left next to a crowd zone); step 1 slides into place, step 2 plays 12374 / 13062 while weapon_pick_type picks the weapon, step 3 has it in hand (held_obj set at step 3, about 46 VIs in), then 0x30 and stand. RAM 2026-11-01 (P1 holding right + C-left beside the crowd). Handler for state 0x8A in No Mercy's table (0x80144CF0). Not identified. Entered through the state setters from: sub_80142E80."
+desc = "Taking a weapon from the crowd: set by input_weapon_grab (C-left next to a crowd zone); step 1 slides into place, step 2 plays 12374 / 13062 while weapon_pick_type picks the weapon, step 3 has it in hand (held_obj set at step 3, about 46 VIs in), then 0x30 and stand. RAM 2026-11-01 (P1 holding right + C-left beside the crowd). Handler for state 0x8A in No Mercy's table (0x80144CF0). Entered through the state setters from: sub_80142E80."
 status = "confirmed"
 
 [[func]]
 addr = 0x80143378
 name = "state_8B_weapon_drop"
 proto = "void state_8B_weapon_drop(struct WrestlerCtx *ctx)"
-desc = "Dropping the held weapon (weapon_release, anim 12390). From a profile of the handler's setters, animations and calls (2026-11-02). Handler for state 0x8B in No Mercy's table (0x80144CF0). Not identified."
-status = "guess"
+desc = "Checked 2026-11-02: L or R while holding a weapon (input_l / input_r, first test) goes here, and the handler drops it (weapon_release, 12390). Holding a weapon two-handed, a transition (12390): carrying a big weapon such as the steps (Andrew's viewer tags, 2026-11-02). Dropping the held weapon (weapon_release, anim 12390). From a profile of the handler's setters, animations and calls (2026-11-02). Handler for state 0x8B in No Mercy's table (0x80144CF0)."
+status = "likely"
 
 [[func]]
 addr = 0x801433E8
 name = "state_8C_steps_grab"
 proto = "void state_8C_steps_grab(struct WrestlerCtx *ctx)"
-desc = "Picking up the ring steps: input_weapon_grab sets it with held_obj = 4 or 5 in the steps zones (zone ids 46-53, 188-195). RAM 2026-11-01 (P1 holding right + C-left beside the crowd). Handler for state 0x8C in No Mercy's table (0x80144CF0). Not identified. Entered through the state setters from: sub_80142E80."
-status = "guess"
+desc = "Confirmed 2026-11-02: the setter read from code and Andrew's animation tags agree. Picking a weapon up (12379), failing and looking surprised (12384), starting to lift something big at waist height (12962), grabbing at it and missing (12964) (Andrew's viewer tags, 2026-11-02). Picking up the ring steps: input_weapon_grab sets it with held_obj = 4 or 5 in the steps zones (zone ids 46-53, 188-195). RAM 2026-11-01 (P1 holding right + C-left beside the crowd). Handler for state 0x8C in No Mercy's table (0x80144CF0). Entered through the state setters from: sub_80142E80."
+status = "confirmed"
 
 [[func]]
 addr = 0x80143750
-name = "state_8D_weapon_throw"
-proto = "void state_8D_weapon_throw(struct WrestlerCtx *ctx)"
-desc = "Throwing the held weapon (weapon_release then object_set_motion, anims 12965 / 12966). From a profile of the handler's setters, animations and calls (2026-11-02). Handler for state 0x8D in No Mercy's table (0x80144CF0). Not identified."
-status = "likely"
+name = "state_8D_ladder_set_up"
+proto = "void state_8D_ladder_set_up(struct WrestlerCtx *ctx)"
+desc = "Confirmed 2026-11-02: setter conditions and the handler's steps both read from code, and they agree. Code 2026-11-02: standing a carried ladder up. From input_weapon_grab_zone when holding an object of kind 3 at a zone that allows it (zone bit 0x10 clear; with it set 0x8E instead): 12965, then the object gets flags 0x100 (a standing ladder), weapon_release(2) and object_set_motion(obj, 0) (a wobble, never a topple), then 12966. Earlier read as throwing the held weapon. From a profile of the handler's setters, animations and calls (2026-11-02). Handler for state 0x8D in No Mercy's table (0x80144CF0)."
+status = "confirmed"
 
 [[func]]
 addr = 0x80143840
-name = "state_8E"
-proto = "void state_8E(struct WrestlerCtx *ctx)"
-desc = "Handler for state 0x8E in No Mercy's table (0x80144CF0). Not identified."
+name = "state_8E_object_pair_move"
+proto = "void state_8E_object_pair_move(struct WrestlerCtx *ctx)"
+desc = "Code 2026-11-02: from input_weapon_grab_zone when holding an object of kind 3 at a zone with bit 0x10: a paired move with the held object (the move's animation, pair_scripted_place / pair_slide_step, then weapon_release(2) and move_event). Earlier read as the follow-up of an aerial catch (state 0x88 actually starts moves 141 / 142). Handler for state 0x8E in No Mercy's table (0x80144CF0)."
 status = "likely"
 
 [[func]]
 addr = 0x8014391C
-name = "state_8F"
-proto = "void state_8F(struct WrestlerCtx *ctx)"
-desc = "P1 had just left it after the run-in's attack (prev 0x8F): probably the reaction to the run-in's cheap shot. RAM 2026-11-01 (an ally ran in to help P2). Handler for state 0x8F in No Mercy's table (0x80144CF0). Not identified."
-status = "guess"
+name = "state_8F_weapon_throw"
+proto = "void state_8F_weapon_throw(struct WrestlerCtx *ctx)"
+desc = "Confirmed 2026-11-02: setter conditions and the handler's steps both read from code, and they agree. Code 2026-11-02: **throwing the held weapon** (from input_weapon_use): plays 12515 + the object's kind (wrestler_move_anim), and at frame 14 weapon_release(w, 3), the throw (30 forward, 5 up); then move_event. Earlier RAM note: P1 had just left it after the run-in's attack (prev 0x8F): probably the reaction to the run-in's cheap shot. RAM 2026-11-01 (an ally ran in to help P2). Handler for state 0x8F in No Mercy's table (0x80144CF0)."
+status = "confirmed"
 
 [[func]]
 addr = 0x801439C0
-name = "state_90"
-proto = "void state_90(struct WrestlerCtx *ctx)"
-desc = "Handler for state 0x90 in No Mercy's table (0x80144CF0). Not identified."
-status = "likely"
+name = "state_90_hit_holding_weapon"
+proto = "void state_90_hit_holding_weapon(struct WrestlerCtx *ctx)"
+desc = "Confirmed 2026-11-02: the setter read from code and Andrew's animation tags agree. Hit while holding a two-handed weapon (12458, 12459 harder), throwing while jumping (12460) (Andrew's viewer tags, 2026-11-02). Handler for state 0x90 in No Mercy's table (0x80144CF0)."
+status = "confirmed"
 
 [[func]]
 addr = 0x80143A34
 name = "state_91_weapon_pickup"
 proto = "void state_91_weapon_pickup(struct WrestlerCtx *ctx)"
-desc = "Picking a weapon up (weapon_pick_type, sets held_obj; anim 11901). From a profile of the handler's setters, animations and calls (2026-11-02). Handler for state 0x91 in No Mercy's table (0x80144CF0). Not identified."
+desc = "Picking a weapon up (weapon_pick_type, sets held_obj; anim 11901). From a profile of the handler's setters, animations and calls (2026-11-02). Handler for state 0x91 in No Mercy's table (0x80144CF0)."
 status = "likely"
 
 [[func]]
 addr = 0x8011F8D8
-name = "state_92"
+name = "state_92_illegal_return"
 proto = "void state_92(struct WrestlerCtx *ctx)"
-desc = "Handler for state 0x92 in No Mercy's table (0x80144CF0). Name from its Revenge match state_70_body (0x800C1DCC), unchecked. As Revenge state_70_body (0x800C1DCC), matched by call graph (score 1.10). Revenge: Matches World Tour state_70_body (0x800C23D0), call-graph score 0.97. Entered through the state setters from: state_01_stand."
-status = "guess"
+desc = "Confirmed 2026-11-02: setter conditions and the handler's steps both read from code, and they agree. Code 2026-11-02: a tag partner who may not act (wrestler_may_act 0) walks back to its own corner: in the ring toward the side's corner (0x8014D1A8 by flags_e9 0x20, aimed 170 angle units off it, walk_speed 2), then 0x6E out to the apron (dropping any weapon); on the apron / floor along the side's path segments (0x801475D0 ...) and, within 10 of the end or after a lost fall, 0x6F or 0x6E. Leaves as soon as it may act. Entered from standing whenever stand_flags_update returns non-zero. Handler for state 0x92 in No Mercy's table (0x80144CF0). Name from its Revenge match state_70_body (0x800C1DCC), unchecked. As Revenge state_70_body (0x800C1DCC), matched by call graph (score 1.10). Revenge: Matches World Tour state_70_body (0x800C23D0), call-graph score 0.97. Entered through the state setters from: state_01_stand."
+status = "confirmed"
 
 [[func]]
 addr = 0x8013874C
-name = "state_93_tag_reach"
-proto = "void state_93_tag_reach(struct WrestlerCtx *ctx)"
-desc = "Reaching for the tag (tag_in, apron_line_pos, anim 12092; then 0x0A). From a profile of the handler's setters, animations and calls (2026-11-02). Handler for state 0x93 in No Mercy's table (0x80144CF0). Not identified."
-status = "guess"
+name = "state_93_tag_received"
+proto = "void state_93_tag_received(struct WrestlerCtx *ctx)"
+desc = "Confirmed 2026-11-02: the setter read from code and Andrew's animation tags agree. Checked 2026-11-02: tag_exchange gives 0x93 to the wrestler without flags_e9 0x10 (the partner on the apron) and 0x94 to the one with it (the legal man): this is the partner taking the tag (12092 / 12923), then 0x0A into the ring. Uses the crouched corner wait (12092) (Andrew's viewer tags, 2026-11-02). Reaching for the tag (tag_in, apron_line_pos, anim 12092; then 0x0A). From a profile of the handler's setters, animations and calls (2026-11-02). Handler for state 0x93 in No Mercy's table (0x80144CF0)."
+status = "confirmed"
 
 [[func]]
 addr = 0x801388B0
-name = "state_94"
-proto = "void state_94(struct WrestlerCtx *ctx)"
-desc = "Handler for state 0x94 in No Mercy's table (0x80144CF0). Not identified."
-status = "likely"
+name = "state_94_tag_out"
+proto = "void state_94_tag_out(struct WrestlerCtx *ctx)"
+desc = "Confirmed 2026-11-02: the setter read from code and Andrew's animation tags agree. Checked 2026-11-02: tag_exchange gives 0x94 to the legal man (flags_e9 0x10): reaching out to tag the partner (12924). Code 2026-11-02: the tag (set by tag_exchange): 12924, the arm swung out for the tag, placed by pair_scripted_place (80 from the partner, 12 frames), dropping any weapon, then move_event. A big swing at the air (12924): reaching out from the apron? (Andrew's viewer tags, 2026-11-02). Handler for state 0x94 in No Mercy's table (0x80144CF0)."
+status = "confirmed"
 
 [[func]]
 addr = 0x80138588
 name = "state_95_apron_partner"
 proto = "void state_95_apron_partner(struct WrestlerCtx *ctx)"
-desc = "The partner on the apron (illegal_man_check; R or C-up pressed; anim 12092; then 0x01 or 0x0A). From a profile of the handler's setters, animations and calls (2026-11-02). Handler for state 0x95 in No Mercy's table (0x80144CF0). Name from its Revenge match state_81_body (0x800D9F04), unchecked. As Revenge state_81_body (0x800D9F04), matched by call graph (score 1.05). Revenge: Body of state_81 (the handler only calls it). Entered through the state setters from: sub_801380F8."
-status = "guess"
+desc = "Confirmed 2026-11-02: the setter read from code and Andrew's animation tags agree. Crouched on the corner (12092) and taunting while balancing on the apron edge (12921, 12922 the other way) (Andrew's viewer tags, 2026-11-02). The partner on the apron (illegal_man_check; R or C-up pressed; anim 12092; then 0x01 or 0x0A). From a profile of the handler's setters, animations and calls (2026-11-02). Handler for state 0x95 in No Mercy's table (0x80144CF0). Name from its Revenge match state_81_body (0x800D9F04), unchecked. As Revenge state_81_body (0x800D9F04), matched by call graph (score 1.05). Revenge: Body of state_81 (the handler only calls it). Entered through the state setters from: sub_801380F8."
+status = "confirmed"
 
 [[func]]
 addr = 0x8011F3A4
-name = "state_96"
-proto = "void state_96(struct WrestlerCtx *ctx)"
-desc = "Handler for state 0x96 in No Mercy's table (0x80144CF0). Not identified. Entered through the state setters from: state_01_stand."
+name = "state_96_leave_after_fall"
+proto = "void state_96_leave_after_fall(struct WrestlerCtx *ctx)"
+desc = "From standing once the wrestler has lost a fall (end_flags 0x01) in the ring: drops any weapon and goes to 0x96 (leaving the ring, eliminated?) (setters read from code, 2026-11-02). Handler for state 0x96 in No Mercy's table (0x80144CF0). Entered through the state setters from: state_01_stand."
 status = "likely"
 
 [[func]]
 addr = 0x800EAAE4
-name = "state_97"
-proto = "void state_97(struct WrestlerCtx *ctx)"
-desc = "Handler for state 0x97 in No Mercy's table (0x80144CF0). Not identified."
+name = "state_97_l_on_ropes"
+proto = "void state_97_l_on_ropes(struct WrestlerCtx *ctx)"
+desc = "L at an opponent leaning on the ropes (state 0x32), both in the same place and close: input_l pairs 0x97 / 0x98 (guest_referee_call also uses the pair) (setters read from code, 2026-11-02). Handler for state 0x97 in No Mercy's table (0x80144CF0)."
 status = "likely"
 
 [[func]]
 addr = 0x800EAC40
-name = "state_98"
-proto = "void state_98(struct WrestlerCtx *ctx)"
-desc = "Handler for state 0x98 in No Mercy's table (0x80144CF0). Not identified."
-status = "likely"
+name = "state_98_on_ropes_taken"
+proto = "void state_98_on_ropes_taken(struct WrestlerCtx *ctx)"
+desc = "Confirmed 2026-11-02: the setter read from code and Andrew's animation tags agree. The opponent taken while leaning on the ropes (paired with 0x97) (setters read from code, 2026-11-02). Handler for state 0x98 in No Mercy's table (0x80144CF0)."
+status = "confirmed"
 
 [[func]]
 addr = 0x8011F590
 name = "state_99_roll"
 proto = "void state_99_roll(struct WrestlerCtx *ctx)"
 desc = "Rolling or crawling from lying down (from 0x31; wrestler_translate, ring_zone_of). From a profile of the handler's setters, animations and calls (2026-11-02). Handler for state 0x99 in No Mercy's table (0x80144CF0). Name from its Revenge match state_85_body (0x800C1A24), unchecked. As Revenge state_85_body (0x800C1A24), matched by call graph (score 1.09). Revenge: Body of state_85 (the handler only calls it). Entered through the state setters from: state_31_down."
-status = "guess"
+status = "likely"
 
 [[func]]
 addr = 0x8011FDE8
 name = "state_9A_climb"
 proto = "void state_9A_climb(struct WrestlerCtx *ctx)"
-desc = "Shared by 0x9A and 0x9B. 0x9B is climbing onto the announce table (entered from the run 0x03; location goes 0x40 -> 0x60, height 0 -> 90). The carried-over ropes name may fit 0x9A. RAM 2026-11-01 (Andrew's save states: table spots and a rear grapple). Handler for state 0x9A, 0x9B in No Mercy's table (0x80144CF0). Name from its Revenge match state_60_ropes_a_body (0x800C0E44), unchecked. As Revenge state_60_ropes_a_body (0x800C0E44), matched by call graph (score 0.93). Revenge: Body of state_60_ropes_a (the handler only calls it)."
-status = "guess"
+desc = "Setter found (code 2026-11-02, run_exit_check 0x80110A90): from the run with C-up or C-down held at an exit collision segment, the state is 0x9A when the segment's +0x26 has bit 0x02 (C-up) or none of 0x10E2 (C-down), else 0x9B; so 0x9A is the run out of the ring over the ropes / off the edge and 0x9B the run onto the announce table, sharing the climb handler. Earlier: no setter for 0x9A itself (0x9B, the table climb, is read). Checked 2026-11-02: 0x9B (the run onto the announce table) is read; no setter for 0x9A itself was found (needs RAM for 0x9A's own use). Shared by 0x9A and 0x9B. 0x9B is climbing onto the announce table (entered from the run 0x03; location goes 0x40 -> 0x60, height 0 -> 90). The carried-over ropes name may fit 0x9A. RAM 2026-11-01 (Andrew's save states: table spots and a rear grapple). Handler for state 0x9A, 0x9B in No Mercy's table (0x80144CF0). Name from its Revenge match state_60_ropes_a_body (0x800C0E44), unchecked. As Revenge state_60_ropes_a_body (0x800C0E44), matched by call graph (score 0.93). Revenge: Body of state_60_ropes_a (the handler only calls it)."
+status = "likely"
 
 [[func]]
 addr = 0x80133584
-name = "state_9C"
-proto = "void state_9C(struct WrestlerCtx *ctx)"
-desc = "Grapple from the floor at an opponent on the apron, attacker (paired 0x9D); flags78 0x20000. From code (grapple_start_pair), 2026-11-01. Handler for state 0x9C in No Mercy's table (0x80144CF0). Not identified."
+name = "state_9C_floor_to_apron_grapple"
+proto = "void state_9C_floor_to_apron_grapple(struct WrestlerCtx *ctx)"
+desc = "Grapple from the floor at an opponent on the apron, attacker (grapple_start_pair, flags78 0x20000); paired with 0x9D (setters read from code, 2026-11-02). Grapple from the floor at an opponent on the apron, attacker (paired 0x9D); flags78 0x20000. From code (grapple_start_pair), 2026-11-01. Handler for state 0x9C in No Mercy's table (0x80144CF0)."
 status = "likely"
 
 [[func]]
 addr = 0x80133624
-name = "state_9D"
-proto = "void state_9D(struct WrestlerCtx *ctx)"
-desc = "Handler for state 0x9D in No Mercy's table (0x80144CF0). Not identified."
+name = "state_9D_floor_to_apron_grappled"
+proto = "void state_9D_floor_to_apron_grappled(struct WrestlerCtx *ctx)"
+desc = "Grappled from the floor while on the apron (paired with 0x9C) (setters read from code, 2026-11-02). Handler for state 0x9D in No Mercy's table (0x80144CF0)."
 status = "likely"
 
 [[func]]
 addr = 0x800EAD70
 name = "state_9E_leapfrog"
 proto = "void state_9E_leapfrog(struct WrestlerCtx *ctx)"
-desc = "Leapfrog over a runner (set by input_leapfrog; anim 11979). From a profile of the handler's setters, animations and calls (2026-11-02). Handler for state 0x9E in No Mercy's table (0x80144CF0). Not identified. Entered through the state setters from: input_leapfrog."
+desc = "Leapfrog over a runner (set by input_leapfrog; anim 11979). From a profile of the handler's setters, animations and calls (2026-11-02). Handler for state 0x9E in No Mercy's table (0x80144CF0). Entered through the state setters from: input_leapfrog."
 status = "likely"
 
 [[func]]
 addr = 0x800EAEDC
 name = "state_9F_run_dodge"
 proto = "void state_9F_run_dodge(struct WrestlerCtx *ctx)"
-desc = "A dodge started by run_collide (C-down held; anim 11980), back to the run. From a profile of the handler's setters, animations and calls (2026-11-02). Handler for state 0x9F in No Mercy's table (0x80144CF0). Not identified. Entered through the state setters from: run_collide."
-status = "guess"
+desc = "A dodge started by run_collide (C-down held; anim 11980), back to the run. From a profile of the handler's setters, animations and calls (2026-11-02). Handler for state 0x9F in No Mercy's table (0x80144CF0). Entered through the state setters from: run_collide."
+status = "likely"
 
 [[func]]
 addr = 0x80129F04
 name = "state_A0_running_grapple_attacker"
 proto = "void state_A0_running_grapple_attacker(struct WrestlerCtx *ctx)"
-desc = "Running grapple, attacker (set by grapple_start_pair from the attempt 0x50; anim 16725; flags78 gains 0x40); afterwards 0x30 -> 0x4E -> 0x30 -> stand. RAM 2026-11-01 (Andrew's save states: light grapple, running grapple, ground grapple at the head). Handler for state 0xA0 in No Mercy's table (0x80144CF0). Not identified. Entered through the state setters from: grapple_start_pair."
+desc = "Running grapple, attacker (set by grapple_start_pair from the attempt 0x50; anim 16725; flags78 gains 0x40); afterwards 0x30 -> 0x4E -> 0x30 -> stand. RAM 2026-11-01 (Andrew's save states: light grapple, running grapple, ground grapple at the head). Handler for state 0xA0 in No Mercy's table (0x80144CF0). Entered through the state setters from: grapple_start_pair."
 status = "confirmed"
 
 [[func]]
 addr = 0x8012A034
 name = "state_A1_running_grapple_defender"
 proto = "void state_A1_running_grapple_defender(struct WrestlerCtx *ctx)"
-desc = "Running grapple, defender (anim 16726), paired with 0xA0; ends in 0x31 (down), then 0x4F. RAM 2026-11-01 (Andrew's save states: light grapple, running grapple, ground grapple at the head). Handler for state 0xA1 in No Mercy's table (0x80144CF0). Not identified."
+desc = "Running grapple, defender (anim 16726), paired with 0xA0; ends in 0x31 (down), then 0x4F. RAM 2026-11-01 (Andrew's save states: light grapple, running grapple, ground grapple at the head). Handler for state 0xA1 in No Mercy's table (0x80144CF0)."
 status = "confirmed"
 
 [[func]]
 addr = 0x8011D848
 name = "state_A3_run_in"
 proto = "void state_A3_run_in(struct WrestlerCtx *ctx)"
-desc = "A wrestler entering mid-match (run_in_try starts it at step 13; match_init_wrestlers also uses it): it sets the partner of its +0x0C wrestler to itself, so the run-in became P2's partner (P2 partner 3, slot 3 partner 1, opponent P1). Afterwards it attacked through 0x6E. RAM 2026-11-01 (an ally ran in to help P2). Handler for state 0xA3 in No Mercy's table (0x80144CF0). Not identified. Entered through the state setters from: match_init_wrestlers, sub_8011D400, sub_8011D5D0."
+desc = "A wrestler entering mid-match (run_in_try starts it at step 13; match_init_wrestlers also uses it): it sets the partner of its +0x0C wrestler to itself, so the run-in became P2's partner (P2 partner 3, slot 3 partner 1, opponent P1). Afterwards it attacked through 0x6E. RAM 2026-11-01 (an ally ran in to help P2). Handler for state 0xA3 in No Mercy's table (0x80144CF0). Entered through the state setters from: match_init_wrestlers, sub_8011D400, sub_8011D5D0."
 status = "confirmed"
 
 [[func]]
 addr = 0x8011F470
-name = "state_A4"
-proto = "void state_A4(struct WrestlerCtx *ctx)"
-desc = "Handler for state 0xA4 in No Mercy's table (0x80144CF0). Not identified. Entered through the state setters from: state_01_stand."
+name = "state_A4_illegal_leave"
+proto = "void state_A4_illegal_leave(struct WrestlerCtx *ctx)"
+desc = "From standing in the ring when illegal_check says the wrestler may not stay (tag rules): heading out (setters read from code, 2026-11-02). Handler for state 0xA4 in No Mercy's table (0x80144CF0). Entered through the state setters from: state_01_stand."
 status = "likely"
 
 [[func]]
 addr = 0x8010FD74
 name = "state_A5_run_to_side"
 proto = "void state_A5_run_to_side(struct WrestlerCtx *ctx)"
-desc = "Running toward a side point (side_point, walk_speed), then the run 0x03. From a profile of the handler's setters, animations and calls (2026-11-02). Handler for state 0xA5 in No Mercy's table (0x80144CF0). Not identified."
-status = "guess"
+desc = "Running toward a side point (side_point, walk_speed), then the run 0x03. From a profile of the handler's setters, animations and calls (2026-11-02). Handler for state 0xA5 in No Mercy's table (0x80144CF0)."
+status = "likely"
 
 [[func]]
 addr = 0x80135720
 name = "state_A6_referee_count"
 proto = "void state_A6_referee_count(struct WrestlerCtx *ctx)"
-desc = "The referee counting a pin or a count-out: each count shows on the HUD (hud_count_show, count at +0xD0), with a sound when the counted wrestler's health is below 50; C-left (pressed 0x02) after frame 5 sets state_counter 0x02, the guest referee's count call (the guide's C-left ref calls). From code and the guest-referee match 2026-11-02. Counts with hud_count_show at +0xD0 and calls a sound when the counted wrestler's health is below 50: probably the referee's pin count (or a count-out). From code 2026-11-01. Handler for state 0xA6 in No Mercy's table (0x80144CF0). Not identified."
+desc = "The referee counting a pin or a count-out: each count shows on the HUD (hud_count_show, count at +0xD0), with a sound when the counted wrestler's health is below 50; C-left (pressed 0x02) after frame 5 sets state_counter 0x02, the guest referee's count call (the guide's C-left ref calls). From code and the guest-referee match 2026-11-02. Counts with hud_count_show at +0xD0 and calls a sound when the counted wrestler's health is below 50: probably the referee's pin count (or a count-out). From code 2026-11-01. Handler for state 0xA6 in No Mercy's table (0x80144CF0)."
 status = "likely"
 
 [[func]]
 addr = 0x80135C1C
 name = "state_A7_stay_down_getup"
 proto = "void state_A7_stay_down_getup(struct WrestlerCtx *ctx)"
-desc = "Handler for state 0xA7 in No Mercy's table (0x80144CF0). Name from its Revenge match state_8E_stay_down_getup_body (0x800E1634), unchecked. As Revenge state_8E_stay_down_getup_body (0x800E1634), matched by call graph (score 1.02). Revenge: Body of state_8E_stay_down_getup (the handler only calls it)."
-status = "guess"
+desc = "Breaking an attacker's grab attempt by ducking backwards (12943, 12950 ducking less) (Andrew's viewer tags, 2026-11-02). Handler for state 0xA7 in No Mercy's table (0x80144CF0). Name from its Revenge match state_8E_stay_down_getup_body (0x800E1634), unchecked. As Revenge state_8E_stay_down_getup_body (0x800E1634), matched by call graph (score 1.02). Revenge: Body of state_8E_stay_down_getup (the handler only calls it)."
+status = "likely"
 
 [[func]]
 addr = 0x80136094
@@ -1014,127 +1014,127 @@ status = "likely"
 addr = 0x8012A888
 name = "state_AA_ladder_climb"
 proto = "void state_AA_ladder_climb(struct WrestlerCtx *ctx)"
-desc = "Climbing a ladder: input_ladder_climb (C-up next to a standing ladder, object type2 25, a free side) sets held_obj, ladder_side and this state; it sets location 0x08 (on a ladder), 0xAB clears it. From code 2026-11-01. Handler for state 0xAA in No Mercy's table (0x80144CF0). Not identified. Entered through the state setters from: sub_8013F60C."
-status = "guess"
+desc = "Confirmed 2026-11-02: the setter read from code and Andrew's animation tags agree. Climbing a ladder: input_ladder_climb (C-up next to a standing ladder, object type2 25, a free side) sets held_obj, ladder_side and this state; it sets location 0x08 (on a ladder), 0xAB clears it. From code 2026-11-01. Handler for state 0xAA in No Mercy's table (0x80144CF0). Entered through the state setters from: sub_8013F60C."
+status = "confirmed"
 
 [[func]]
 addr = 0x8012ABD4
 name = "state_AB_ladder_off"
 proto = "void state_AB_ladder_off(struct WrestlerCtx *ctx)"
-desc = "Getting off a ladder (clears location 0x08; anim 12968). From a profile of the handler's setters, animations and calls (2026-11-02). Handler for state 0xAB in No Mercy's table (0x80144CF0). Not identified."
-status = "guess"
+desc = "Confirmed 2026-11-02: the setter read from code and Andrew's animation tags agree. Getting off a ladder (clears location 0x08; anim 12968). From a profile of the handler's setters, animations and calls (2026-11-02). Handler for state 0xAB in No Mercy's table (0x80144CF0)."
+status = "confirmed"
 
 [[func]]
 addr = 0x8012AC9C
 name = "state_AC_ladder_up"
 proto = "void state_AC_ladder_up(struct WrestlerCtx *ctx)"
-desc = "On the ladder (ladder_pose, anim 12969). From a profile of the handler's setters, animations and calls (2026-11-02). Handler for state 0xAC in No Mercy's table (0x80144CF0). Not identified."
-status = "guess"
+desc = "Confirmed 2026-11-02: the setter read from code and Andrew's animation tags agree. Checked 2026-11-02 against Andrew's tags: 12969 climbing up a step. On the ladder (ladder_pose, anim 12969). From a profile of the handler's setters, animations and calls (2026-11-02). Handler for state 0xAC in No Mercy's table (0x80144CF0)."
+status = "confirmed"
 
 [[func]]
 addr = 0x8012ACFC
 name = "state_AD_ladder_down"
 proto = "void state_AD_ladder_down(struct WrestlerCtx *ctx)"
-desc = "On the ladder (ladder_pose, anim 12970). From a profile of the handler's setters, animations and calls (2026-11-02). Handler for state 0xAD in No Mercy's table (0x80144CF0). Not identified."
-status = "guess"
+desc = "Confirmed 2026-11-02: the setter read from code and Andrew's animation tags agree. Checked 2026-11-02 against Andrew's tags: 12970 climbing down a step; set from 0xAE. On the ladder (ladder_pose, anim 12970). From a profile of the handler's setters, animations and calls (2026-11-02). Handler for state 0xAD in No Mercy's table (0x80144CF0)."
+status = "confirmed"
 
 [[func]]
 addr = 0x8012A648
 name = "state_AE_ladder_control"
 proto = "void state_AE_ladder_control(struct WrestlerCtx *ctx)"
-desc = "Shared by 0xAE and 0xB1: on the ladder taking input (d-pad, R, B); 0x30 sends a ladder wrestler here. From a profile of the handler's setters, animations and calls (2026-11-02). Handler for state 0xAE, 0xB1 in No Mercy's table (0x80144CF0). Not identified. Entered through the state setters from: state_B8, state_BD."
-status = "guess"
+desc = "Confirmed 2026-11-02: the setter read from code and Andrew's animation tags agree. Shared by 0xAE and 0xB1: on the ladder taking input (d-pad, R, B); 0x30 sends a ladder wrestler here. From a profile of the handler's setters, animations and calls (2026-11-02). Handler for state 0xAE, 0xB1 in No Mercy's table (0x80144CF0). Entered through the state setters from: state_B8, state_BD."
+status = "confirmed"
 
 [[func]]
 addr = 0x8012AD5C
 name = "state_AF_ladder_top"
 proto = "void state_AF_ladder_top(struct WrestlerCtx *ctx)"
-desc = "Sets location 0x10 (cleared by 0xB0): at the top of the ladder? anim 12987. From a profile of the handler's setters, animations and calls (2026-11-02). Handler for state 0xAF in No Mercy's table (0x80144CF0). Not identified."
-status = "guess"
+desc = "Confirmed 2026-11-02: the setter read from code and Andrew's animation tags agree. Checked 2026-11-02: sets location 0x10; 12987 reaching near the top. Sets location 0x10 (cleared by 0xB0): at the top of the ladder? anim 12987. From a profile of the handler's setters, animations and calls (2026-11-02). Handler for state 0xAF in No Mercy's table (0x80144CF0)."
+status = "confirmed"
 
 [[func]]
 addr = 0x8012ADCC
 name = "state_B0_ladder_top_leave"
 proto = "void state_B0_ladder_top_leave(struct WrestlerCtx *ctx)"
-desc = "Clears location 0x10 (anim 12988). From a profile of the handler's setters, animations and calls (2026-11-02). Handler for state 0xB0 in No Mercy's table (0x80144CF0). Not identified."
-status = "guess"
+desc = "Confirmed 2026-11-02: the setter read from code and Andrew's animation tags agree. Checked 2026-11-02: clears location 0x10; 12988 climbing down from the top. Clears location 0x10 (anim 12988). From a profile of the handler's setters, animations and calls (2026-11-02). Handler for state 0xB0 in No Mercy's table (0x80144CF0)."
+status = "confirmed"
 
 [[func]]
 addr = 0x8012AE3C
 name = "state_B2_ladder_knocked"
 proto = "void state_B2_ladder_knocked(struct WrestlerCtx *ctx)"
-desc = "Hit while on a ladder (set by strike_land, run_collide, dive_land_hit; apply_damage, the ladder object set moving), then 0xB3. From a profile of the handler's setters, animations and calls (2026-11-02). Handler for state 0xB2 in No Mercy's table (0x80144CF0). Not identified. Entered through the state setters from: dive_land_hit, run_collide, strike_land."
-status = "likely"
+desc = "Confirmed 2026-11-02: setter conditions (state_22_strike / run_inputs / run_step / state_4F / strike_land, read from code) and the handler (its move and hit test) agree. Hit while on a ladder (set by strike_land, run_collide, dive_land_hit; apply_damage, the ladder object set moving), then 0xB3. From a profile of the handler's setters, animations and calls (2026-11-02). Handler for state 0xB2 in No Mercy's table (0x80144CF0). Entered through the state setters from: dive_land_hit, run_collide, strike_land."
+status = "confirmed"
 
 [[func]]
 addr = 0x8012AF68
 name = "state_B3_ladder_fall"
 proto = "void state_B3_ladder_fall(struct WrestlerCtx *ctx)"
-desc = "Shared by 0xB3 and 0xB5: falling with the ladder (object_set_motion, wrestler_translate); 0xB5 is the grapple partner of 0xB4 (a grapple at a ladder climber). From a profile of the handler's setters, animations and calls (2026-11-02). Handler for state 0xB3, 0xB5 in No Mercy's table (0x80144CF0). Not identified. Entered through the state setters from: state_B2."
-status = "guess"
+desc = "Confirmed 2026-11-02: the setter read from code and Andrew's animation tags agree. Shared by 0xB3 and 0xB5: falling with the ladder (object_set_motion, wrestler_translate); 0xB5 is the grapple partner of 0xB4 (a grapple at a ladder climber). From a profile of the handler's setters, animations and calls (2026-11-02). Handler for state 0xB3, 0xB5 in No Mercy's table (0x80144CF0). Entered through the state setters from: state_B2."
+status = "confirmed"
 
 [[func]]
 addr = 0x8012B17C
-name = "state_B4_ladder_grapple"
-proto = "void state_B4_ladder_grapple(struct WrestlerCtx *ctx)"
-desc = "Grappling an opponent on a ladder (grapple_start_pair, paired with 0xB5). From a profile of the handler's setters, animations and calls (2026-11-02). Grapple at an opponent on a ladder (its location 0x08), attacker (paired 0xB5). From code (grapple_start_pair), 2026-11-01. Handler for state 0xB4 in No Mercy's table (0x80144CF0). Not identified. Entered through the state setters from: grapple_start_pair."
-status = "guess"
+name = "state_B4_ladder_pull_off"
+proto = "void state_B4_ladder_pull_off(struct WrestlerCtx *ctx)"
+desc = "Confirmed 2026-11-02: the setter read from code and Andrew's animation tags agree. Grabbing someone and smashing them down (12982), a one-handed pull down (12983): pulling a climber off the ladder (Andrew's viewer tags, 2026-11-02). Grappling an opponent on a ladder (grapple_start_pair, paired with 0xB5). From a profile of the handler's setters, animations and calls (2026-11-02). Grapple at an opponent on a ladder (its location 0x08), attacker (paired 0xB5). From code (grapple_start_pair), 2026-11-01. Handler for state 0xB4 in No Mercy's table (0x80144CF0). Entered through the state setters from: grapple_start_pair."
+status = "confirmed"
 
 [[func]]
 addr = 0x8012B1EC
-name = "state_B6_ladder_tip"
-proto = "void state_B6_ladder_tip(struct WrestlerCtx *ctx)"
-desc = "Tipping a ladder over (object_set_motion; anims 12972-12974). From a profile of the handler's setters, animations and calls (2026-11-02). Handler for state 0xB6 in No Mercy's table (0x80144CF0). Not identified."
-status = "guess"
+name = "state_B6_ladder_jump"
+proto = "void state_B6_ladder_jump(struct WrestlerCtx *ctx)"
+desc = "Confirmed 2026-11-02: the setter read from code and Andrew's animation tags agree. Starting to jump off the ladder (12972), a balanced pose with the hands out (12973), a small duck (12974): the dive off the ladder (Andrew's viewer tags, 2026-11-02). Tipping a ladder over (object_set_motion; anims 12972-12974). From a profile of the handler's setters, animations and calls (2026-11-02). Handler for state 0xB6 in No Mercy's table (0x80144CF0)."
+status = "confirmed"
 
 [[func]]
 addr = 0x8012B3D8
 name = "state_B7_ladder_strike"
 proto = "void state_B7_ladder_strike(struct WrestlerCtx *ctx)"
-desc = "Generic move 87. A strike from the ladder (from 0xBA; generic move, strike_hit_test; anim 12992). From a profile of the handler's setters, animations and calls (2026-11-02). Handler for state 0xB7 in No Mercy's table (0x80144CF0). Not identified. Entered through the state setters from: state_BA."
-status = "guess"
+desc = "Confirmed 2026-11-02: the setter read from code and Andrew's animation tags agree. Generic move 87. A strike from the ladder (from 0xBA; generic move, strike_hit_test; anim 12992). From a profile of the handler's setters, animations and calls (2026-11-02). Handler for state 0xB7 in No Mercy's table (0x80144CF0). Entered through the state setters from: state_BA."
+status = "confirmed"
 
 [[func]]
 addr = 0x8012B680
-name = "state_B8_ladder_move"
-proto = "void state_B8_ladder_move(struct WrestlerCtx *ctx)"
-desc = "A move from the ladder (wrestler_start_move; anim 12996), then 0xB1. From a profile of the handler's setters, animations and calls (2026-11-02). Handler for state 0xB8 in No Mercy's table (0x80144CF0). Not identified."
-status = "guess"
+name = "state_B8_ladder_climb_top"
+proto = "void state_B8_ladder_climb_top(struct WrestlerCtx *ctx)"
+desc = "Confirmed 2026-11-02: the setter read from code and Andrew's animation tags agree. Climbing to the very top of the ladder (12996) (Andrew's viewer tags, 2026-11-02). A move from the ladder (wrestler_start_move; anim 12996), then 0xB1. From a profile of the handler's setters, animations and calls (2026-11-02). Handler for state 0xB8 in No Mercy's table (0x80144CF0)."
+status = "confirmed"
 
 [[func]]
 addr = 0x8012B4B0
-name = "state_B9"
-proto = "void state_B9(struct WrestlerCtx *ctx)"
-desc = "Handler for state 0xB9 in No Mercy's table (0x80144CF0). Not identified."
+name = "state_B9_ladder_mid_strike"
+proto = "void state_B9_ladder_mid_strike(struct WrestlerCtx *ctx)"
+desc = "B while on the ladder (0xAE, not the top 0xB1): generic move 84 / 85 / 86 and animation 12975-12977 by the opponent's angle (within 170 of facing, within 1878, or behind) (code 2026-11-02). At the top (0xB1) A climbs to the very top 0xB8 and B strikes 0xB7. Handler for state 0xB9 in No Mercy's table (0x80144CF0)."
 status = "likely"
 
 [[func]]
 addr = 0x8012B5DC
-name = "state_BA"
-proto = "void state_BA(struct WrestlerCtx *ctx)"
-desc = "Handler for state 0xBA in No Mercy's table (0x80144CF0). Not identified."
-status = "likely"
+name = "state_BA_ladder_top_shove"
+proto = "void state_BA_ladder_top_shove(struct WrestlerCtx *ctx)"
+desc = "Confirmed 2026-11-02: the setter read from code and Andrew's animation tags agree. A shove across the top of the ladder (12993) (Andrew's viewer tags, 2026-11-02). Handler for state 0xBA in No Mercy's table (0x80144CF0)."
+status = "confirmed"
 
 [[func]]
 addr = 0x8012B638
-name = "state_BB"
-proto = "void state_BB(struct WrestlerCtx *ctx)"
-desc = "Handler for state 0xBB in No Mercy's table (0x80144CF0). Not identified."
-status = "likely"
+name = "state_BB_ladder_top_yank"
+proto = "void state_BB_ladder_top_yank(struct WrestlerCtx *ctx)"
+desc = "Confirmed 2026-11-02: the setter read from code and Andrew's animation tags agree. A yank from the top of the ladder (12994) (Andrew's viewer tags, 2026-11-02). Handler for state 0xBB in No Mercy's table (0x80144CF0)."
+status = "confirmed"
 
 [[func]]
 addr = 0x8012B86C
-name = "state_BC"
-proto = "void state_BC(struct WrestlerCtx *ctx)"
-desc = "Handler for state 0xBC in No Mercy's table (0x80144CF0). Not identified. Entered through the state setters from: sub_8012A400."
+name = "state_BC_ladder_c_up"
+proto = "void state_BC_ladder_c_up(struct WrestlerCtx *ctx)"
+desc = "On the ladder with C-up held: ladder_pose sets a downward push (-20) and 0xBC (setters read from code, 2026-11-02). Handler for state 0xBC in No Mercy's table (0x80144CF0). Entered through the state setters from: sub_8012A400."
 status = "likely"
 
 [[func]]
 addr = 0x8012BA50
 name = "state_BD_ladder_grab_prize"
 proto = "void state_BD_ladder_grab_prize(struct WrestlerCtx *ctx)"
-desc = "At the top of the ladder with buttons; weapon_pick_type and object motion: probably grabbing what hangs above the ring (the ladder match goal); anims 12997-13001. From a profile of the handler's setters, animations and calls (2026-11-02). Handler for state 0xBD in No Mercy's table (0x80144CF0). Not identified."
-status = "guess"
+desc = "Confirmed 2026-11-02: the setter read from code and Andrew's animation tags agree. Checked 2026-11-02 against Andrew's tags: 12997-13001 reaching, straining and grasping for the belt at the top. At the top of the ladder with buttons; weapon_pick_type and object motion: probably grabbing what hangs above the ring (the ladder match goal); anims 12997-13001. From a profile of the handler's setters, animations and calls (2026-11-02). Handler for state 0xBD in No Mercy's table (0x80144CF0)."
+status = "confirmed"
 
 [[func]]
 addr = 0x800EB0DC
@@ -1147,28 +1147,28 @@ status = "likely"
 addr = 0x80124720
 name = "state_BF"
 proto = "void state_BF(struct WrestlerCtx *ctx)"
-desc = "Generic move 73. Strike from a raised place (location 0x3C0) at an opponent on the floor (location 0x04), from state_22_strike. From code (state_22_strike, 2026-11-01). Handler for state 0xBF in No Mercy's table (0x80144CF0). Not identified. Entered through the state setters from: state_22_strike."
-status = "likely"
+desc = "Confirmed 2026-11-02: setter conditions (state_22_strike / run_inputs / run_step / state_4F / strike_land, read from code) and the handler (its move and hit test) agree. Generic move 73. Strike from a raised place (location 0x3C0) at an opponent on the floor (location 0x04), from state_22_strike. From code (state_22_strike, 2026-11-01). Handler for state 0xBF in No Mercy's table (0x80144CF0). Entered through the state setters from: state_22_strike."
+status = "confirmed"
 
 [[func]]
 addr = 0x800EB334
-name = "state_C1"
-proto = "void state_C1(struct WrestlerCtx *ctx)"
-desc = "Handler for state 0xC1 in No Mercy's table (0x80144CF0). Not identified. Entered through the state setters from: run_step, state_35."
+name = "state_C1_hit_cage_wall"
+proto = "void state_C1_hit_cage_wall(struct WrestlerCtx *ctx)"
+desc = "Knocked back or running into the cage wall: set by state_35_knocked_back (past a limit) and run_step at location 0x400 (setters read from code, 2026-11-02). Handler for state 0xC1 in No Mercy's table (0x80144CF0). Entered through the state setters from: run_step, state_35."
 status = "likely"
 
 [[func]]
 addr = 0x800EED7C
-name = "state_C2"
-proto = "void state_C2(struct WrestlerCtx *ctx)"
-desc = "Handler for state 0xC2 in No Mercy's table (0x80144CF0). Not identified. Entered through the state setters from: state_0B_whip_attacker."
-status = "likely"
+name = "state_C2_cage_whip"
+proto = "void state_C2_cage_whip(struct WrestlerCtx *ctx)"
+desc = "Confirmed 2026-11-02: the setter read from code and Andrew's animation tags agree. Starting a whip by the back of the head (12827); trying to throw someone and being stopped, hit and knocked down (12833): whipping into the cage (C-right in cage matches) (Andrew's viewer tags, 2026-11-02). Handler for state 0xC2 in No Mercy's table (0x80144CF0). Entered through the state setters from: state_0B_whip_attacker."
+status = "confirmed"
 
 [[func]]
 addr = 0x800EF0AC
-name = "state_C3"
-proto = "void state_C3(struct WrestlerCtx *ctx)"
-desc = "Handler for state 0xC3 in No Mercy's table (0x80144CF0). Not identified."
+name = "state_C3_cage_whip_b"
+proto = "void state_C3_cage_whip_b(struct WrestlerCtx *ctx)"
+desc = "Failing to grab at head height (12828), running holding something cumbersome (12830) (Andrew's viewer tags, 2026-11-02). Handler for state 0xC3 in No Mercy's table (0x80144CF0)."
 status = "likely"
 
 [[func]]
@@ -1182,96 +1182,96 @@ status = "likely"
 addr = 0x800EF4E0
 name = "state_C5_cage_escape"
 proto = "void state_C5_cage_escape(struct WrestlerCtx *ctx)"
-desc = "Over the top of the cage and down to the floor: the win by escape (code, 2026-11-02). Step 1 at animation 12811's end: sound 1, sets the opponent's end_flags 0x1000 (lost by escape) and its pair_other to this slot, faces by the ring zone (table 0x8014D1E8), and drops at 2.61 a frame (step_vec y -2.61). Step 2 falls until pos.y < 218, then animation 12806. Step 3 at the end: location 0x04 (floor), pos.y 0, state 0x30. Handler for state 0xC5 (0x80144CF0)."
-status = "likely"
+desc = "Confirmed 2026-11-02: setter conditions and the handler's steps both read from code, and they agree. Over the top of the cage and down to the floor: the win by escape (code, 2026-11-02). Step 1 at animation 12811's end: sound 1, sets the opponent's end_flags 0x1000 (lost by escape) and its pair_other to this slot, faces by the ring zone (table 0x8014D1E8), and drops at 2.61 a frame (step_vec y -2.61). Step 2 falls until pos.y < 218, then animation 12806. Step 3 at the end: location 0x04 (floor), pos.y 0, state 0x30. Handler for state 0xC5 (0x80144CF0)."
+status = "confirmed"
 
 [[func]]
 addr = 0x800EF66C
-name = "state_C6"
-proto = "void state_C6(struct WrestlerCtx *ctx)"
-desc = "Handler for state 0xC6 in No Mercy's table (0x80144CF0). Not identified. Entered through the state setters from: state_C4, state_CA, sub_800EE768."
-status = "likely"
+name = "state_C6_cage_hang"
+proto = "void state_C6_cage_hang(struct WrestlerCtx *ctx)"
+desc = "Confirmed 2026-11-02: the setter read from code and Andrew's animation tags agree. Hanging on the cage, tired (12862), recovering back into the climb (12863); escape_time op 10 (Andrew's viewer tags, 2026-11-02). Handler for state 0xC6 in No Mercy's table (0x80144CF0). Entered through the state setters from: state_C4, state_CA, sub_800EE768."
+status = "confirmed"
 
 [[func]]
 addr = 0x800EF7D4
-name = "state_C7"
-proto = "void state_C7(struct WrestlerCtx *ctx)"
-desc = "Handler for state 0xC7 in No Mercy's table (0x80144CF0). Not identified. Entered through the state setters from: state_01_stand, state_C4, state_C6."
-status = "likely"
+name = "state_C7_drop_down"
+proto = "void state_C7_drop_down(struct WrestlerCtx *ctx)"
+desc = "Confirmed 2026-11-02: setter conditions and the handler's steps both read from code, and they agree. Code 2026-11-02: dropping down from up high (12864 or 12865, a slide with keep_in_bounds, then 12866 and move_event 0x265: settle by pose, generic move 37 on the opponent). Entered from standing (when not somewhere it can walk), the cage climb (0xC4) and hanging (0xC6) once the match is over (0x8016B599 bit 0x40, set by match_tick entering its post-match phase; frame_loop.md), and by turnbuckle_check on a chance: stops what the wrestler is doing after the bell (setters read from code, 2026-11-02). Handler for state 0xC7 in No Mercy's table (0x80144CF0). Entered through the state setters from: state_01_stand, state_C4, state_C6."
+status = "confirmed"
 
 [[func]]
 addr = 0x800EF950
 name = "state_C8_cage_climb_start"
 proto = "void state_C8_cage_climb_start(struct WrestlerCtx *ctx)"
-desc = "Starts the cage climb, from cage_climb_check (cage match, g_match_type 0x10000, in the ring: C-right pressed, or A / B toward an opponent who is up on the cage, location 0x400). Places the pair (pair_scripted_place, animation 12856), slides, changes both wrestlers' spirit and goes on through move_event. Handler for state 0xC8 (0x80144CF0)."
-status = "guess"
+desc = "Confirmed 2026-11-02: the setter read from code and Andrew's animation tags agree. Starts the cage climb, from cage_climb_check (cage match, g_match_type 0x10000, in the ring: C-right pressed, or A / B toward an opponent who is up on the cage, location 0x400). Places the pair (pair_scripted_place, animation 12856), slides, changes both wrestlers' spirit and goes on through move_event. Handler for state 0xC8 (0x80144CF0)."
+status = "confirmed"
 
 [[func]]
 addr = 0x80124850
 name = "state_C9_strike_turnbuckle"
 proto = "void state_C9_strike_turnbuckle(struct WrestlerCtx *ctx)"
-desc = "Generic move 62. Strike at an opponent on the turnbuckle (location 0x400) (from state_22_strike; anim 12849). From a profile of the handler's setters, animations and calls (2026-11-02). Strike at an opponent with location 0x400 (? on the ropes / turnbuckle) close in front, from state_22_strike. From code (state_22_strike, 2026-11-01). Handler for state 0xC9 in No Mercy's table (0x80144CF0). Not identified. Entered through the state setters from: state_22_strike."
+desc = "Needs RAM or the viewer (2026-11-02): location 0x400 is the cage wall in cage matches; whether these states also run on the turnbuckle outside a cage is open. Generic move 62. Strike at an opponent on the turnbuckle (location 0x400) (from state_22_strike; anim 12849). From a profile of the handler's setters, animations and calls (2026-11-02). Strike at an opponent with location 0x400 (? on the ropes / turnbuckle) close in front, from state_22_strike. From code (state_22_strike, 2026-11-01). Handler for state 0xC9 in No Mercy's table (0x80144CF0). Entered through the state setters from: state_22_strike."
 status = "likely"
 
 [[func]]
 addr = 0x800EFB70
-name = "state_CA"
-proto = "void state_CA(struct WrestlerCtx *ctx)"
-desc = "Handler for state 0xCA in No Mercy's table (0x80144CF0). Not identified. Entered through the state setters from: sub_800EFFB8."
-status = "likely"
+name = "state_CA_cage_hang_hit"
+proto = "void state_CA_cage_hang_hit(struct WrestlerCtx *ctx)"
+desc = "Confirmed 2026-11-02: the setter read from code and Andrew's animation tags agree. Hanging on the cage and being hit (12860), then hanging (12862) (Andrew's viewer tags, 2026-11-02). Handler for state 0xCA in No Mercy's table (0x80144CF0). Entered through the state setters from: sub_800EFFB8."
+status = "confirmed"
 
 [[func]]
 addr = 0x800EFC6C
-name = "state_CB"
-proto = "void state_CB(struct WrestlerCtx *ctx)"
-desc = "Handler for state 0xCB in No Mercy's table (0x80144CF0). Not identified."
+name = "state_CB_run_at_cage_climber"
+proto = "void state_CB_run_at_cage_climber(struct WrestlerCtx *ctx)"
+desc = "Checked 2026-11-02: run_inputs sets it for B while running in a cage match (g_match_type 0x10000) at an opponent up on the cage wall (location 0x400): a jumping strike or grab at the climber (12855), not a jump down. A big jumping hit or grab landing on the feet (12855): coming down off the cage (Andrew's viewer tags, 2026-11-02). Handler for state 0xCB in No Mercy's table (0x80144CF0)."
 status = "likely"
 
 [[func]]
 addr = 0x80124974
-name = "state_CC"
-proto = "void state_CC(struct WrestlerCtx *ctx)"
-desc = "Handler for state 0xCC in No Mercy's table (0x80144CF0). Not identified."
-status = "likely"
+name = "state_CC_cage_climb_idle"
+proto = "void state_CC_cage_climb_idle(struct WrestlerCtx *ctx)"
+desc = "Confirmed 2026-11-02: the setter read from code and Andrew's animation tags agree. Idle while climbing the cage (12804) (Andrew's viewer tags, 2026-11-02). Handler for state 0xCC in No Mercy's table (0x80144CF0)."
+status = "confirmed"
 
 [[func]]
 addr = 0x800EFDB4
 name = "state_CD_turnbuckle_grapple"
 proto = "void state_CD_turnbuckle_grapple(struct WrestlerCtx *ctx)"
-desc = "Grapple at an opponent on the turnbuckle (location 0x400) from the ring (grapple_start_pair, paired with 0xCE; anim 12850). From a profile of the handler's setters, animations and calls (2026-11-02). Grapple at an opponent with location 0x400 (? on the turnbuckle) from the ring, attacker (paired 0xCE). From code (grapple_start_pair), 2026-11-01. Handler for state 0xCD in No Mercy's table (0x80144CF0). Not identified. Entered through the state setters from: grapple_start_pair."
+desc = "Needs RAM or the viewer (2026-11-02): location 0x400 is the cage wall in cage matches; whether these states also run on the turnbuckle outside a cage is open. Grapple at an opponent on the turnbuckle (location 0x400) from the ring (grapple_start_pair, paired with 0xCE; anim 12850). From a profile of the handler's setters, animations and calls (2026-11-02). Grapple at an opponent with location 0x400 (? on the turnbuckle) from the ring, attacker (paired 0xCE). From code (grapple_start_pair), 2026-11-01. Handler for state 0xCD in No Mercy's table (0x80144CF0). Entered through the state setters from: grapple_start_pair."
 status = "likely"
 
 [[func]]
 addr = 0x800EFE90
 name = "state_CE_turnbuckle_grappled"
 proto = "void state_CE_turnbuckle_grappled(struct WrestlerCtx *ctx)"
-desc = "Grappled while on the turnbuckle (anim 12851), paired with 0xCD. From a profile of the handler's setters, animations and calls (2026-11-02). Handler for state 0xCE in No Mercy's table (0x80144CF0). Not identified."
+desc = "Needs RAM or the viewer (2026-11-02): location 0x400 is the cage wall in cage matches; whether these states also run on the turnbuckle outside a cage is open. Grappled while on the turnbuckle (anim 12851), paired with 0xCD. From a profile of the handler's setters, animations and calls (2026-11-02). Handler for state 0xCE in No Mercy's table (0x80144CF0)."
 status = "likely"
 
 [[func]]
 addr = 0x8013BE70
-name = "state_CF_turnbuckle_attack"
-proto = "void state_CF_turnbuckle_attack(struct WrestlerCtx *ctx)"
-desc = "An attack from the turnbuckle (taunt_stir_opponent sets it on location 0x400 with A; apply_damage, generic move; anims 12843-12845). From a profile of the handler's setters, animations and calls (2026-11-02). Handler for state 0xCF in No Mercy's table (0x80144CF0). Not identified."
-status = "guess"
+name = "state_CF_cage_top_attack"
+proto = "void state_CF_cage_top_attack(struct WrestlerCtx *ctx)"
+desc = "Checked 2026-11-02: taunt_stir_opponent sets it with A at location 0x400 (up on the cage wall / turnbuckle): an attack down from there (12843-12845). An elbow drop from the cage (12843) (Andrew's viewer tags, 2026-11-02). An attack from the turnbuckle (taunt_stir_opponent sets it on location 0x400 with A; apply_damage, generic move; anims 12843-12845). From a profile of the handler's setters, animations and calls (2026-11-02). Handler for state 0xCF in No Mercy's table (0x80144CF0)."
+status = "likely"
 
 [[func]]
 addr = 0x8011C9CC
-name = "state_D0"
-proto = "void state_D0(struct WrestlerCtx *ctx)"
-desc = "Handler for state 0xD0 in No Mercy's table (0x80144CF0). Not identified."
-status = "likely"
+name = "state_D0_drag"
+proto = "void state_D0_drag(struct WrestlerCtx *ctx)"
+desc = "Confirmed 2026-11-02: the setter read from code and Andrew's animation tags agree. Pulling someone along (12042): the drag from the lock-up (lockup_place_move's second kind) (Andrew's viewer tags, 2026-11-02). Handler for state 0xD0 in No Mercy's table (0x80144CF0)."
+status = "confirmed"
 
 [[func]]
 addr = 0x8011CC08
-name = "state_D1"
-proto = "void state_D1(struct WrestlerCtx *ctx)"
-desc = "Handler for state 0xD1 in No Mercy's table (0x80144CF0). Not identified."
-status = "likely"
+name = "state_D1_dragged"
+proto = "void state_D1_dragged(struct WrestlerCtx *ctx)"
+desc = "Confirmed 2026-11-02: the setter read from code and Andrew's animation tags agree. Grabbed and dragged (12041, 12043) (Andrew's viewer tags, 2026-11-02). Handler for state 0xD1 in No Mercy's table (0x80144CF0)."
+status = "confirmed"
 
 [[func]]
 addr = 0x800EB51C
-name = "state_D2_stance_turn_anim"
-proto = "void state_D2_stance_turn_anim(struct WrestlerCtx *ctx)"
-desc = "Handler for state 0xD2 in No Mercy's table (0x80144CF0). Name from its Revenge match stance_turn_anim (0x800E1560), unchecked. As Revenge stance_turn_anim (0x800E1560), matched by call graph (score 1.08). Revenge: Matches World Tour stance_turn_anim (0x800BC1B8), call-graph score 1.35."
-status = "guess"
+name = "state_D2_ram_strike"
+proto = "void state_D2_ram_strike(struct WrestlerCtx *ctx)"
+desc = "Confirmed 2026-11-02: setter conditions and the handler's steps both read from code, and they agree. Checked 2026-11-02: no setter anywhere uses 0xD2, so it is unused in play (a test pose). Code 2026-11-02: puts the wrestler at the ring centre (0, 90, 0), facing 0, and plays 12491 / 12496 / 12501 / 12506 by the d-pad held (none / up / right / down or left), then stands. No setter uses 0xD2: probably a leftover test pose. Smacking someone like a battering ram (12506); the carried-over stance-turn name did not fit (Andrew's viewer tags, 2026-11-02). Handler for state 0xD2 in No Mercy's table (0x80144CF0). Name from its Revenge match stance_turn_anim (0x800E1560), unchecked. As Revenge stance_turn_anim (0x800E1560), matched by call graph (score 1.08). Revenge: Matches World Tour stance_turn_anim (0x800BC1B8), call-graph score 1.35."
+status = "confirmed"

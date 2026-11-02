@@ -23,6 +23,7 @@ from aki_archive import Archive, classify  # noqa: E402
 from wcw_models import is_mesh, decode_mesh  # noqa: E402
 
 MAIN_ROM, MAIN_VRAM, MAIN_END = 0x1000, 0x80000400, 0x80056670
+OVL_E_ROM, OVL_E_VRAM, OVL_E_END = 0x144BE0, 0x800D9960, 0x80151ED0
 ATTIRE_PTRS = 0x80047124    # 84 wrestlers x 4 attires: pointer to a 20-byte attire descriptor
 WRESTLERS = 84
 ATTIRE_FILE = 1             # 38-byte packed attire records (sub_8000B60C unpacks them)
@@ -42,6 +43,8 @@ class Main:
         self.rom = rom
 
     def off(self, a):
+        if OVL_E_VRAM <= a < OVL_E_END:  # the match overlay's text and data
+            return a - OVL_E_VRAM + OVL_E_ROM
         assert MAIN_VRAM <= a < MAIN_END, hex(a)
         return a - MAIN_VRAM + MAIN_ROM
 
@@ -473,6 +476,115 @@ def seam_bones(slot, mesh):
     return [SLOT_BONE.get(first, first) or own, SLOT_BONE.get(second, second) or own]
 
 
+# Animations of states whose meaning is still a guess (QUESTIONS.md, "No Mercy: check in the
+# animation viewer"): the constants each handler passes to wrestler_set_anim. The viewer labels
+# them "check: ..."; type "check" in its filter to list them all.
+CHECK_ANIMS = {
+    "stand / neutral": {0x00: [12959], 0x02: [11795, 11796], 0x09: [11876], 0x15: [12003, 12005],
+                        0x16: [12625], 0x19: [12055], 0x1E: [11978], 0xD2: [12506]},
+    "taunt / apron": {0x1B: [11745, 12168], 0x0A: [12092], 0x93: [12092], 0x95: [12092, 12921, 12922],
+                      0x94: [12924]},
+    "hit reaction / fall": {0x17: [12147, 12148, 12149, 12150], 0x2E: [12611, 12612, 12613, 12614, 12615, 12616],
+                            0x32: [12557, 12558, 12559], 0x33: [12562, 12563], 0x4D: [12990, 12991],
+                            0x18: [12060], 0x2D: [12565, 12579]},
+    "lift / carry": {0x34: [12076, 12081], 0x3A: [12066, 12068], 0x3C: [12070, 12072], 0x3E: [12074, 12083],
+                     0x3F: [12082], 0x40: [12077], 0x38: [11909], 0x39: [11910], 0x80: [12642, 12646]},
+    "get up / down": {0x4E: [12157, 12171], 0x4F: [12157, 12171, 12172], 0xA7: [12943, 12950]},
+    "grapple / counter": {0x68: [11887], 0x6B: [11877, 11878], 0x6E: [12128, 13017], 0x6F: [11824, 12805, 13016],
+                          0x72: [12104], 0xD0: [12042], 0xD1: [12041, 12043]},
+    "turnbuckle / cage": {0xC2: [12827, 12833], 0xC3: [12828, 12830], 0xC6: [12862, 12863], 0xCA: [12860, 12862],
+                          0xCB: [12855], 0xCC: [12804], 0xCF: [12843], 0xC8: [12856, 12858]},
+    "ladder": {0xAA: [12967], 0xAB: [12968], 0xAC: [12969], 0xAD: [12970], 0xAE: [12971, 12989], 0xAF: [12987],
+               0xB0: [12988], 0xB3: [12979, 12984], 0xB4: [12982, 12983], 0xB6: [12972, 12973, 12974],
+               0xB7: [12992], 0xB8: [12996], 0xBA: [12993], 0xBB: [12994],
+               0xBD: [12997, 12998, 12999, 13000, 13001]},
+    "weapon": {0x8B: [12390], 0x8C: [12379, 12384, 12962, 12964], 0x90: [12458, 12459, 12460]},
+    # States that start a fixed move number: their animation comes from the wrestler's move set
+    # (anim_style: RAM table 0x8015A700[g_move_anims code] + 13090 + part). Read in RAM 2026-11-02
+    # for The Rock, Triple H, Austin and Undertaker; other wrestlers may differ.
+    "move-set (RAM)": {0x06: [15320, 15321, 15322], 0x1A: [15341, 15342, 15343],
+                       0x1C: [17141, 17142, 17143, 17504, 17505, 17506, 17510, 17511, 17512],
+                       0x73: [16817, 16818, 16819]},
+}
+
+
+def move_labels(main, arc):
+    """'move N part p: wrestlers' labels for every animation a roster move set uses (from the ROM)."""
+    import collections
+    anims, uses = arc.read(MOVE_ANIM_CODES), collections.defaultdict(list)
+    for w in roster(main, arc):
+        af, mf = move_files(main, w["slot"])
+        if not w["name"] or not mf:
+            continue
+        alt = bool(attributes(arc.read(af))[52] & 2)
+        codes, _ = move_codes(main, arc, arc.read(mf), alt)
+        for slot, code in enumerate(codes):
+            if not code:
+                continue
+            base = s16(struct.unpack_from(">H", anims, 2 * code)[0]) + 13090
+            for part, role in ((0, "attacker"), (1, "receiver")):
+                uses[(base + part, slot, role)].append(w["short"] or w["name"])
+    out = {}
+    for (anim, slot, role), names in sorted(uses.items()):
+        if anim == 13090:
+            continue
+        text = "move %d %s: %s" % (slot, role, ", ".join(names[:4]) + (" +%d" % (len(names) - 4) if len(names) > 4 else ""))
+        out[anim] = text if anim not in out else out[anim] + "; " + text
+    return out
+
+
+def check_labels():
+    labels = {}
+    for family, states in CHECK_ANIMS.items():
+        for state, anims in states.items():
+            for a in anims:
+                labels.setdefault(str(a), []).append("check: state 0x%02X (%s)" % (state, family))
+    return labels
+
+
+ANIM_META_FILE, ANIM_META_FIRST, ANIM_META_SIZE = 703, 11737, 36
+END_PLACES = {1: "ring", 2: "floor", 3: "apron", 6: "cage wall", 7: "on top"}
+
+
+def anim_record(meta, n):
+    """Animation n's 36-byte record from file 703's data (anim_player_set; animation_data.md), or zeros."""
+    k = n - ANIM_META_FIRST
+    if 0 <= k < len(meta) // ANIM_META_SIZE:
+        return meta[ANIM_META_SIZE * k:ANIM_META_SIZE * (k + 1)]
+    return bytes(ANIM_META_SIZE)
+
+
+def anim_record_labels(rec):
+    """Filterable labels: the active window, the paired hold frame, where it ends."""
+    out = []
+    if rec[3] or rec[4]:
+        out.append("window: frames %d-%d" % (rec[3], rec[4]))
+    if rec[16]:
+        out.append("holds the defender until frame %d" % rec[16])
+    if rec[0] & 15:
+        out.append("ends: %s" % END_PLACES.get(rec[0] & 15, "place %d" % (rec[0] & 15)))
+    return out
+
+
+# The page's event text for No Mercy's codes (anim_frame_events, animation_data.md); the record line
+# shows the active window (bytes 3 / 4, lit while the frame is inside it) and the hold frame (byte 16).
+NM_EVENT_TEXT = r"""
+function eventText(c) {
+  if (c < 170) return `sound ${c}`;
+  if (c < 176) return `special ${c - 170}`;
+  if (c < 200) return `hands ${c - 176}`;
+  return eventTextWT(c);
+}
+function nmRecordText(meta, cf) {
+  const b = i => parseInt(meta.substr(2 * i, 2), 16), out = [];
+  if (b(3) || b(4)) out.push(`<span class="${cf >= b(3) && cf <= b(4) ? "evon" : ""}">window ${b(3)}-${b(4)}</span>`);
+  if (b(16)) out.push(`hold until ${b(16)}`);
+  if (b(0) & 15) out.push(`ends ${({1: "ring", 2: "floor", 3: "apron", 6: "cage wall", 7: "on top"})[b(0) & 15] || b(0) & 15}`);
+  return out.length ? out.join("&nbsp;&nbsp; ") + "&nbsp;&nbsp;|&nbsp;&nbsp; " : "";
+}
+"""
+
+
 def build_viewer(main, arc, out_path):
     """The World Tour / Revenge previewer page with every No Mercy wrestler, attire and animation."""
     import base64
@@ -504,14 +616,21 @@ def build_viewer(main, arc, out_path):
         roster_out.append({"name": "%s (0x%03X)" % (w["name"], w["roster"]), "group": "0",
                            "costumes": costumes})
     blob, anims = bytearray(), []
+    labels, meta = check_labels(), arc.read(ANIM_META_FILE)
+    for anim, text in move_labels(main, arc).items():
+        labels.setdefault(str(anim), []).append(text)
     for n in range(1, arc.count + 1):
         d = arc.read(n)
         if is_anim(d):
-            anims.append([n, len(blob), len(d), "00" * 32])
+            rec = anim_record(meta, n)
+            anims.append([n, len(blob), len(d), rec.hex()])
+            extra = anim_record_labels(rec)
+            if extra:  # an empty list would read as "labelled" in the page
+                labels.setdefault(str(n), []).extend(extra)
             blob += d
     data = {"skeleton": sk, "seams": [], "roster": roster_out, "arenas": [], "arenaNames": [],
             "meshes": {str(k): v for k, v in meshes.items()}, "textures": textures,
-            "anims": anims, "labels": {}}
+            "anims": anims, "labels": labels}
     here = os.path.dirname(os.path.abspath(__file__))
     page = open(os.path.join(here, "wcw_viewer.html"), encoding="utf-8").read()
     # No Mercy parts name their seam bones, and one seam group may be empty (torso halves).
@@ -519,18 +638,164 @@ def build_viewer(main, arc, out_path):
                         "const [sa, sb] = m.seam, sm = node.seamBones || seams[node.bone];")
     page = page.replace("if (sm && sa > 0 && sb > 0)", "if (sm && (sa > 0 || sb > 0))")
     page = page.replace('"wcw_anim_tags"', '"nomercy_anim_tags"').replace('"wcw_anim_last"', '"nomercy_anim_last"')
+    page = page.replace('"wcw_anim_tags.json"', '"nomercy_anim_tags.json"')
     # #cam=x,y,z[,tx,ty,tz] sets the camera for screenshots.
     page = page.replace("controls.target.set(0, 80, 0);",
                         "controls.target.set(0, 80, 0);\n"
                         "{ const c = new URLSearchParams(location.hash.slice(1)).get('cam');"
                         " if (c) { const v = c.split(',').map(Number); camera.position.set(v[0], v[1], v[2]);"
                         " if (v.length > 5) controls.target.set(v[3], v[4], v[5]); controls.update(); } }")
+    # file 703 records are 36 bytes: frame events at bytes 20-35, No Mercy's event codes
+    page = page.replace("meta.substr(32 + 4 * k, 2)", "meta.substr(40 + 4 * k, 2)")
+    page = page.replace("meta.substr(34 + 4 * k, 2)", "meta.substr(42 + 4 * k, 2)")
+    page = page.replace("function eventText(c) {", NM_EVENT_TEXT + "\nfunction eventTextWT(c) {", 1)
+    page = page.replace('$("events").innerHTML = ev.length ?',
+                        '$("events").innerHTML = nmRecordText(anim.meta, cf) + (ev.length ?', 1)
+    page = page.replace(': "no frame events";', ': "no frame events");', 1)
     page = page.replace("/*DATA*/null", json.dumps(data, separators=(",", ":")))
     page = page.replace("/*ANIMBLOB*/\"\"", '"' + base64.b64encode(bytes(blob)).decode() + '"')
     with open(out_path, "w", encoding="utf-8") as f:
         f.write(page)
     print("wrote %s: %d wrestlers, %d meshes, %d textures, %d animations"
           % (out_path, len(roster_out), len(meshes), len(textures), len(anims)))
+
+
+# The attribute record (wrestler_data_unpack, 0x800063BC): (offset, bits), read most significant bit
+# first from a wrestler's packed 32-byte data file (505, 507, ... 677: the 32-byte files that are
+# followed by a 184-byte file). Field meanings are in _re_docs/.../damage_and_spirit.md.
+ATTR_FIELDS = ([(0, 3), (1, 4), (2, 3), (3, 4), (4, 4), (5, 3), (6, 3), (7, 3), (8, 5), (9, 6)]
+               + [(10 + i, 4) for i in range(10)]
+               + [(20, 3), (21, 5), (22, 3), (23, 3), (24, 4), (25, 3), (26, 3), (28, 9), (30, 4), (31, 4),
+                  (32, 9), (34, 4), (35, 3), (36, 3), (37, 4), (38, 4), (39, 3), (40, 12), (42, 12),
+                  (44, 12), (46, 12), (48, 3), (49, 3), (50, 3), (51, 3), (52, 32), (56, 1), (60, 1),
+                  (62, 4)])
+
+
+def attributes(packed):
+    """{offset: value} of the 64-byte attribute record unpacked from a wrestler's packed data."""
+    bits = "".join("{:08b}".format(b) for b in packed)
+    out, p = {}, 0
+    for off, width in ATTR_FIELDS:
+        out[off] = int(bits[p:p + width], 2)
+        p += width
+    return out
+
+
+def attribute_files(arc):
+    """The packed attribute files: each 32-byte file directly followed by a 184-byte one."""
+    sizes = {}
+    for n in range(1, ANIM_META_FIRST):
+        try:
+            sizes[n] = len(arc.read(n))
+        except Exception:
+            pass
+    return [n for n in sorted(sizes) if sizes[n] == 32 and sizes.get(n + 1) == 184]
+
+
+# The packed move set (moveset_unpack, 0x8013CBAC): a 184-byte file per wrestler (the attire descriptor's
+# +10; its attribute file is +12). For each (move slot, four category ids) entry of the list at
+# *0x800442DC (*0x800442E0 with attrs +0x34 bit 1), read w + 5 bits (w = the widest category's index
+# width, 0x800442E4): the low w bits index the category's code list (*0x80045500[category]), the next
+# 2 bits pick which of the four categories, and bit w + 4 marks the move preferred (move flags 0x8000).
+# The code goes to g_move_anims; g_move_anims2 = file 497[code]; the 36-byte move record is file 495
+# [that value]. Checked against RAM for four wrestlers (2026-11-02). Slots not in the list keep
+# defaults set after the loop (0x8014DCE0 ..., not decoded here).
+MOVE_LISTS = (0x800442DC, 0x800442E0)
+MOVE_WIDTHS = 0x800442E4
+MOVE_CODE_LISTS = 0x80045500
+MOVE_TO_ANIM2, MOVE_RECORDS, MOVE_ANIM_CODES = 497, 495, 496
+
+
+def moveset(main, packed, alt=False):
+    """{move slot: (anim code, preferred)} from a wrestler's packed move-set file."""
+    bits = "".join("{:08b}".format(b) for b in packed)
+    pos, out = 0, {}
+    p = main.u32(MOVE_LISTS[1 if alt else 0])
+    while s16(main.u16(p)) != -1:
+        slot, cats = s16(main.u16(p)), [s16(main.u16(p + 2 + 2 * k)) for k in range(4)]
+        width = max(s16(main.u16(MOVE_WIDTHS + 2 * c)) for c in cats)
+        v = int(bits[pos:pos + width + 5], 2)
+        pos += width + 5
+        cat = cats[(v >> width) & 3]
+        code = s16(main.u16(main.u32(MOVE_CODE_LISTS + 4 * cat) + 2 * (v & ((1 << width) - 1))))
+        out[slot] = (code, bool((v >> (width + 2)) & 4))
+        p += 10
+    return out
+
+
+MOVE_DEFAULTS = 0x8014DCE0     # (slot, category, index) entries, -1 ended: fixed codes
+MOVE_DERIVED = 0x8014DD34      # (source slot, n, step): n > 0 -> slot n = code + step; else -n slots after
+                               # the source get code + step, + 2 x step ...
+PIN_FIRST = 292                # slots 292+: each pinnable move's pin (code + 1), in move order
+
+
+def move_codes(main, arc, packed, alt=False):
+    """All 548 move slots' animation codes and the per-move pin variant (byte table 0x800A5720),
+    as moveset_unpack leaves them (checked against RAM for four wrestlers, 2026-11-02)."""
+    listed = moveset(main, packed, alt)
+    codes = [0] * 548
+    for slot, (code, _) in listed.items():
+        codes[slot] = code
+    p = MOVE_DEFAULTS
+    while s16(main.u16(p)) != -1:
+        lst = main.u32(MOVE_CODE_LISTS + 4 * s16(main.u16(p + 2)))
+        codes[s16(main.u16(p))] = s16(main.u16(lst + 2 * s16(main.u16(p + 4))))
+        p += 6
+    p = MOVE_DERIVED
+    while s16(main.u16(p)) != -1:
+        src, n, step = s16(main.u16(p)), s16(main.u16(p + 2)), s16(main.u16(p + 4))
+        if n > 0:
+            codes[n] = codes[src] + step
+        else:
+            c, i = codes[src], 0
+            while True:
+                c += step
+                i += 1
+                codes[src + i] = c
+                n += 1
+                if n >= 0:
+                    break
+        p += 6
+    to_rec, recs = arc.read(MOVE_TO_ANIM2), arc.read(MOVE_RECORDS)
+    pin_variant, k = [0] * PIN_FIRST, 0
+    for slot in range(PIN_FIRST):
+        rec = s16(struct.unpack_from(">H", to_rec, 2 * codes[slot])[0])
+        flags = struct.unpack_from(">I", recs, 36 * rec + 32)[0]
+        if slot in listed and listed[slot][1]:
+            flags |= 0x8000
+        if flags & 0x1E00 and k < 256:
+            pin_variant[slot] = k
+            codes[PIN_FIRST + k] = codes[slot] + 1
+            k += 1
+    return codes, pin_variant
+
+
+def move_files(main, slot):
+    """(attribute file, move-set file) of roster slot `slot` (attire descriptor +12 / +10)."""
+    p = main.u32(ATTIRE_PTRS + 16 * slot)
+    return main.u16(p + 12), main.u16(p + 10)
+
+
+# Collision sets (keep_in_bounds, object_fly): a 0-ended list of pointers to (first, last) groups of
+# consecutive 48-byte walls: four s16 corners (x, y, z), a run-time normal, +0x24 u16 wall id. See
+# _re_docs/individual_games/wwf_no_mercy/movement.md.
+COLLISION_SETS = [("ring", 0x80146BF0)] + [("apron zone %d" % k, ("ptr", 0x8014D390 + 4 * k)) for k in range(4)]     + [("cage zone %d" % k, ("ptr", 0x8014D3A0 + 4 * k)) for k in range(4)]     + [("raised 0x40", 0x80147E20), ("raised 0x80", 0x8014BC8C), ("raised 0x100", 0x8014B704),
+       ("default", 0x8014C500)]     + [("floor area %d zone %d" % (a, z), ("ptr", 0x8014D290 + 16 * a + 4 * z)) for a in range(10) for z in range(4)]     + [("object surfaces %d" % k, 0x80147BB4 + 16 * k) for k in range(8)]
+
+
+def collision_walls(main, set_addr):
+    """[(wall id, ((x, y, z) x 4))] of a collision set."""
+    out, i = [], 0
+    while True:
+        g = main.u32(set_addr + 4 * i)
+        if not g:
+            return out
+        w, last = main.u32(g), main.u32(g + 4)
+        while w <= last:
+            c = [s16(main.u16(w + 2 * k)) for k in range(12)]
+            out.append((main.u16(w + 36), tuple(tuple(c[3 * k:3 * k + 3]) for k in range(4))))
+            w += 48
+        i += 1
 
 
 def assets(arc):
@@ -555,7 +820,7 @@ def assets(arc):
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("rom")
-    ap.add_argument("cmd", choices=["roster", "assets", "preview", "viewer"])
+    ap.add_argument("cmd", choices=["roster", "assets", "preview", "viewer", "attrs", "moves", "collision"])
     ap.add_argument("out", nargs="?", help="preview: output .html (keep it out of git, e.g. under _tools/)")
     args = ap.parse_args()
     rom = open(args.rom, "rb").read()
@@ -564,6 +829,36 @@ def main():
         sys.exit("expected the No Mercy Rev 1 ROM")
     if args.cmd == "assets":
         assets(arc)
+        return
+    if args.cmd == "collision":
+        main_ = Main(rom)
+        for name, where in COLLISION_SETS:
+            addr = main_.u32(where[1]) if isinstance(where, tuple) else where
+            if not addr:
+                continue
+            for wid, quad in collision_walls(main_, addr):
+                print("%-24s wall %3d  %s" % (name, wid, "  ".join("%d,%d,%d" % p for p in quad)))
+        return
+    if args.cmd == "moves":
+        main_, anims = Main(rom), arc.read(MOVE_ANIM_CODES)
+        for w in roster(main_, arc):
+            af, mf = move_files(main_, w["slot"])
+            if not w["name"] or not mf:
+                continue
+            alt = bool(attributes(arc.read(af))[52] & 2)
+            packed = arc.read(mf)
+            pref = {sl for sl, (_, pr) in moveset(main_, packed, alt).items() if pr}
+            codes, _ = move_codes(main_, arc, packed, alt)
+            print("%2d %-20s attrs %d moves %d" % (w["slot"], w["name"], af, mf))
+            print("    " + " ".join("%d:%d%s>%d" % (sl, c, "*" if sl in pref else "",
+                                                     s16(struct.unpack_from(">H", anims, 2 * c)[0]) + 13090)
+                                    for sl, c in enumerate(codes) if c))
+        return
+    if args.cmd == "attrs":
+        for n in attribute_files(arc):
+            a = attributes(arc.read(n))
+            print("%4d " % n + " ".join("%02X:%d" % (o, a[o]) for o, _ in ATTR_FIELDS if o != 52)
+                  + " 34:%08x" % a[52])
         return
     if args.cmd == "viewer":
         build_viewer(Main(rom), arc, args.out or "_tools/viewer/nomercy_viewer.html")

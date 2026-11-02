@@ -46,6 +46,8 @@ other findings go in MD files right in this folder?
   `moves.md`, `controls.md`, `models.md` (attires, palette recolouring), `arena.md`.
 - `individual_games/wwf_no_mercy/README.md`: No Mercy compared with Revenge: ROM revision, tooling,
   memory layout, first landmarks (211 states, 145 AI modes, 856-byte wrestler) and the engine changes.
+- `individual_games/wwf_no_mercy/*.md`: No Mercy system docs (frame loop, movement, strikes, grapples,
+  pins and holds, damage and spirit, match rules, AI), listed in its README.
 - `individual_games/wwf_no_mercy/wrestler_models.md`: how No Mercy builds a wrestler's model from a
   63-byte appearance (attire records in file 1, the builder, part slots and texture layers).
 - `symbols/nomercy/`: WWF No Mercy symbols (USA **Rev 1** addresses), same format; IDA build
