@@ -19,6 +19,9 @@ LAYOUTS = {
     "5ad2d8359058c8bb71f08e3d3433b7a50d3bb645": dict(game="wcw", data_base=0x39490, table=0x7C1A78, count=5498),
     # Revenge: table at ROM 0xCE2752 (DMA'd by func_800034A0), data at 0xDAC50 (file loader func_80003684)
     "e1711a2511394b9357b5f1ac8ca5cc17bd674836": dict(game="revenge", data_base=0xDAC50, table=0xCE2752, count=7657),
+    # No Mercy (Rev 1): data right after the overlays (the recomp's "assets" segment), offset table
+    # after the data; the last offset lands exactly on the table
+    "91cee3d096f4a76644d8b35b9aead6448909abd1": dict(game="nomercy", data_base=0x1BD150, table=0x16C31D8, count=19458),
 }
 DATA_BASE = 0x39490      # World Tour values, kept for older callers
 OFFSET_TABLE = 0x7C1A78
@@ -62,7 +65,7 @@ class Archive:
         self.rom = rom
         layout = LAYOUTS.get(hashlib.sha1(rom).hexdigest())
         if layout is None:
-            raise ValueError("unknown ROM (expected a US World Tour or Revenge .z64)")
+            raise ValueError("unknown ROM (expected a US World Tour, Revenge or No Mercy Rev 1 .z64)")
         self.game = layout["game"]
         self.data_base, self.table, self.count = layout["data_base"], layout["table"], layout["count"]
 

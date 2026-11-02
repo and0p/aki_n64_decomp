@@ -1,0 +1,473 @@
+# No Mercy match overlay (ovl_e, 0x800D9960): first landmarks. Rev 1 addresses.
+
+[[func]]
+addr = 0x8012E07C
+name = "rng_match"
+desc = "Linear congruential generator s = s * 0x5D588B65 + inc (state 0x80159350, increment 0x80159354), returning (s & 0xFFFFF) / 1000 and rerolling results of 1000 or more; as World Tour's rng_match (0x800A0468) and Revenge's (0x800D4204). Found by the multiplier; it is the only use of it in the ROM, which is how ovl_e was picked as the match overlay."
+status = "likely"
+
+[[data]]
+addr = 0x80144CF0
+name = "g_state_handlers"
+type = "u32[211]"
+desc = "Action-state handler table, indexed by the wrestler's state (u32 at +0x14), called by wrestler_update with &g_wrestler_ctx. 211 entries (states 0x00-0xD2), 5 empty (0x00 and four more); 182 distinct handlers, see states.toml. Revenge has 146 states, World Tour 120."
+status = "likely"
+
+[[data]]
+addr = 0x80145A10
+name = "g_ai_modes"
+type = "u32[145]"
+desc = "CPU AI mode table, 145 entries (111 distinct functions, see ai.toml), dispatched from sub_800F03F0; ai_think sets modes up to 139. Revenge has 62 modes, World Tour 48."
+status = "likely"
+
+[[data]]
+addr = 0x80159990
+name = "g_wrestlers"
+type = "struct Wrestler[4]"
+desc = "The four wrestler records, 856 bytes each (Revenge 944, World Tour 928; the layout is new). Seen so far: +0x00/+0x04/+0x08/+0x0C slot indices of related wrestlers (+0x08 opponent, +0x0C tag partner or itself) (copied into g_wrestler_ctx), +0x14 state, +0x18 step within the state, +0x1C previous state, +0x20 the step it left that state at (RAM 2026-11-01), +0x24 angle to the opponent, +0x80-+0x8E flag words, +0x88 a flags word tested by wrestlers_update_all (bit 2 active, 1 / 2 update-order bits), +0x120 position."
+status = "likely"
+
+[[data]]
+addr = 0x80159080
+name = "g_wrestler_ctx"
+type = "struct WrestlerCtx"
+desc = "Per-update context filled by wrestler_update and passed to every state handler: +0x00 slot being updated, then the related slot indices from its record, pointers to those records at +0x2C-+0x3C (self at +0x2C), and the slot's input words from the 56-byte per-slot array at 0x80159540."
+status = "likely"
+
+[[data]]
+addr = 0x801591F8
+name = "g_update_first_slot"
+desc = "wrestlers_update_all starts each pass at this slot and goes round (slot + 1) & 3, then advances it by one, so the update order rotates every frame."
+status = "likely"
+
+[[func]]
+addr = 0x800E5890
+name = "wrestler_update"
+proto = "void wrestler_update(s32 slot)"
+desc = "Per-frame update of one wrestler: fills g_wrestler_ctx from its record and its input entry, clears per-frame flag bits, sets facing_to_opponent, then calls g_state_handlers[state](&g_wrestler_ctx). Same role as Revenge wrestler_update (0x8009D8D0), which works from globals instead."
+status = "likely"
+
+[[func]]
+addr = 0x80117F28
+name = "wrestlers_update_all"
+desc = "Updates the four wrestlers in passes, each starting at g_update_first_slot and going round, then advances g_update_first_slot. Matched to Revenge wrestlers_update_all (0x800BBA00) by call graph."
+status = "likely"
+
+[[func]]
+addr = 0x8012F848
+name = "wrestler_set_anim"
+proto = "void wrestler_set_anim(struct Wrestler *w, s16 anim, s32 mode)"
+desc = "Starts animation anim on w: stores it in anim_id and in the per-slot table at 0x801593A0 (index anim_slot), and when it changed calls anim_player_set on w->anim_player. As Revenge wrestler_set_anim (0x800D427C), matched by call graph."
+status = "likely"
+
+[[func]]
+addr = 0x8012EC28
+name = "ring_zone_of"
+proto = "s32 ring_zone_of(struct Vec3 *pos)"
+desc = "Ring zone of a position; wrestler_update stores it in ring_zone every frame. As Revenge ring_zone_of (0x800A77F0), matched by constants."
+status = "likely"
+
+[[func]]
+addr = 0x800EB5E0
+name = "wrestler_set_state"
+proto = "void wrestler_set_state(struct Wrestler *w, s32 state)"
+desc = "Changes w's state: saves state / state_step into prev_state / prev_step (unless the current state is 0x30), zeroes state_step, state_counter (+0x84), state_flags (+0x9C), state_timer (+0xA8), the bytes +0xF5 / +0xF6 and bounds_override (+0x350), and adjusts flag bits (flags80 |= 1, flags88 |= 0x10, ...). Base of all the setters below."
+status = "likely"
+
+[[func]]
+addr = 0x800EB6D4
+name = "wrestler_set_state_now"
+proto = "void wrestler_set_state_now(struct Wrestler *w, s32 state)"
+desc = "wrestler_set_state, then flags88 |= 1 (the most used setter, 97 callers). Probably the 'run the new state this frame' variant, like Revenge's _now setters."
+status = "guess"
+
+[[func]]
+addr = 0x800EB760
+name = "wrestler_unpair"
+proto = "void wrestler_unpair(struct Wrestler *w)"
+desc = "Sets pair_slot and pair_slot2 (+0x30 / +0x34) to -1 and clears flags88 bit 0x04."
+status = "likely"
+
+[[func]]
+addr = 0x800EB704
+name = "wrestler_set_state_free"
+proto = "void wrestler_set_state_free(struct Wrestler *w, s32 state)"
+desc = "wrestler_set_state, then wrestler_unpair (cf. Revenge's _free setters)."
+status = "likely"
+
+[[func]]
+addr = 0x800EB730
+name = "wrestler_set_state_free_now"
+proto = "void wrestler_set_state_free_now(struct Wrestler *w, s32 state)"
+desc = "wrestler_set_state_free, then flags88 |= 1. Called by run_collide, strike_land, move_aftermath_check and dive_land_hit."
+status = "likely"
+
+[[func]]
+addr = 0x800EB824
+name = "wrestler_pair_set_state"
+proto = "void wrestler_pair_set_state(struct Wrestler *a, s32 state_a, struct Wrestler *b, s32 state_b)"
+desc = "Puts two wrestlers into a paired move: both through wrestler_set_state_free, then links them (a's flags88 |= 4, a->pair_slot = b's slot, and pair_other and opponent of each set to the other's slot). Wrapped by sub_800EB77C and sub_800EB7DC, which add more flag bits."
+status = "likely"
+
+[[func]]
+addr = 0x8012FEDC
+name = "wrestler_joints_update"
+desc = "For each of the four wrestlers, copies the model's joint positions (124-byte joint records in the 2852-byte per-wrestler model blocks at 0x800A1184) into the record from +0x120, and point_120 from joint 0 plus an offset, scaled. The carried-over name weapons_tick (Revenge / World Tour) did not fit."
+status = "likely"
+
+[[func]]
+addr = 0x8011D400
+name = "run_in_check"
+desc = "Called from match_tick: with match option bits 0x80097EC0 & 0x1000 and 0x800A9950 & 0x200, chance_check(500) picks the order and tries run_in_try(2, 0) / run_in_try(3, 1) (and the other way round); a second path (0x80097EC0 & 0x20000 / 0x4000) tries slot 3 for side 2 and looks for wrestlers on the floor (location 0x04). Seen 2026-11-01: an ally ran in to help P2 into slot 3."
+status = "likely"
+
+[[func]]
+addr = 0x8011D5D0
+name = "run_in_try"
+proto = "s32 run_in_try(s32 slot, s32 side)"
+desc = "Brings a run-in into an empty slot (roster_id == -1, flags_e9 & 2) for a side: the side's condition word (0x800AA07C, or 0x800AA078[side]) is 0 = any time, 0x100 | t = once the match clock (0x8016B930 minutes * 60 + 0x8016B934 seconds) reaches t, 0x200 | n = when 0x80159628 == n; each side has one run-in (bit 0x10 << side in 0x8016B650, armed by wrestler_add_health when that side's wrestler reaches 0 health, cleared when used). Then roster_id = the side wrestler's ally_id (+0xD8), sets bit 0x08 in that wrestler's +0xF1, and starts state 0xA3 at step 13."
+status = "likely"
+
+[[data]]
+addr = 0x8016B930
+name = "g_match_minutes"
+type = "s32"
+desc = "? Match clock minutes (6 at 6:18 in RAM); 0x8016B934 holds the seconds. Used by run_in_try's time condition."
+status = "guess"
+
+[[data]]
+addr = 0x8016AE10
+name = "g_objects"
+type = "struct Object[7]"
+desc = "Weapons and props, 180 bytes each (struct Object). Wrestlers point at them with held_obj; records 4 and 5 are the ring steps. RAM 2026-11-01: record 0 a thrown stop sign (type 17) on the floor, record 1 a crowd weapon (type 5) in P1's hand, the rest -1."
+status = "likely"
+
+[[data]]
+addr = 0x8014E064
+name = "g_crowd_weapon_types"
+type = "s8[23]"
+desc = "Weapon types the crowd can hand over, -1 terminated: 0-5, 7-17, 20-24 (6, 18 and 19 are not in it). weapon_pick_type keeps the ones sub_80025C48(type) allows, leaves out 14 and 22 when option bit 0x80097EC0 & 0x100000 is set, and picks one with rand_pool_next."
+status = "likely"
+
+[[func]]
+addr = 0x80142E80
+name = "input_weapon_grab"
+proto = "void input_weapon_grab(struct WrestlerCtx *ctx)"
+desc = "C-left weapon grab, from state_01_stand and run_step. Needs the wrestler's zone (zone_info +0x28 & 0x20) to allow it and, when standing, C-left pressed with the d-pad toward it (buttons & w+0x98); when running (state 3) C-left alone. Zone ids 46-53 and 188-195 are the ring steps: state 0x8C with held_obj 4 or 5. Otherwise saves zone_info into grab_zone_info and starts state 0x8A (crowd weapon)."
+status = "likely"
+
+[[func]]
+addr = 0x80140694
+name = "weapon_pick_type"
+desc = "Picks the weapon a grab produces (called by states 0x8A, 0x8C, 0x91, 0xBD): a zone can force a type (area data +8) or allow a chance_check(800) special; otherwise a random entry of g_crowd_weapon_types that sub_80025C48 allows. With flag 8 it hands the object to the wrestler instead (holder = its slot, -1 links, flags 0)."
+status = "likely"
+
+[[func]]
+addr = 0x80141508
+name = "object_hit_check"
+proto = "void object_hit_check(s32 obj)"
+desc = "Hit test for a moving object (thrown weapon): strike_hit_test from the owner's record; on a wrestler it starts the hit (move table 5 * type + 111, copied from 0x800A6040); on another object (100 + index) it knocks that one away with a random spin. Called from sub_80140A84."
+status = "likely"
+
+[[func]]
+addr = 0x80132AE8
+name = "input_press_kind"
+proto = "s32 input_press_kind(s32 slot, u8 *out)"
+desc = "Reads a slot's button history (20 u16 from 0x80159518 + 56 * slot, the current entry last) and sets *out: 2 = A / B pressed recently (a tap; | 4 for A, | 8 for B), 1 = A / B held through the last 8 entries (a hold), with more for A+B held. Called by state_22_strike and state_50_grapple_attempt, so it is how weak / strong (and probably the long A+B lunge) are told apart."
+status = "guess"
+
+[[func]]
+addr = 0x80025C48
+name = "weapon_type_allowed"
+proto = "s32 weapon_type_allowed(s32 type)"
+desc = "1 unless type is one of 12 lockable weapon types (list at 0x80052D18) whose bit in the mask 0x8009FDEA is set; weapon_pick_type keeps only allowed types. Probably the unlock / weapon option mask set outside the match."
+status = "likely"
+
+[[func]]
+addr = 0x800EC698
+name = "wrestler_start_move"
+proto = "void wrestler_start_move(struct Wrestler *w, s32 slot, s32 move)"
+desc = "Starts move number move (0-547) for w from slot's move set: w->move = g_movesets + slot * 0x4D10 + 36 * move, move_anim / move_anim2 from g_move_anims / g_move_anims2 (548 u16 per slot), move_repeat counts repeats; flags8c 0x01 from the move's flags 0x8000, 0x02 when it is one of the two finishers in attrs +0x1C / +0x20, 0x04 for moves 0x46 and 0x51. Move numbers seen: 172 / 174 weak strike (+1 with a direction), 186 / 188 strong, 190 the A+B lunge, 183 / 184 / 185 kick-catch follow-ups."
+status = "guess"
+
+[[data]]
+addr = 0x80159628
+name = "g_arena"
+type = "s32"
+desc = "Arena / area number: 10 and above are the backstage areas (the CPU uses ai_decide_backstage there; keep_in_bounds and match_init_wrestlers use area - 9 as an index), below 10 the ring; run_in_try's 0x200 condition waits for a value of it. It read 2 in a ring match."
+status = "guess"
+
+[[func]]
+addr = 0x8011CD60
+name = "wrestler_add_health"
+proto = "void wrestler_add_health(struct Wrestler *w, s32 delta, s32 mode)"
+desc = "Adds delta to health, capped at health_max (+0xAC), floored at 0. When health reaches 0 for slot 0 or 1 with interference on (0x80097EC0 & 0x1000), it rolls chance_check(500) (or 250 under option 0x400000) and on success arms that side's run-in (sets its bit in 0x8016B650), so a run-in comes for a wrestler who has been beaten down: the 'dominating' trigger. Mode 2 takes another path (not read). As Revenge wrestler_add_health (0x800BF338)."
+status = "likely"
+
+[[func]]
+addr = 0x80117EB0
+name = "fall_count_add"
+proto = "void fall_count_add(struct Wrestler *w, s32 slot)"
+desc = "Adds one (max 99) to a per-slot count at 0x80159218 and, for w, raises health to at least 60, then sub_8011D100(w, 7). Called by state_2E_tko_check, countout_tick (a count-out under g_match_rules 0x80000), match_end and state_49_ground_held: probably the falls / submissions tally."
+status = "guess"
+
+[[func]]
+addr = 0x8011CF9C
+name = "spirit_exchange"
+desc = "After a hit or move: adds spirit to both sides from the move data (+0x327 / +0x328 of the third argument), 3 more for the receiver when its health is below 49 (unless in state 0x49), plus per-wrestler bonuses from 0x8014659C (by attrs +5) when +0xF3 bit 2 is set; calls wrestler_add_spirit. The amounts come from the move record (hit_move +0x07 / +0x08)."
+status = "likely"
+
+[[func]]
+addr = 0x8013F60C
+name = "input_ladder_climb"
+proto = "void input_ladder_climb(struct WrestlerCtx *ctx)"
+desc = "From state_01_stand: C-up in the ring or on the floor while in contact with a standing ladder (g_objects type2 25, flags without 0x4000), facing it; takes a free side (climber0 / climber1 == -1), sets held_obj and ladder_side and starts state 0xAA."
+status = "likely"
+
+[[func]]
+addr = 0x8011D100
+name = "spirit_update"
+proto = "s32 spirit_update(struct Wrestler *w, s32 op)"
+desc = "The attitude meter. op 0: timer 120. op 1 (state_01_stand): every 120 frames spirit drifts toward 50 (+3 below 31, +2 below 50, -1 above 50), or -8 (to at least 1) while w is out of the ring and its opponent is in it. op 2 (every frame, wrestler_update): counts a meter mode down and on expiry restores spirit (empty -> 40, SPECIAL -> 70, finisher -> 60). op 3: a mode loses 60 frames. op 4 (TKO check): empty mode, spirit 0 for 300 frames. op 5 (taunts, 0x0A, 0x1C, run-in): if SPECIAL, switch to finisher mode (flags_ee 4) for 600 frames and return 1. op 7 (after a fall): spirit 50."
+status = "likely"
+
+[[func]]
+addr = 0x80112074
+name = "apply_damage"
+proto = "void apply_damage(struct Wrestler *att, struct Wrestler *def)"
+desc = "Applies the move in def->hit_move (read from the disassembly). D = hit_move +0x06 (or +0x1B when def+0x31E equals the nonzero s16 hit_move +0x1C; then flags8a 0x4000 is set), r = hit_move +0x0B (region), k = hit_move +0x0C (kind). Damage = max(0, trunc((wrestler_region_condition(att, r) + 50) * D * 0.01)) + max(0, (att.attrs[0x0A + r] - def.attrs[0x0F + k]) * D / 10) + max(0, (att.spirit - def.spirit) / 20, only when D != 0); x1.2 when the attacker is in finisher mode (flags_ee 0x04). Then wrestler_add_health(def, -damage, mode) with mode 1 in states 0x45 / 0x49 / 0x4B, 2 with hit_move flags 0x8000000, else 0; damage_history_add; health_max -= damage / 4 (at least 1 when D != 0; not below 64; skipped with 0x8000000); each of the five regions drops by hit_move +0x12 + i (more in a submission 0x49, from the two wrestlers' attrs +0x16 classes through the float table 0x801461C0); the weakest region index goes to +0xE7 when r is it (r != 4); then spirit_exchange."
+status = "confirmed"
+
+[[func]]
+addr = 0x8011241C
+name = "escape_time"
+desc = "Time values (frames) by op, read from the disassembly (the decompiler drops the result). Op 1, the pin escape time (w = the pinned wrestler, other = the pinner): 95 + other.spirit / 5 + finisher bonus (10 / 15 / 20 / 25 for finisher_heat up to 15 / 30 / 45 / more, table 0x801461E4) + 2 * w.pin_count (pins taken so far) - (w.spirit / 3 + w.health / 2) + max(0, damage_history_ratio - 15); if that is 90 or more and w.spirit is 90 or more it becomes 87. The referee counts once per 30 frames, so 90 frames is a three count: below 90 the wrestler kicks out (the pin state also takes 1-3 more off per mash and keeps at least 15). Op 0, the time down after a knockdown (state_31_down): 0 in finisher mode; else 3 * finisher_heat + 180 - (health + spirit) / 2 - 80 * down_count, where down_count already includes this knockdown and counts 2 fewer after a finisher (the attacker's flags8c 0x04, moves 70 / 81), and finisher_heat is set to 180 by a finisher (flags8c 0x800); scaled in tag matches on the floor / apron (0x80150968 / 0x80150970); below 0 means up at once. Example: the first knockdown at 100 health / 20 spirit gives 180 - 60 - 80 = 40 frames; a finisher on the same wrestler gives 540 + 180 - 60 + 80 = 740. Ops 2 and 9: 100 - (spirit / 2 + health / 4). Op 3 (state_49_ground_held): 60 in finisher mode, else the op 6 formula. Op 4: 180 - (spirit / 2 + health / 4) under a match condition (0x80162A80 & 1, 0x8016B594 >= 6). Op 5 (state_80_carried_escape) and op 6 (state_82_carried), w carried by other: (200 or 300 + other.spirit / 2 - (w.spirit / 4 + w.health)) / 2. Op 7 (state_34): (100 - (w.spirit / 2 + w.health / 4)) x 4, x 8 with w's flags78 0x04. Op 10 (state_C6, state_CA, the cage / turnbuckle family): (100 - (spirit / 2 + health / 4)) x 4. Callers: op 0 state_31_down, state_63_hit_while_down, state_70_over_ropes; 1 state_45_pin_defender; 2 state_56_move_defender, state_3F, state_18_corner_slump; 3 state_49_ground_held; 4 state_15; 9 state_17. Every op except 1 and 3 is 0 in finisher mode (flags_ee 0x04). Negative results become 0."
+status = "likely"
+
+[[func]]
+addr = 0x80111FE0
+name = "damage_history_ratio"
+desc = "Sums 30 (a, b) byte pairs at w->damage_history and returns sum b / sum a (0 when sum a is 0)."
+status = "likely"
+
+[[func]]
+addr = 0x800F03F0
+name = "ai_update"
+proto = "void ai_update(s32 slot)"
+desc = "Per-slot CPU update from wrestler_tick: sets the AI globals (0x8016B8E8 self, 0x80159618 opponent, 0x8016B92C partner, 0x8016B71C partner's opponent, 0x8016B720 opponent's partner, 0x8015A6F0 the slot's 176-byte AI block in g_ai_blocks), refreshes perception (ai_update_perception), stores the situation classes (ai_situation: own in +0x24, the opponent's in +0x48), distances to the four ring corners (+0x6C), ring zones (+0x42 / +0x54), and copies ten personality bytes of the wrestler's attribute record (attrs +25, +26, +30, +31, +34-+39) into AI globals (0x80159624, 0x80159510, 0x80162A78, 0x8015A6F4, 0x80159980, 0x8016B590, 0x8016B9E1, 0x8016B93C, 0x8016B9E0, 0x8016B9CE); they are trait levels that index chance arrays in g_ai_mode_tables. Readings from where each is used (guesses): +25 / +26 how to treat a downed opponent (healthy / hurt), +30 / +31 which move list (by the opponent's health), +34 grapple keenness (ai_try_grapple, far decisions, turnbuckle), +35 defence and counters (kick catch, apron reactions, runners, wait or engage), +36 close-range aggression and struggling, +37 overall aggression (used in 18 decisions), +38 weapons and fighting outside (armed checks, the floor, count-outs; 3 a special weapon behaviour), +39 specials and finishers (SPECIAL, taunts, special moves); then runs the current mode from g_ai_modes. Mode 0 stays in state 0x03 / 0x04 at most 150 frames. ai_set_mode (0x800FCEB4) changes the mode."
+status = "likely"
+
+[[data]]
+addr = 0x801596C0
+name = "g_ai_blocks"
+type = "u8[4][176]"
+desc = "Per-slot CPU AI state, 176 bytes each (Revenge 96, World Tour 84), cleared and set up by ai_state_init: +0x00 mode, +0x04 step within the mode, +0x0C / +0x0E / +0x12 / +0x13 the CPU's pad for this frame (held, pressed, stick x / y; wrestler_tick copies them into the slot's input entry, so the CPU plays through the same input as a player), +0x1C the CPU level (0-4, from 0x8009ED10 per slot; 5 -> 3, 6 -> 4), +0x20 skill (100 / 300 / 500 / 750 / 1000 by level, +-20 at random, kept within 10-990; ai_perceive uses it), +0x28 five perceived body regions, +0x3C / +0x3E own perceived health / spirit, +0x4C / +0x4E the opponent's, +0x50 perceived time down, +0x0E set by ai_can_act, +0x12 cleared by ai_update, +0x13 a byte some modes set (80: ? a stick value), +0x18 a mode timer, +0x24 the situation class from perception (compared with 1, 8, 11, 13, 14, 21, 24, 27, 35, 51, 53, 54, 58), +0x3C the perception result, +0x56 the opponent's state when the mode was set, +0x60 a distance (f32), +0x80 flags."
+status = "likely"
+
+[[data]]
+addr = 0x800AA090
+name = "g_movesets"
+type = "u8[4][548][36]"
+desc = "The four wrestlers' move sets in RAM, 548 move records of 36 bytes per slot (Revenge 279, World Tour 222), loaded before the match. Record layout: see Wrestler.hit_move in types.h."
+status = "likely"
+
+[[data]]
+addr = 0x8008FA70
+name = "g_move_anims"
+type = "u16[4][548]"
+desc = "Animation of each move for the wrestler doing it, per slot (wrestler_start_move)."
+status = "likely"
+
+[[data]]
+addr = 0x8009FF90
+name = "g_move_anims2"
+type = "u16[4][548]"
+desc = "Animation of each move for the wrestler receiving it, per slot."
+status = "likely"
+
+[[data]]
+addr = 0x80097EC0
+name = "g_match_type"
+type = "u32"
+desc = "Match type and rule bits, set outside the match (tested in 109 match functions). Readings from the functions that use each bit (2026-11-02; the menus would confirm them): 0x1000 run-ins on (run_in_check, wrestler_add_health); 0x2000 tag rules (illegal_man_check, apron_walk_dpad, tag deciders); 0x4000 elimination (elimination_record, ai_mode_144_chase_last, one fall left); 0x8000 a tag variant (tag_partner_takes_over, ai_decide_tag); 0x10000 cage (cage_climb_check, run_cage_check, into the cage instead of over the ropes); 0x20000 timed entrants (run_in_try time condition: the Royal Rumble); 0x80000 guest referee (confirmed in RAM: 0x00081403 in a guest-referee match); 0x100000 hardcore / backstage (area_change, arena objects, crowd weapons, weapon types 14 / 22); 0x400000 regen and elimination rules with the clock (can_regen, elimination_record, the second run-in roll; ? survival); 0x2000000 ending on the clock by falls (ironman: match_clock_tick, match_end_start skipped); 0x4000000 falls left on the HUD (survival / gauntlet: falls_left, elimination_record)."
+status = "guess"
+
+[[data]]
+addr = 0x800A9950
+name = "g_match_rules"
+type = "u32"
+desc = "Second rule word, set outside the match (80 functions): 0x02 / 0x20 / 0x4000 in the pin defender, 0x200 run-ins, 0x400 over-the-top elimination (standing on the floor sets end_flags 0x10; no whips over the ropes in the ring: state_01_stand, lockup_place_move), 0x2000 the CPU does not use C-left on a downed opponent, 0x80000 falls are counted rather than ending the match (match_end: fall_count_add) and the clock counts down (match_clock_tick), bit 20 (0x100000) with g_match_type 0x4000: slot 0's fall ends it (match_end). Other bits not identified."
+status = "guess"
+
+[[func]]
+addr = 0x801128C8
+name = "chance_roll"
+proto = "s32 chance_roll(struct Wrestler *w, struct Wrestler *other, s32 kind)"
+desc = "The odds behind most contests: picks a chance per mille by kind, then chance_check. Tables (Rev 1 data): 0 by spirit (100: 500, 81: 333, 61: 250, 31: 125, 11: 62, else 31; ground_grapple_defend); 1 a spirit table at 0x8014620E doubled / quadrupled by situation and attrs +0x34 & 0x1000 (grapple_defender_input: the grapple reversal); 2 by health_eff (>= 196: 3.9, 128: 7.8, 64: 15.6, 32: 31.25, else 62.5); 3 by spirit (100: 1000, 81: 500, 61: 333, 31: 250, 11: 200, else 125; whip reversals, 0x04, 0x15); 5 by the move's class (16-666; move_aftermath_check); 6 TKO check; 7 by health and (100 - spirit) / 40 (getting up from 0x31); 8 500 - 10 * max(0, other.spirit - w.spirit) (move reversals, reversal_check); 9 crowd weapon (by attrs +6); 10 lifting (1000 in finisher mode, else by the size difference attrs +0x15 / 3 and the other's health, table 0x8014628C); 11 by spirit (100: 600, 80: 400, 60: 300, 40: 200, else 100; resisting a pick-up); 12 by the escape counter (>= 120: 100 ... else 666); 13 700; 14 500; 15 600; 16-18 100 x byte +0xE4 (knockdown falls, strike_land); 19 10 x (table by +0x48 + other's spirit / 5 - own spirit / 5; state 0xB2). Capped at 1000."
+status = "likely"
+
+[[func]]
+addr = 0x80116AC4
+name = "match_clock_tick"
+desc = "The match clock (g_match_minutes / seconds, 30 frames a second). Each minute after 10 with run-ins on (g_match_rules 0x200) it rolls chance_check(500) (250 once under g_match_type 0x400000) to arm both sides' run-ins. With a time limit (byte 0x8009FE6C indexes 60 / 5 / 10 / 15 / 30 / 60 minutes at 0x80146574) it shows the clock (counting down under g_match_rules 0x80000) and at the limit either flags the end (g_match_type 0x2000000: ironman?) or ends the match (sub_80117438(0x8000): a time-limit draw). Called countout_tick from the World Tour match, which was wrong."
+status = "likely"
+
+[[func]]
+addr = 0x8012835C
+name = "grapple_walk"
+proto = "void grapple_walk(struct WrestlerCtx *ctx, s32 *pair)"
+desc = "Moving while grappled (from the lock-up, state 0x51 step 2): after the d-pad is held 7 frames (_unk0d0) state_counter 0x02 turns walking on, for normal standing grapples (flags78 0x800). A direction within about 20 degrees of the facing (or of its back) walks both wrestlers that way, keeping the pair distance; otherwise both turn 45 units (about 4 degrees) a frame toward it, sliding the opponent round. keep_in_bounds_pair keeps them in the ring. The pair record (g_grapple_pairs) holds the distance: 73.5 front, 53.5 rear."
+status = "likely"
+
+[[func]]
+addr = 0x80128770
+name = "grapple_timer"
+desc = "Lock-up time limit: counts count_timer down (R alone, in_0c & 0xC030 == 0x10, or sub_800ED9C4 sets it to 0); when it runs out it plays the release animation (11907 front / 11911 rear, 11915 / 11919 on a staggered opponent, 11923 / 11927 on the apron) and returns how the lock-up continues."
+status = "likely"
+
+[[data]]
+addr = 0x80159290
+name = "g_grapple_pairs"
+type = "s32[4][6]"
+desc = "Per-slot lock-up record, 24 bytes, set by state 0x51: [2] the distance kept between the two (73.5 front, 53.5 rear, f32), [4] the facing reversed (the pair angle); used by grapple_walk."
+status = "likely"
+
+[[data]]
+addr = 0x8016B8F0
+name = "g_pin_counts"
+type = "s32[4][3]"
+desc = "Per-slot referee count clock (referee_count_tick: clock_tick(.., 30), so one count a second; [1] the count, [2] frames). At 3 the pinned wrestler's end_flags gets 0x08; a pin broken at 2 with 20 frames or more into it plays the near-fall (sub_800E14C8)."
+status = "likely"
+
+[[func]]
+addr = 0x800F0EF0
+name = "ai_choose_mode"
+desc = "The CPU's main decision, run from AI mode 0. (1) Focus: in multi-wrestler matches a worn-down CPU (hits taken in hurt states, +0x5E, re-rolled 0-7) switches to the nearest opponent attacking it (AI block +0x80 0x04 / 0x08). (2) Unless its situation is STANDING or 43, it only reacts: in states 3 / 4 for 151+ frames it stops (+0x0E 3840), on a ladder it goes to mode 136 or 138. (3) Standing: with g_arena < 10 it calls the decider for the where-class (+0x82, from both locations): ai_decide_in_ring, _ring_vs_floor, _apron_vs_floor, _apron_vs_ring, _floor_vs_ring, _apron_vs_apron, _vs_turnbuckle, _turnbuckle_vs_ring, _turnbuckle_vs_turnbuckle, _floor; backstage (g_arena >= 10) ai_decide_backstage; then the raised-place deciders (location 0x3C0); ai_think only under g_match_type 0x100000; mode 144 under g_match_type 0x4000 when its end_flags has 0x01. (4) Unless g_match_rules 0x2000, when the opponent's situation is 15-20 (down) and sub_800FCAFC agrees it presses C-left."
+status = "guess"
+
+[[func]]
+addr = 0x800F559C
+name = "ai_can_act"
+desc = "1 when the CPU's wrestler can start something now: standing (state 0x01), state 0x0A with +0xF4 bit 2, or state 0x4F at step 2 (getting up done); sets AI block +0x0E = 1 then. Called by ai_choose_mode, ai_think and several modes."
+status = "likely"
+
+[[func]]
+addr = 0x800FD6DC
+name = "ai_perceive"
+proto = "f32 ai_perceive(f32 value, f32 cap)"
+desc = "The CPU's noisy reading of a value: error e = value * (1 - skill / 1000), at most value * cap; returns value + e * (r / 1000 - 0.5) for a random r (rand_pool_next), not below 0. So a skill-1000 CPU reads exactly and a skill-100 one is off by up to 45%. Read from the disassembly (the decompiler drops the arguments). Used by ai_update_perception for health, spirit, distances, regions and time down."
+status = "confirmed"
+
+[[data]]
+addr = 0x80145298
+name = "g_ai_mode_tables"
+type = "u8[0x6C8]"
+desc = "The CPU's weighted mode tables (ai_pick_mode_weighted: 6-byte entries {cumulative chance /1000, mode, u8, u8 +0x80 bits}), 0x80145298-0x80145960. Tables found and their users (chance:mode): 0x80145298 ring vs floor 45:41 45:45 10:32; 0x801452F4 in ring 30:6 10:9 30:1 10:2 10:41 10:32; 0x80145318 / 0x80145330 / 0x80145348 in-ring variants (39 fetch weapon, 41 approach, 45 back off, 48 approach downed); 0x801453CC 40:44 40:86 20:41; 0x8014543C apron / ring 20:6 20:1 60:2; 0x8014548A 99:32; 0x801454C8 floor vs ring 35:41 10:32 15:33 15:34 25:39; 0x80145574 floor vs ring 23:6 25:9 10:44 20:41 20:32; 0x801455BA, 0x8014561A, 0x80145650, 0x80145668 (sub_800F6D30 / 0x800F6FA4); 0x801456AC-0x80145740 (0x800F7318-0x800F75A8); 0x80145794 40:41 50:39 10:45; 0x801457B2 20:41 15:32 55:39; 0x80145958 vs turnbuckle 45:86 45:45 10:55. Decoded by a scan of the data (tables start after a 1000 entry)."
+status = "likely"
+
+[[func]]
+addr = 0x80131C40
+name = "walk_speed"
+proto = "f32 walk_speed(struct Wrestler *w, s32 flags)"
+desc = "Movement speed per frame, read from the disassembly. Speed class = attrs +0 (1-3), lowered by one for each threshold the legs' condition (region 3) is below: class 1 [10], class 2 [30, 10], class 3 [30, 10] (tables at 0x8014DB90 / 0x8014DB98 / 0x8014DBA4). Speeds by class 0-3 (0x8014DBB0, pairs {fast, normal}): {4.5, 3.4}, {5.25, 3.7}, {6.0, 4.0}, {6.75, 4.3}. Returns normal, or fast with flags & 1. Flags: 0x08 doubles both; 0x10 / 0x20 set fast to 1.5; on the apron (location 0x02) flags 0x02 -> 3.0, 0x08 -> 12.0; 0x40 -> 8.0 (each of these only matters with flags & 1). As Revenge walk_speed (0x800D63F0)."
+status = "confirmed"
+
+[[func]]
+addr = 0x8012069C
+name = "strike_hit_test"
+proto = "s32 strike_hit_test(struct Wrestler *att, s32 obj, s32 kind)"
+desc = "Whether a strike (or thrown object, kind 24) connects; returns the target slot (or 100 + object), -1 for none. Only inside the move's active window (anim_frame between anim_player +8 and +9) unless kind 24. Candidates come from hit_candidates; for a wrestler the height window runs from its lowest joint plus a per-slot offset (0x8016B778 + 112 * slot), for an object from its y + 126. By kind: strike kinds 1, 3, 17-19, 21, 22, 24-27, 29, 30 (and 5-16, 28, 31 with another joint list) need the two wrestlers' joint 0 within 460, then each attacking joint of the move (move +0x0D.., up to 3; the weapon tip for kinds 3 / 24) is tested against the target's joints 5 and 1 (list 0x8014689C): distance <= the per-slot joint radii (0x8016B728 + 112 * slot) and the joint's height inside the window. Kinds 2 / 4: the current opponent in the same place (location & 0x3C5); 20 / 23: any wrestler. As Revenge strike_hit_test (0x800C2CDC), read from the code and data 2026-11-02."
+status = "likely"
+
+[[func]]
+addr = 0x801269DC
+name = "grapple_attempt_resolve"
+proto = "void grapple_attempt_resolve(struct Wrestler *att, struct Wrestler *def)"
+desc = "What a grapple attempt that reached def does (from code 2026-11-02). From behind (relative_position bit 0x08): flags78 0x80, a rear grapple. A defender swinging a weapon (state 0x1B) loses 10 spirit. No grapple on a lying wrestler (flags80 0x08) or one held by someone else. The defender drops any weapon. A defender in the air (states 121-125, 149 step 3, +0xF4 bits 0x0F) is caught when the attacker is in the ring and not running: pair 0x88 / 0x89. Not rear: a defender in the L evade (state 0x6B) with count_timer 4 or less (a 5-frame window) and both in the same place deflects it: 0x6C / 0x6D, or against a running grapple the defender counters: it takes 0x5B (with move 90) and the runner 0x5C; mash_escape kind 3 can also deflect. Two simultaneous attempts (the defender in 0x50 step 4 before frame 3) give flags78 0x200000. A defender in the pick-up 0x34 with frame_flags 0x08 in the ring: 0x40 / 0x41. From the floor at the apron: grapple_start_pair. Otherwise, unless a double team takes over (grapple_double_team_check), grapple_start_pair. With flags78 0x08 (a staggered target): 0x5B / 0x5C, or with 0x1000 a double-team lock-up with slot_d."
+status = "likely"
+
+[[func]]
+addr = 0x8012CB8C
+name = "keep_in_bounds"
+desc = "Keeps a wrestler (or a pair) out of the arena's collision geometry (from code 2026-11-02). The wrestler's radius is half its joint spread, or 30 on raised places (location 0x340) and in state 0x49 step 1. The collision set is the state's override (Wrestler +0x350, cleared by wrestler_set_state) or by location: ring 0x80146BF0; apron by ring zone (table 0x8014D390); floor by ring zone and area (0x8014D290 + 16 * (g_arena - 9 for backstage, else 0)); 0x40 0x80147E20; 0x80 0x8014BC8C; 0x100 0x8014B704; turnbuckle (0x400) by zone (0x8014D3A0); otherwise 0x8014C500. Each set is a list of triangle lists tested with run_step_corner (really a segment / triangle test); the nearest hit pushes the wrestler back. As Revenge keep_in_bounds (0x800D2CAC)."
+status = "likely"
+
+[[func]]
+addr = 0x8012906C
+name = "grapple_defender_input"
+proto = "void grapple_defender_input(struct Wrestler *def, struct Wrestler *att, u16 pressed)"
+desc = "The held wrestler's one reversal try per lock-up (flags_f0 0x08 marks it used), only while it is in finisher mode or the attacker is not. Any of A / B / L / R pressed (wrestlers with attrs +0x34 0x1000 always count as pressing) rolls chance_roll kind 1; success sets flags_f0 0x04, which grapple_reversal_start turns into the reversal. Kind 1 (exact): spirit 100 / 81 / 61 / 31 / 11 / below: 500 / 333 / 250 / 125 / 62 / 31 per mille, doubled when the defender is the bigger wrestler (attrs +0x15 / 3 higher), and against a strong grapple x4 at health_eff 192+ or x2 at 128+; wrestlers with attrs +0x34 0x1000 use kind 8 instead (500 - 10 * spirit deficit). From code 2026-11-02."
+status = "confirmed"
+
+[[func]]
+addr = 0x801112F0
+name = "run_collide"
+desc = "What a running wrestler hits (from code 2026-11-02). Another runner (flags80 0x20): both bounce into 0x05, or from the apron both are knocked down (0x2D). A blocker facing it (0x4C / 0x4D): runner 0x05, blocker 0x4D at step 2. With a charged run (flags8a 0x20): a wrestler slumped in the corner (0x18) is knocked down (0x2D, hit flags 4) while the runner bounces (0x05); one with frame_flags 0x10 goes over the ropes (0x70); one on a ladder is knocked off (0xB2) and the runner is knocked down 10% (0x2D) or back 90% (0x35). run_collide_test 1: the runner dodges (0x9F). From the apron into a standing wrestler: both knocked down. Otherwise the run goes on (state 3, step 3). Objects in the way are pushed (object_set_motion); a charged run into a ladder (type2 25) tips it and knocks the runner down or back. As Revenge run_collide (0x800B5340)."
+status = "likely"
+
+[[func]]
+addr = 0x8011C5AC
+name = "lockup_place_move"
+desc = "From the lock-up (C-down / C-up through lockup_input; World Tour's push_apart by call graph, a name that did not fit): outside cage matches, aims the whip direction (whip_direction) and checks the zone in front (zone_info): facing a feature (zone_info +0x28 bit 0x80) with ring-edge zones 1-4 it starts 0x0D / 0x0E (unless in the ring under g_match_rules 0x400); zones 29-54 (the announce table areas) or 25-27 start 0x0F / 0x10 (putting the opponent onto the table / steps; state_counter 0x02 / 0x04); a zone with flags +0x26 0x20 starts 0x0D / 0x0E (0x10); returns 1 / 2 for the caller's whip choice (2 -> 0xD0 / 0xD1)."
+status = "likely"
+
+[[func]]
+addr = 0x80110880
+name = "whip_run_inputs"
+proto = "void whip_run_inputs(struct Wrestler *runner, struct Wrestler *whipper, u16 pressed)"
+desc = "The whipped runner's reversal (from code 2026-11-02): in the ring, only for wrestlers with the trait attrs +0x34 0x2000, while being whipped (flags86 0x20), in finisher mode or against a whipper who is not, on the way back from the ropes and not yet tried (state_counter & 0x10088 == 8): pressing A / B / L / R between 75.3 and 175.3 units from the ring side it runs toward (points 0x8014D1A8 by dir) uses the one try (state_counter 0x01) and chance_roll kind 3 (spirit 100 / 81 / 61 / 31 / 11 / below: 1000 / 500 / 333 / 250 / 200 / 125 per mille); success sets flags86 0x800 for A or 0x400 otherwise, the two reversal kinds. As Revenge whip_run_inputs."
+status = "confirmed"
+
+[[func]]
+addr = 0x8013EE00
+name = "guest_referee_call"
+desc = "The guest referee's C-left call (from state_01_stand / 0x1B; only for the guest-referee slot, flags_e9 0x04): with no other wrestler busy it marks a wrestler's fall (end_flags 0x200) or, for an illegal act (flags8c 0x1000 / 0x2000), a disqualification (end_flags 0x400, the same bit strike_dq_check sets); then the referee's own call animation (0x8D-ish states by weapon). Carried over from Revenge as move_apply_hit, which did not fit. From code 2026-11-02."
+status = "likely"
+
+[[func]]
+addr = 0x80116CDC
+name = "match_end"
+proto = "int match_end(u16 cause)"
+desc = "Ends a fall for one end_flags cause (from match_tick); returns 1 when it acted (code, 2026-11-02). Cause to result code: 0x08 pin -> 0x4000, 0x20 submission -> 0x2000, 0x40 TKO -> 0x10000, 0x10 out over the top -> 0x80000, 0x100 last one standing -> 0x800, 0x200 guest referee call -> 0x800000, 0x400 DQ -> 0x20000, 0x800 ladder -> 0x40000, 0x1000 cage escape -> 0x2000000. 0x800: the first slot with the flag clears it and is recorded as the winner (match_record_fall with 0x800 | 0x400). 0x800000: match_result(0x800000) and the bell, ending the whole match. 0x80000: needs every wrestler with flags_e9 0x10 to be out (end_flags 0x01, or not in the ring / apron and not flags_f1 0x01 or state 0xA3); records stats and a fall for each flagged wrestler (saving end_flags at +0x90), then match_result; with elimination (g_match_type 0x4000 and rules bit 20, or g_match_type 0x400000) slot 0's fall ends it outright. The rest: for each flagged loser, saves and clears the flag; under g_match_rules 0x80000 it adds to the fall count (fall_count_add; for DQ the wrestler at +0x6C) instead; otherwise tag_partner_takes_over decides whether the fall ends the match (match_record_fall with 0x400, then match_end_start unless the cage escape) or play goes on."
+status = "likely"
+
+[[data]]
+addr = 0x8016B928
+name = "g_tables_intact"
+type = "u8"
+desc = "Which breakable tables still stand: 0x04 the place at location 0x40, 0x08 at 0x100, 0x10 at 0x200 (code, 2026-11-02). Climbing on (state_6F) needs the bit; finisher_effects clears it when a finisher lands there (sound 51, crowd flash or pyro, arena_zones_swap 2 / 3 / 4) and sets 0x8009FE68 0x40 for the first one. Set at match_load."
+status = "likely"
+
+[[func]]
+addr = 0x80114514
+name = "match_tick"
+proto = "void match_tick(void)"
+desc = "The match's per-frame step, a switch on the phase word 0x801591FC (0-4) (code, 2026-11-02). Phase 0: set-up (buffers, g_match_minutes and the flag blocks cleared, results_screen(0), objects_cleanup, match_init_wrestlers), then a 30-frame wait (0x801591E0) and phase 1, where wrestlers without a roster entry or with flags_e9 0x02, and run-ins (state 0xA3), are hidden. Play: match_frame_extras instead when 0x80162A7C bit 1 (paused?); otherwise run_in_check, wrestlers_update_all(1), referee_count_tick, match_clock_tick (non-zero ends the frame), countout_tick(2) (non-zero ends the frame), then match_end for one cause a frame in this order: 0x08 pin, 0x40 TKO, 0x20 submission, 0x10 over the top, 0x100 last one standing, 0x200 guest referee call, 0x400 DQ, 0x800 ladder, 0x1000 cage escape (the first that acts ends the frame), then match_events."
+status = "likely"
+
+[[func]]
+addr = 0x801166B8
+name = "countout_tick"
+proto = "int countout_tick(int op)"
+desc = "The count-out (code, 2026-11-02; was results_screen from the World Tour match, which did not fit). Op 0: count-outs on (g_countout bit 0) when the option byte 0x800A9462 is not 0. Op 1: restarts the count: counts left (0x8016B594) from the option (table 0x80146568: 0 / 10 / 20), number shown (0x8016B578) 0, clears g_countout bit 1, hud_countout_show. Op 2, every frame from match_tick: with count-outs on, in the ring arenas (g_arena < 10), if any wrestler in play (flags_e9 0x10) is off the ring and apron (location & 3 == 0) and match_can_interrupt is 0: with no counts left it is a count-out (the bell; under g_match_rules 0x80000 fall_count_add for each wrestler outside, otherwise match_result(0x80000)); else, outside guest-referee matches and while no pin count runs (0x80159204 == -1), the clock 0x801591EC ticks in seconds and each count comes after 2 seconds (4 or more left), 3 (3-5 left) or 4 (fewer than 3), op 3. With everyone back in, op 1 restarts the count. Op 3: the next number (shown + 1, left - 1, hud_countout_number) and g_countout bit 1 once counting started."
+status = "likely"
+
+[[data]]
+addr = 0x80162A80
+name = "g_countout"
+type = "u8"
+desc = "Count-out state bits (countout_tick): 0x01 count-outs on (from the option byte 0x800A9462), 0x02 the referee has started counting. escape_time op 4 also needs 0x01 and 6 or more counts left."
+status = "likely"
+
+[[data]]
+addr = 0x8016B594
+name = "g_countout_left"
+type = "s32"
+desc = "Counts left before a count-out (countout_tick): 10 or 20 from the option, one off per referee count; at 0 with a wrestler still outside the match ends (result 0x80000)."
+status = "likely"
+
+[[func]]
+addr = 0x8001692C
+name = "scene_setup"
+desc = "Scene / light set-up at match start (sub_8000E6D0, lights_init, sub_8000D514 ...); not the wrestler model loader its Revenge match suggested (that is wrestler_model_build / model_load_parts)."
+status = "guess"

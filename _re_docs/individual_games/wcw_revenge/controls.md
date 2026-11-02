@@ -20,8 +20,7 @@ THQ Man swap; one more is said to need a GameShark). Not yet checked against the
 | Analog stick | Taunt |
 
 Differences from World Tour worth checking in code: C-Left flips a downed opponent (World Tour
-had no flip button), and the dazed turn-around moved to L (states 0x83 / 0x84, README "New
-states").
+had no flip button), and the dazed turn-around moved to L (states 0x83 / 0x84, `states.md`).
 
 ## Unlocks and secrets
 

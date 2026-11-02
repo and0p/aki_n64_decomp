@@ -1,0 +1,278 @@
+# No Mercy functions named after a World Tour function with no Revenge name yet
+# (tools/sym/match_calls.py --src wcw --dst nomercy, seeded by from_revenge.toml). Unchecked.
+
+[[func]]
+addr = 0x80002268
+name = "node_tree_update"
+desc = "As World Tour node_tree_update (0x80002274), matched by call graph (score 1.30). World Tour: Walks a scene-node tree (child at +4, sibling at +8) computing world matrices: parent world * local, or the local copied at the root."
+status = "likely"
+
+[[func]]
+addr = 0x80003BD0
+name = "file_lookup"
+desc = "As World Tour file_lookup (0x80004D24), matched by call graph (score 0.92). World Tour: Fills info with ROM start/end, unpacked size and packed length of archive file 1..5498."
+status = "guess"
+
+[[func]]
+addr = 0x800054E0
+name = "atanf"
+desc = "As World Tour atanf (0x80005080), matched by call graph (score 1.03). World Tour: atan of a ratio (called by atan2f)."
+status = "likely"
+
+[[func]]
+addr = 0x800055D8
+name = "atan2f"
+desc = "As World Tour atan2f (0x80005208), matched by call graph (score 1.05). World Tour: atan2 by quadrant on top of atanf; used for facing angles."
+status = "likely"
+
+[[func]]
+addr = 0x8000A1BC
+name = "text_release"
+desc = "As World Tour text_release (0x80028FCC), matched by call graph (score 1.01). World Tour: Frees a loaded text/font block unless it lives in the static pool at 0x80062078."
+status = "likely"
+
+[[func]]
+addr = 0x8000B354
+name = "text_load"
+desc = "As World Tour text_load (0x80028E90), matched by call graph (score 0.93). World Tour: Loads a text/font resource (heap_alloc + copy) for the HUD, results and pause menu."
+status = "guess"
+
+[[func]]
+addr = 0x8000C4FC
+name = "sprite_init"
+desc = "As World Tour sprite_init (0x80005E44), matched by call graph (score 1.80). World Tour: Clears a sprite record."
+status = "likely"
+
+[[func]]
+addr = 0x8001062C
+name = "node_bind_model"
+desc = "As World Tour node_bind_model (0x800089D4), matched by call graph (score 1.32). World Tour: Points a node at a model from a 40-byte model table entry and attaches its display."
+status = "likely"
+
+[[func]]
+addr = 0x80010800
+name = "hud_tint_text"
+desc = "As World Tour hud_tint_text (0x8009290C), matched by call graph (score 1.53). World Tour: Writes RGB-scaled colour values for HUD text (from a 5551 colour)."
+status = "likely"
+
+[[func]]
+addr = 0x80011A54
+name = "anim_frame_count"
+desc = "As World Tour anim_frame_count (0x80009678), matched by call graph (score 1.10). World Tour: Frame count of an animation: low 16 bits of its header word."
+status = "likely"
+
+[[func]]
+addr = 0x80011AC0
+name = "anim_pose_class"
+desc = "As World Tour anim_pose_class (0x800096F4), matched by call graph (score 1.05). World Tour: Pose class of an animation: header bits 26-30 (copied to Wrestler.pose every frame)."
+status = "likely"
+
+[[func]]
+addr = 0x80012A8C
+name = "anim_stream_open"
+desc = "As World Tour anim_stream_open (0x8000A42C), matched by call graph (score 1.54). World Tour: Starts streaming an animation file (always stored raw) into the slot's ring buffer: DMAs the first 128 bytes after the 4-byte header."
+status = "likely"
+
+[[func]]
+addr = 0x80012F48
+name = "model_blend_prev"
+desc = "As World Tour model_blend_prev (0x8000A7F0), matched by call graph (score 0.98). World Tour: Blends the new animation's first frames toward the previous pose (weights at 0x8002D410)."
+status = "guess"
+
+[[func]]
+addr = 0x800132D8
+name = "model_decode_frame_interp"
+desc = "As World Tour model_decode_frame_interp (0x8000AC80), matched by call graph (score 1.48). World Tour: Odd frame: decodes the next keyframe into a temp buffer and moves each joint halfway to it (angles by the shortest arc)."
+status = "likely"
+
+[[func]]
+addr = 0x80021980
+name = "rope_vertices_init"
+desc = "As World Tour rope_vertices_init (0x8000F790), matched by call graph (score 1.40). World Tour: Fills a side's 84 rope vertices: 7 stations from x = -224 every 74, 3 ropes, 4 cross-section vertices each; s along the rope with a 0-7 random jitter, t 16/31, grey shades 100/0/50/50."
+status = "likely"
+
+[[func]]
+addr = 0x80021D64
+name = "rope_dl"
+desc = "As World Tour rope_dl (0x8000FBF0), matched by call graph (score 1.32). World Tour: Builds the per-segment rope display list: 4 triangles per rope linking two stations (two crossed ribbons)."
+status = "likely"
+
+[[func]]
+addr = 0x80021F38
+name = "rope_build_side"
+desc = "As World Tour rope_build_side (0x8000FD88), matched by call graph (score 2.27). World Tour: Allocates a side's 84 rope vertices and 6 bone nodes spaced 74 units apart along the side (from -187), then generates the vertices (sub_8000F8A4)."
+status = "likely"
+
+[[func]]
+addr = 0x800220D0
+name = "rope_anim_set"
+desc = "As World Tour rope_anim_set (0x8000FF08), matched by call graph (score 2.09). World Tour: Fills one rope's deflection record: position, start/end offsets and per-frame steps over n frames."
+status = "likely"
+
+[[func]]
+addr = 0x80025B4C
+name = "weapon_models_free"
+desc = "As World Tour weapon_models_free (0x80091D14), matched by call graph (score 1.07). World Tour: Frees the four weapon display lists (0x800EBB98 ... 0x800EBCC8)."
+status = "likely"
+
+[[func]]
+addr = 0x80035D50
+name = "mtx_rotate_xyz"
+desc = "As World Tour mtx_rotate_xyz (0x80008BD0), matched by call graph (score 1.02). World Tour: Row-vector rotation matrix from three Euler angles in degrees (the joint angle convention of the animations)."
+status = "likely"
+
+[[func]]
+addr = 0x80035F28
+name = "camera_manual"
+desc = "As World Tour camera_manual (0x8009D474), matched by call graph (score 0.98). World Tour: Camera moved by player 1's stick (dead zone 5)."
+status = "guess"
+
+[[func]]
+addr = 0x800DB560
+name = "hud_quad_dl"
+desc = "As World Tour hud_quad_dl (0x80098E40), matched by call graph (score 1.81). World Tour: Writes a HUD quad display list."
+status = "likely"
+
+[[func]]
+addr = 0x800DB9D0
+name = "results_text_draw"
+desc = "As World Tour results_text_draw (0x80099A04), matched by call graph (score 1.56). World Tour: Results screen helper drawing a text block while the screen is up (word_800F01BA >= 0)."
+status = "likely"
+
+[[func]]
+addr = 0x800DC100
+name = "hud_node_init"
+desc = "As World Tour hud_node_init (0x800925E0), matched by call graph (score 1.67). World Tour: HUD node setup (texture node, hidden)."
+status = "likely"
+
+[[func]]
+addr = 0x800DC1B4
+name = "hud_rect_dl"
+desc = "As World Tour hud_rect_dl (0x80092660), matched by call graph (score 1.34). World Tour: Builds a HUD rectangle display list (optional texture at +20)."
+status = "likely"
+
+[[func]]
+addr = 0x800DC260
+name = "hud_sprite_alloc"
+desc = "As World Tour hud_sprite_alloc (0x800926E8), matched by call graph (score 0.92). World Tour: Allocates a HUD sprite node (two 64-byte and one 512-byte buffers)."
+status = "guess"
+
+[[func]]
+addr = 0x800DC6A4
+name = "hud_text_node"
+desc = "As World Tour hud_text_node (0x80092A00), matched by call graph (score 1.73). World Tour: HUD text node: builds and fills the node's display list (sub_8009290C)."
+status = "likely"
+
+[[func]]
+addr = 0x800DC75C
+name = "hud_quad_reset"
+desc = "As World Tour hud_quad_reset (0x80099018), matched by call graph (score 1.17). World Tour: Resets a HUD sprite node and writes its fixed display-list header."
+status = "likely"
+
+[[func]]
+addr = 0x800DC85C
+name = "hud_text"
+desc = "As World Tour hud_text (0x80092AE4), matched by call graph (score 0.92). World Tour: Draws a HUD text / number string at a position with a colour (used by the bars, count and messages)."
+status = "guess"
+
+[[func]]
+addr = 0x800DDB10
+name = "hud_init"
+desc = "As World Tour hud_init (0x800952EC), matched by call graph (score 1.20). World Tour: Builds every HUD node for the match (panels, counts, messages)."
+status = "likely"
+
+[[func]]
+addr = 0x800E2284
+name = "camera_set"
+desc = "As World Tour camera_set (0x8009BD88), matched by call graph (score 1.08). World Tour: Sets the camera parameter block at 0x800F0520 (position, target, up)."
+status = "likely"
+
+[[func]]
+addr = 0x800EB970
+name = "running_ground_attack_check"
+desc = "As World Tour running_ground_attack_check (0x800B9E44), matched by call graph (score 0.94). World Tour: Run + B next to a lying opponent in the ring: starts the running ground attack (0x4F) when within reach."
+status = "guess"
+
+[[func]]
+addr = 0x800FD7C0
+name = "ai_pick_dpad"
+desc = "As World Tour ai_pick_dpad (0x800DF948), matched by call graph (score 0.99). World Tour: Weighted pick of d-pad bits from (bound, bits) pairs, e.g. 0x800E7BA0: Up / Down / none, a third each."
+status = "guess"
+
+[[func]]
+addr = 0x8011723C
+name = "tag_partner_takes_over"
+desc = "As World Tour tag_partner_takes_over (0x800B1FFC), matched by call graph (score 1.04). World Tour: Makes idx^1 LEGAL and swaps the CPU flags of the pair, so a human whose wrestler is eliminated controls the partner."
+status = "likely"
+
+[[func]]
+addr = 0x8011CD3C
+name = "wrestler_health_eff"
+desc = "As World Tour wrestler_health_eff (0x800A0594), matched by call graph (score 1.02). World Tour: Health used by recovery and reaction code: health_max while SPECIAL (flags_lo & 0x1000), else health."
+status = "likely"
+
+[[func]]
+addr = 0x80121330
+name = "strike_land"
+desc = "Applies a strike to the slot it hit (from code 2026-11-02): resets the defender's hit_flags, copies the move (hit_move_copy). A blocking defender (state 0x4C) that started blocking less than 3 frames ago (count_timer < 3) and passes strike_counter_check counters with R (the timed R counter); otherwise the block holds (state 0x4D) unless the strike is unblockable (strike_flags 0x100600, from behind flags8a 0x02, or 0x40 at location 0x10). Defenders in 0x34 / 0x35 can escape by mashing; 0x34 / 0xC1 add hit flags. Then stats, DQ checks (strike_dq_check for weapons), a hit on a ladder climber (location 0x08) knocks it off (0xB2), and the hit_flags (reaction kind, mirror, falls) are chosen with chances (700, 800, 500, 300) and chance_roll kind 18; the reaction state follows (0x17, 0x70 stagger, 0x2D knockdown ...). As World Tour strike_land (0x800CA9B0)."
+status = "likely"
+
+[[func]]
+addr = 0x801227A4
+name = "move_aftermath_check"
+desc = "As World Tour move_aftermath_check (0x800CBC94), matched by call graph (score 1.03). World Tour: End of a move on def: may start bleeding (move f07, chance_roll 4 -> state 0x26) or a TKO stagger (rule 0x01, health_eff < 26, move f08, chance_roll 5 -> state 0x25)."
+status = "likely"
+
+[[func]]
+addr = 0x80127DCC
+name = "grapple_anim_defender"
+desc = "As World Tour grapple_anim_defender (0x800C421C), matched by call graph (score 0.99). World Tour: Defender's grapple-lock animation, the attacker's id + 1 (2937, 2941, 2945, 2949, 2953, 2958, 2935)."
+status = "guess"
+
+[[func]]
+addr = 0x8012E040
+name = "chance_check"
+desc = "As World Tour chance_check (0x800A0410), matched by call graph (score 1.13). World Tour: 1 when rand_pool_next() <= chance, so a chance c succeeds (c + 1) / 1000 of the time."
+status = "likely"
+
+[[func]]
+addr = 0x8012E434
+name = "lying_body_dist"
+desc = "As World Tour lying_body_dist (0x800A0100), matched by call graph (score 0.98). World Tour: Distance from a point to a lying wrestler's body (an ellipse along its facing), used to decide whether a downed opponent is within reach."
+status = "guess"
+
+[[func]]
+addr = 0x8012F83C
+name = "wrestler_anim_invalidate"
+desc = "As World Tour wrestler_anim_invalidate (0x800A0E30), matched by call graph (score 1.05). World Tour: Sets anim_id (+0x08) to -1 so the next wrestler_set_anim restarts the animation."
+status = "likely"
+
+[[func]]
+addr = 0x8012F980
+name = "wrestler_restart_anim"
+desc = "As World Tour wrestler_restart_anim (0x800A1024), matched by call graph (score 1.58). World Tour: wrestler_anim_invalidate then wrestler_set_anim: plays an animation from the start even if it is the current one."
+status = "likely"
+
+[[func]]
+addr = 0x80132374
+name = "ground_approach_plan"
+desc = "As World Tour ground_approach_plan (0x800A3390), matched by call graph (score 1.55). World Tour: Plans the attacker's walk to the spot next to a downed opponent chosen by state_33 (fills a 48-byte record at 0x800F0730 + slot*48)."
+status = "likely"
+
+[[func]]
+addr = 0x80132E7C
+name = "recover_tick_ground"
+desc = "As World Tour recover_tick_ground (0x800A3EFC), matched by call graph (score 1.71). World Tour: Ground grapple defender: recover_tick, plus 1 back with 75 % chance; zeroes it when the flag argument is set."
+status = "likely"
+
+[[func]]
+addr = 0x8014012C
+name = "ai_mode_14_grapple"
+desc = "As World Tour ai_mode_14_grapple (0x800E1350), matched by call graph (score 1.20). World Tour: Grappling as attacker: after 5-20 frames picks A/B with Up/Down/none, the stick when SPECIAL is ready, or a whip (mode 8) 10% from a weak grapple."
+status = "likely"
+
+[[func]]
+addr = 0x80143B94
+name = "grapple_contact"
+desc = "As World Tour grapple_contact (0x800C5210), matched by call graph (score 1.02). World Tour: During the reach animation's active window: index of a wrestler whose pelvis is within 30 of a hand (45 from the floor into the ring) or within 56 of a point ahead; 85 from the pelvis for a runner catch. -1 if none."
+status = "likely"

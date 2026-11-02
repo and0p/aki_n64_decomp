@@ -1,0 +1,1065 @@
+# No Mercy functions named after their Revenge match (tools/sym/match_games.py, match_consts.py,
+# match_calls.py, --src revenge --dst nomercy). The first method that found a pair is named in desc.
+# `guess` entries are unchecked; when one is checked, move it to its subsystem file.
+
+[[func]]
+addr = 0x800007D4
+name = "heap_alloc"
+desc = "As Revenge heap_alloc (0x80000854), matched by constants, through paired neighbours. Revenge: Matches World Tour heap_alloc (0x800007F4), call-graph score 1.42."
+status = "guess"
+
+[[func]]
+addr = 0x8000093C
+name = "heap_free"
+desc = "As Revenge heap_free (0x80000958), matched by constants, through paired neighbours. Revenge: Matches World Tour heap_free (0x800008FC), call-graph score 1.83."
+status = "guess"
+
+[[func]]
+addr = 0x800015B4
+name = "node_init"
+desc = "As Revenge node_init (0x800014D8), matched by constants (score 1.00). Revenge: Matches World Tour node_init (0x80001730), call-graph score 1.98."
+status = "likely"
+
+[[func]]
+addr = 0x8000161C
+name = "draw_list_add_unique"
+desc = "As Revenge draw_list_add_unique (0x80001544), matched by identical machine code. Revenge: Matches World Tour draw_list_add_unique (0x800017AC), call-graph score 2.08."
+status = "likely"
+
+[[func]]
+addr = 0x80001684
+name = "node_attach_display"
+desc = "As Revenge node_attach_display (0x800015AC), matched by identical machine code. Revenge: Matches World Tour node_attach_display (0x80001808), call-graph score 2.07."
+status = "likely"
+
+[[func]]
+addr = 0x80005818
+name = "pads_read"
+desc = "As Revenge pads_read (0x80003E78), matched by call graph (score 1.43). Revenge: Matches World Tour pads_read (0x8000544C), call-graph score 1.32."
+status = "likely"
+
+[[func]]
+addr = 0x8000A4DC
+name = "tex_pal_load"
+desc = "As Revenge tex_pal_load (0x8002AA28), matched by call graph (score 1.34). Revenge: Matches World Tour tex_pal_load (0x80007AC0), call-graph score 0.95."
+status = "likely"
+
+[[func]]
+addr = 0x8000BD18
+name = "file_load"
+desc = "As Revenge file_load (0x80004580), matched by identical machine code. Revenge: Matches World Tour file_load (0x80004DDC), call-graph score 1.37."
+status = "likely"
+
+[[func]]
+addr = 0x8000CA18
+name = "texture_load_bind"
+desc = "As Revenge texture_load_bind (0x80004F80), matched by identical machine code. Revenge: Matches World Tour texture_load_bind (0x80006540), call-graph score 1.09."
+status = "likely"
+
+[[func]]
+addr = 0x8000DE40
+name = "node_free"
+desc = "As Revenge node_free (0x80006D64), matched by call graph (score 1.31). Revenge: Matches World Tour node_free (0x80008324), call-graph score 2.33."
+status = "likely"
+
+[[func]]
+addr = 0x8000E098
+name = "camera_set_view"
+desc = "As Revenge camera_set_view (0x80005304), matched by call graph (score 1.83). Revenge: Matches World Tour camera_set_view (0x80006860), call-graph score 1.35."
+status = "likely"
+
+[[func]]
+addr = 0x8000FA54
+name = "hud_box_build"
+desc = "As Revenge hud_box_build (0x80006814), matched by constants (score 0.93). Revenge: Matches World Tour hud_box_build (0x80007B58), call-graph score 1.62."
+status = "likely"
+
+[[func]]
+addr = 0x8000FE4C
+name = "fade_quad_build"
+desc = "As Revenge fade_quad_build (0x80006B84), matched by constants (score 0.68). Revenge: Matches World Tour fade_quad_build (0x800080EC), call-graph score 2.10."
+status = "guess"
+
+[[func]]
+addr = 0x8000FFE4
+name = "node_free_buffers"
+desc = "As Revenge node_free_buffers (0x80006D14), matched by identical machine code. Revenge: Matches World Tour node_free_buffers (0x800082D0), call-graph score 2.05."
+status = "likely"
+
+[[func]]
+addr = 0x80010120
+name = "ptr_pair_free"
+desc = "As Revenge ptr_pair_free (0x80006E2C), matched by identical machine code. Revenge: Matches World Tour ptr_pair_free (0x800083D0), call-graph score 1.40."
+status = "likely"
+
+[[func]]
+addr = 0x80010314
+name = "scenery_object"
+desc = "As Revenge scenery_object (0x80007020), matched by call graph (score 1.22). Revenge: As World Tour's scenery_object: loads count mesh parts with palette p and texture p + 1 and returns one display list."
+status = "likely"
+
+[[func]]
+addr = 0x80010688
+name = "node_bind_model_ex"
+desc = "As Revenge node_bind_model_ex (0x80007874), matched by call graph (score 2.59). Revenge: Matches World Tour node_bind_model_ex (0x80008A30), call-graph score 1.89."
+status = "likely"
+
+[[func]]
+addr = 0x80010BD8
+name = "hud_buffers_free"
+desc = "As Revenge hud_buffers_free (0x8002AAFC), matched by call graph (score 1.42). Revenge: Matches World Tour hud_buffers_free (0x800998EC), call-graph score 1.22."
+status = "likely"
+
+[[func]]
+addr = 0x80010FD4
+name = "mtx_rotate_y"
+desc = "As Revenge mtx_rotate_y (0x80007E14), matched by identical machine code. Revenge: Matches World Tour mtx_rotate_y (0x80008D54), call-graph score 2.07."
+status = "likely"
+
+[[func]]
+addr = 0x80011BD8
+name = "anim_player_set"
+desc = "As Revenge anim_player_set (0x800086A4), matched by constants (score 0.72). Revenge: Matches World Tour anim_player_set (0x800097EC), call-graph score 1.14."
+status = "guess"
+
+[[func]]
+addr = 0x80011EE0
+name = "hud_free_all"
+desc = "As Revenge hud_free_all (0x800984C8), matched by call graph (score 1.35). Revenge: Matches World Tour hud_free_all (0x8009A290), call-graph score 1.07."
+status = "likely"
+
+[[func]]
+addr = 0x80012130
+name = "model_animate"
+desc = "As Revenge model_animate (0x80008CE8), matched by call graph (score 1.44). Revenge: Matches World Tour model_animate (0x80009D00), call-graph score 1.15."
+status = "likely"
+
+[[func]]
+addr = 0x80012BE0
+name = "model_build_skin"
+desc = "As Revenge model_build_skin (0x80009B84), matched by call graph (score 1.62). Revenge: Matches World Tour model_build_skin (0x8000A5C4), call-graph score 1.90."
+status = "likely"
+
+[[func]]
+addr = 0x80013234
+name = "model_decode_frame"
+desc = "As Revenge model_decode_frame (0x8000A310), matched by call graph (score 1.21). Revenge: Matches World Tour model_decode_frame (0x8000ABA0), call-graph score 1.08."
+status = "likely"
+
+[[func]]
+addr = 0x800135D0
+name = "anim_decode_joint"
+desc = "As Revenge anim_decode_joint (0x8000AA70), matched by identical machine code. Revenge: Matches World Tour anim_decode_joint (0x8000AF78), call-graph score 2.07."
+status = "likely"
+
+[[func]]
+addr = 0x80013860
+name = "anim_frame_events"
+desc = "As Revenge anim_frame_events (0x8000AD00), matched by call graph (score 1.20). Revenge: Matches World Tour anim_frame_events (0x8000B1B0), call-graph score 1.37."
+status = "likely"
+
+[[func]]
+addr = 0x80013E40
+name = "rope_release"
+desc = "As Revenge rope_release (0x8000B248), matched by identical machine code. Revenge: Matches World Tour rope_release (0x8000B7CC), call-graph score 1.07."
+status = "likely"
+
+[[func]]
+addr = 0x800140B4
+name = "models_init"
+desc = "As Revenge models_init (0x80008810), matched by call graph (score 1.04). Revenge: Matches World Tour models_init (0x8000992C), call-graph score 1.39."
+status = "likely"
+
+[[func]]
+addr = 0x800151A0
+name = "shadow_node_place"
+desc = "As Revenge shadow_node_place (0x8000D424), matched by call graph (score 1.55). Revenge: Matches World Tour shadow_node_place (0x8009BBC8), call-graph score 1.43."
+status = "likely"
+
+[[func]]
+addr = 0x8001A7B0
+name = "move_record_unpack"
+desc = "As Revenge move_record_unpack (0x800A7D64), matched by constants (score 0.61). Revenge: Matches World Tour move_record_unpack (0x800A6514), call-graph score 1.69."
+status = "guess"
+
+[[func]]
+addr = 0x80021B10
+name = "rope_shape"
+desc = "As Revenge rope_shape (0x8000F710), matched by constants (score 0.67). Revenge: Matches World Tour rope_shape (0x8000F8A4), call-graph score 1.37."
+status = "guess"
+
+[[func]]
+addr = 0x8002240C
+name = "rope_attach"
+desc = "As Revenge rope_attach (0x80010060), matched by identical machine code. Revenge: Matches World Tour rope_attach (0x800101F0), call-graph score 1.04."
+status = "likely"
+
+[[func]]
+addr = 0x800225BC
+name = "ring_rope_push"
+desc = "As Revenge ring_rope_push (0x80010200), matched by constants, through paired neighbours. Revenge: Matches World Tour ring_rope_push (0x800103B0), call-graph score 1.25."
+status = "guess"
+
+[[func]]
+addr = 0x80022B98
+name = "ropes_build"
+desc = "As Revenge ropes_build (0x80010D2C), matched by constants (score 1.00). Revenge: Matches World Tour ropes_build (0x80010B18), call-graph score 1.98."
+status = "likely"
+
+[[func]]
+addr = 0x80022CEC
+name = "ropes_tick"
+desc = "As Revenge ropes_tick (0x80010E6C), matched by call graph (score 1.36). Revenge: Matches World Tour ropes_tick (0x80010C6C), call-graph score 1.17."
+status = "likely"
+
+[[func]]
+addr = 0x80034AE0
+name = "virt_to_phys"
+desc = "As Revenge virt_to_phys (0x8001CE80), matched by identical machine code. Revenge: Matches World Tour virt_to_phys (0x80013C00), call-graph score 1.04."
+status = "likely"
+
+[[func]]
+addr = 0x80034B40
+name = "sqrtf"
+desc = "As Revenge sqrtf (0x8001A480), matched by call graph (score 1.20). Revenge: Matches World Tour sqrtf (0x80013BF0), call-graph score 1.20."
+status = "likely"
+
+[[func]]
+addr = 0x80034EF0
+name = "cosf"
+desc = "As Revenge cosf (0x8001A830), matched by identical machine code. Revenge: Matches World Tour cosf (0x8001CB30), call-graph score 2.09."
+status = "likely"
+
+[[func]]
+addr = 0x80035750
+name = "mtx_mul4"
+desc = "As Revenge mtx_mul4 (0x8001B550), matched by identical machine code. Revenge: Matches World Tour mtx_mul4 (0x80002004), call-graph score 1.40."
+status = "likely"
+
+[[func]]
+addr = 0x800359D0
+name = "mtx_perspective"
+desc = "As Revenge mtx_perspective (0x8001B7D0), matched by identical machine code. Revenge: Matches World Tour mtx_perspective (0x8001BD90), call-graph score 1.62."
+status = "likely"
+
+[[func]]
+addr = 0x80036110
+name = "rng_main"
+desc = "As Revenge rng_main (0x8001C580), matched by identical machine code. Revenge: Matches World Tour rng_main (0x80011BF0), call-graph score 1.20."
+status = "likely"
+
+[[func]]
+addr = 0x80036460
+name = "sinf"
+desc = "As Revenge sinf (0x8001BF50), matched by identical machine code. Revenge: Matches World Tour sinf (0x8001C970), call-graph score 2.09."
+status = "likely"
+
+[[func]]
+addr = 0x800D9960
+name = "match_main"
+desc = "As Revenge match_main (0x80090000), matched by identical machine code. Revenge: Loops match_run while 0x800F99B0 (restart flag) is set."
+status = "likely"
+
+[[func]]
+addr = 0x800DAAE4
+name = "pause_menu"
+desc = "As Revenge pause_menu (0x80099628), matched by call graph (score 1.32). Revenge: Matches World Tour pause_menu (0x8009A900), call-graph score 1.78."
+status = "likely"
+
+[[func]]
+addr = 0x800DAF18
+name = "pause_menu_update"
+desc = "As Revenge pause_menu_update (0x80099968), matched by call graph (score 1.32). Revenge: Matches World Tour pause_menu_update (0x8009AE40), call-graph score 1.27."
+status = "likely"
+
+[[func]]
+addr = 0x800DB6C0
+name = "results_page_text"
+desc = "As Revenge results_page_text (0x80097BE0), matched by constants, through paired neighbours. Revenge: Matches World Tour results_page_text (0x800994C0), call-graph score 1.03."
+status = "guess"
+
+[[func]]
+addr = 0x800DBB80
+name = "match_tick_stub"
+desc = "As Revenge match_tick_stub (0x800BC7C8), matched by call graph (score 1.20). Revenge: Matches World Tour match_tick_stub (0x800B4DC8), call-graph score 1.20."
+status = "likely"
+
+[[func]]
+addr = 0x800DBB88
+name = "results_screen_build"
+desc = "As Revenge results_screen_build (0x800982AC), matched by call graph (score 1.48). Revenge: Matches World Tour results_screen_build (0x8009A108), call-graph score 1.77."
+status = "likely"
+
+[[func]]
+addr = 0x800DBD40
+name = "results_page_draw"
+desc = "As Revenge results_page_draw (0x80098560), matched by constants (score 0.75). Revenge: Draws the end-of-match results page."
+status = "guess"
+
+[[func]]
+addr = 0x800DBE60
+name = "hud_text_dl"
+desc = "As Revenge hud_text_dl (0x800986DC), matched by constants (score 0.86). Revenge: Matches World Tour hud_text_dl (0x80098B84), call-graph score 1.44."
+status = "likely"
+
+[[func]]
+addr = 0x800DC3F8
+name = "hud_node_build"
+desc = "As Revenge hud_node_build (0x800905A4), matched by identical machine code. Revenge: Matches World Tour hud_node_build (0x800927EC), call-graph score 1.76."
+status = "likely"
+
+[[func]]
+addr = 0x800DC818
+name = "node_set_xy"
+desc = "As Revenge node_set_xy (0x8009075C), matched by call graph (score 1.10). Revenge: Matches World Tour node_set_xy (0x80092AA0), call-graph score 2.08."
+status = "likely"
+
+[[func]]
+addr = 0x800DCC9C
+name = "hud_draw_bars"
+desc = "As Revenge hud_draw_bars (0x80091DF4), matched by call graph (score 1.38). Revenge: Matches World Tour hud_draw_bars (0x80094CAC), call-graph score 1.24."
+status = "likely"
+
+[[func]]
+addr = 0x800DD5F4
+name = "hud_panel_3"
+desc = "As Revenge hud_panel_3 (0x80091108), matched by call graph (score 1.52). Revenge: Matches World Tour hud_panel_3 (0x800935E8), call-graph score 1.75."
+status = "likely"
+
+[[func]]
+addr = 0x800DE58C
+name = "hud_draw_all"
+desc = "As Revenge hud_draw_all (0x800942F0), matched by call graph (score 1.43). Revenge: Draws the match HUD (panels, bars) from match_draw; hides it while match_hud_hidden."
+status = "likely"
+
+[[func]]
+addr = 0x800DE6EC
+name = "hud_free_nodes"
+desc = "As Revenge hud_free_nodes (0x80094424), matched by call graph (score 0.99). Revenge: Matches World Tour hud_free_nodes (0x80095B80), call-graph score 1.06."
+status = "guess"
+
+[[func]]
+addr = 0x800E0158
+name = "hud_count_hide"
+desc = "As Revenge hud_count_hide (0x80096018), matched by call graph (score 1.38). Revenge: Matches World Tour hud_count_hide (0x800974C8), call-graph score 1.76."
+status = "likely"
+
+[[func]]
+addr = 0x800E01A4
+name = "hud_count_show"
+desc = "As Revenge hud_count_show (0x8009608C), matched by call graph (score 1.01). Revenge: Matches World Tour hud_count_show (0x80097530), call-graph score 1.38."
+status = "likely"
+
+[[func]]
+addr = 0x800E0304
+name = "hud_draw_panels"
+desc = "As Revenge hud_draw_panels (0x80096210), matched by call graph (score 1.12). Revenge: Matches World Tour hud_draw_panels (0x800976E8), call-graph score 1.01."
+status = "likely"
+
+[[func]]
+addr = 0x800E0F14
+name = "hud_countout_show"
+desc = "As Revenge hud_countout_show (0x8009678C), matched by constants (score 1.00). Revenge: Matches World Tour hud_countout_show (0x80097BF4), call-graph score 1.27."
+status = "likely"
+
+[[func]]
+addr = 0x800E0FB4
+name = "hud_countout_number"
+desc = "As Revenge hud_countout_number (0x80096854), matched by call graph (score 1.25). Revenge: Matches World Tour hud_countout_number (0x80097CB0), call-graph score 1.16."
+status = "likely"
+
+[[func]]
+addr = 0x800E1454
+name = "ref_count_reset"
+desc = "As Revenge ref_count_reset (0x800B8D04), matched by call graph (score 1.67). Revenge: Matches World Tour ref_count_reset (0x800B21D0), call-graph score 0.92."
+status = "likely"
+
+[[func]]
+addr = 0x800E1980
+name = "match_setup"
+desc = "As Revenge match_setup (0x80099F70), matched by call graph (score 1.04). Revenge: Matches World Tour match_setup (0x8009B310), call-graph score 1.43."
+status = "likely"
+
+[[func]]
+addr = 0x800E1E60
+name = "match_draw"
+desc = "As Revenge match_draw (0x8009A374), matched by call graph (score 1.38). Revenge: Matches World Tour match_draw (0x8009B6A8), call-graph score 1.09."
+status = "likely"
+
+[[func]]
+addr = 0x800E2110
+name = "match_free"
+desc = "As Revenge match_free (0x8009A5F4), matched by call graph (score 1.02). Revenge: Matches World Tour match_free (0x8009B988), call-graph score 1.00."
+status = "likely"
+
+[[func]]
+addr = 0x800E21B8
+name = "camera_floor_snap"
+desc = "As Revenge camera_floor_snap (0x8009A69C), matched by identical machine code. Revenge: Matches World Tour camera_floor_snap (0x8009BA34), call-graph score 1.73."
+status = "likely"
+
+[[func]]
+addr = 0x800E38A4
+name = "camera_frame_all"
+desc = "As Revenge camera_frame_all (0x8009B2EC), matched by constants (score 0.93). Revenge: Matches World Tour camera_frame_all (0x8009C308), call-graph score 1.60."
+status = "likely"
+
+[[func]]
+addr = 0x800E5750
+name = "fade_in_step"
+desc = "As Revenge fade_in_step (0x8009D7A0), matched by constants (score 1.00). Revenge: Matches World Tour fade_in_step (0x8009DD58), call-graph score 2.02."
+status = "likely"
+
+[[func]]
+addr = 0x800E57F8
+name = "fade_out_step"
+desc = "As Revenge fade_out_step (0x8009D844), matched by call graph (score 1.57). Revenge: Matches World Tour fade_out_step (0x8009DDF0), call-graph score 2.03."
+status = "likely"
+
+[[func]]
+addr = 0x800EBA84
+name = "wrestler_turn_toward"
+desc = "As Revenge wrestler_turn_toward (0x800A7240), matched by call graph (score 1.51). Revenge: Matches World Tour wrestler_turn_toward (0x800A56E0), call-graph score 1.19."
+status = "likely"
+
+[[func]]
+addr = 0x800EBBF4
+name = "apron_line_pos"
+desc = "As Revenge apron_line_pos (0x800A7364), matched by call graph (score 1.21). Revenge: Places the wrestler reference point on the apron line (x = 265) for its side (+0x3C)."
+status = "likely"
+
+[[func]]
+addr = 0x800EBCA8
+name = "cover_side_pick"
+desc = "As Revenge cover_side_pick (0x800C9AC0), matched by call graph (score 1.34). Revenge: Matches World Tour cover_side_pick (0x800CEDD0), call-graph score 1.24."
+status = "likely"
+
+[[func]]
+addr = 0x800EC2B0
+name = "rope_rebound_slide"
+desc = "As Revenge rope_rebound_slide (0x800A7968), matched by call graph (score 1.18). Revenge: Matches World Tour rope_rebound_slide (0x800A5F00), call-graph score 1.38."
+status = "likely"
+
+[[func]]
+addr = 0x800ED844
+name = "camera_state_class"
+desc = "As Revenge camera_state_class (0x800A9028), matched by call graph (score 1.16). Revenge: Camera: framing class of a wrestler from its state (0x3E -> 2, 0x49 and others -> 1)."
+status = "likely"
+
+[[func]]
+addr = 0x800ED8F8
+name = "wrestler_byte_363"
+desc = "As Revenge wrestler_byte_363 (0x800A90FC), matched by call graph (score 1.10). Revenge: Returns byte +0x363 of wrestler slot a1 (camera framing)."
+status = "likely"
+
+[[func]]
+addr = 0x800ED954
+name = "down_count_allowed"
+desc = "As Revenge down_count_allowed (0x800A9348), matched by call graph (score 1.19). Revenge: Whether a downed wrestler may be counted / stay down: rules 0x8007E280 / 0x8007F0A0 bit 0x400 and lo 0x200 / 0x100."
+status = "likely"
+
+[[func]]
+addr = 0x800F01E0
+name = "ai_state_init"
+desc = "As Revenge ai_state_init (0x800A97A0), matched by call graph (score 1.02). Revenge: Initialises a slot AI block (0x800F9B88 + 96 x slot) from the CPU level 0x8007E2A8."
+status = "likely"
+
+[[func]]
+addr = 0x800FB4C0
+name = "ai_wants_tag_out"
+desc = "As Revenge ai_wants_tag_out (0x800D9270), matched by call graph (score 1.06). Revenge: Matches World Tour ai_wants_tag_out (0x800DD7B8), call-graph score 1.24."
+status = "likely"
+
+[[func]]
+addr = 0x800FC810
+name = "ai_think"
+desc = "As Revenge ai_think (0x800A9924), matched by call graph (score 1.03). Revenge: CPU decision as in World Tour (0x800B5780): calls g_ai_modes[mode] (AI block +2) through the table at 0x800E2FF0 + 412 * 4."
+status = "likely"
+
+[[func]]
+addr = 0x800FD188
+name = "ai_update_perception"
+desc = "As Revenge ai_update_perception (0x800ADB44), matched by call graph (score 1.13). Revenge: Noisy perceived values into the AI block, as World Tour's 0x800DF548."
+status = "likely"
+
+[[func]]
+addr = 0x8010A084
+name = "ai_mode_11_evade"
+desc = "As Revenge ai_mode_11_evade (0x800AF23C), matched by call graph (score 1.05). Revenge: AI mode 11; same mode as World Tour mode 11 (ai.md)."
+status = "likely"
+
+[[func]]
+addr = 0x8010FF78
+name = "run_start"
+desc = "As Revenge run_start (0x800B4690), matched by call graph (score 1.19). Revenge: Matches World Tour run_start (0x800B7430), call-graph score 1.00."
+status = "likely"
+
+[[func]]
+addr = 0x80110410
+name = "run_inputs"
+desc = "As Revenge run_inputs (0x800B5730), matched by call graph (score 1.14). Revenge: Matches World Tour run_inputs (0x800B87DC), call-graph score 0.96."
+status = "likely"
+
+[[func]]
+addr = 0x80110D7C
+name = "run_step"
+desc = "As Revenge run_step (0x800B4C60), matched by call graph (score 1.03). Revenge: Matches World Tour run_step (0x800B7A60), call-graph score 1.21."
+status = "likely"
+
+[[func]]
+addr = 0x801118D8
+name = "corner_run_step"
+desc = "As Revenge corner_run_step (0x800B60C8), matched by call graph (score 0.98). Revenge: Matches World Tour corner_run_step (0x800B926C), call-graph score 0.93."
+status = "guess"
+
+[[func]]
+addr = 0x80115000
+name = "match_init_wrestlers"
+desc = "As Revenge match_init_wrestlers (0x800BAC30), matched by call graph (score 0.93). Revenge: Matches World Tour match_init_wrestlers (0x800B3400), call-graph score 1.19."
+status = "guess"
+
+[[func]]
+addr = 0x801161E8
+name = "hud_health_value"
+desc = "As Revenge hud_health_value (0x800B83CC), matched by call graph (score 0.90). Revenge: HUD: wrestler_health_eff for slot a1 unless it is in state 0x3D."
+status = "guess"
+
+[[func]]
+addr = 0x80116328
+name = "match_abort_draw"
+desc = "As Revenge match_abort_draw (0x800B8C94), matched by call graph (score 1.20). Revenge: Matches World Tour match_abort_draw (0x800B2158), call-graph score 1.41."
+status = "likely"
+
+[[func]]
+addr = 0x801163C4
+name = "referee_count_tick"
+desc = "As Revenge referee_count_tick (0x800B8D8C), matched by call graph (score 1.61). Revenge: Matches World Tour referee_count_tick (0x800B2238), call-graph score 1.19."
+status = "likely"
+
+[[func]]
+addr = 0x80118368
+name = "wrestler_tick"
+desc = "As Revenge wrestler_tick (0x800BBFD8), matched by call graph (score 0.91). Revenge: Matches World Tour wrestler_tick (0x800B47D4), call-graph score 1.39."
+status = "guess"
+
+[[func]]
+addr = 0x80118A20
+name = "match_record_fall"
+desc = "As Revenge match_record_fall (0x800B9730), matched by call graph (score 0.94). Revenge: Records a fall (World Tour match_record_result): result word 0x8007E848, winners lo 0x4000, losers lo 0x8000; each loser gets the next battle-royal entrant (br_next_entrant, then lo 0x10) or, with none left, loses LEGAL (lo 0x200)."
+status = "guess"
+
+[[func]]
+addr = 0x80119328
+name = "result_stats_record"
+desc = "As Revenge result_stats_record (0x800B9D60), matched by call graph (score 1.27). Revenge: Adds a fall to the per-wrestler win/loss tallies at 0x8007E850 (24 bytes each) by result kind (pin 0x2000, submission 0x1000, TKO 0x8000, count-out 0x10000)."
+status = "likely"
+
+[[func]]
+addr = 0x80119C20
+name = "nullsub_5"
+desc = "As Revenge nullsub_5 (0x00000000), matched by call graph (score 1.20). Revenge: "
+status = "likely"
+
+[[func]]
+addr = 0x8011A2E4
+name = "hold_for_partner_walk"
+desc = "As Revenge hold_for_partner_walk (0x800C8D84), matched by call graph (score 1.24). Revenge: Matches World Tour hold_for_partner_walk (0x800DC0B4), call-graph score 1.59."
+status = "likely"
+
+[[func]]
+addr = 0x8011B524
+name = "whip_place_runner"
+desc = "As Revenge whip_place_runner (0x800BE450), matched by call graph (score 1.16). Revenge: Matches World Tour whip_place_runner (0x800D5A58), call-graph score 0.97."
+status = "likely"
+
+[[func]]
+addr = 0x8011BF68
+name = "whip_ctx_steer"
+desc = "As Revenge whip_ctx_steer (0x800BEB14), matched by call graph (score 1.33). Revenge: Matches World Tour whip_ctx_steer (0x800D6418), call-graph score 1.27."
+status = "likely"
+
+[[func]]
+addr = 0x8011C1C8
+name = "whip_ctx_targets"
+desc = "As Revenge whip_ctx_targets (0x800BED3C), matched by call graph (score 1.05). Revenge: Matches World Tour whip_ctx_targets (0x800D6760), call-graph score 1.03."
+status = "likely"
+
+[[func]]
+addr = 0x8011C3E4
+name = "whip_ctx_dpad"
+desc = "As Revenge whip_ctx_dpad (0x800BF018), matched by call graph (score 1.39). Revenge: Matches World Tour whip_ctx_dpad (0x800D6BD8), call-graph score 1.28."
+status = "likely"
+
+[[func]]
+addr = 0x8011C510
+name = "whip_push_check"
+desc = "As Revenge whip_push_check (0x800BF150), matched by call graph (score 1.00). Revenge: Matches World Tour whip_push_check (0x800D6DC4), call-graph score 1.33."
+status = "likely"
+
+[[func]]
+addr = 0x801211F8
+name = "run_collide_check"
+desc = "As Revenge run_collide_check (0x800C38FC), matched by call graph (score 1.25). Revenge: Matches World Tour run_collide_check (0x800CA83C), call-graph score 1.03."
+status = "likely"
+
+[[func]]
+addr = 0x8012265C
+name = "relative_facing"
+desc = "As Revenge relative_facing (0x800C4610), matched by call graph (score 1.53). Revenge: Matches World Tour relative_facing (0x8009FEEC), call-graph score 1.00."
+status = "likely"
+
+[[func]]
+addr = 0x80122AB0
+name = "hits_taken_decay"
+desc = "As Revenge hits_taken_decay (0x800C49B4), matched by call graph (score 1.24). Revenge: Matches World Tour hits_taken_decay (0x800CC14C), call-graph score 1.23."
+status = "likely"
+
+[[func]]
+addr = 0x801250C4
+name = "strike_reaction_anim"
+desc = "As Revenge strike_reaction_anim (0x800C778C), matched by call graph (score 1.08). Revenge: Picks a hit-reaction animation (4169-4174) from the hit flags (+0x30) and the header strike style (+0x1E)."
+status = "likely"
+
+[[func]]
+addr = 0x80125748
+name = "carry_walk"
+desc = "As Revenge carry_walk (0x800D6E78), matched by call graph (score 1.07). Revenge: Matches World Tour carry_walk (0x800A30F8), call-graph score 1.59."
+status = "likely"
+
+[[func]]
+addr = 0x8012712C
+name = "grapple_double_team_check"
+desc = "As Revenge grapple_double_team_check (0x800CD6C4), matched by call graph (score 1.09). Revenge: From grapple_attempt_resolve: when a partner (+851) is next to the grapple (state 0x46 with ctx 0x400) starts a double-team grapple."
+status = "likely"
+
+[[func]]
+addr = 0x80127214
+name = "double_team_grapple_start"
+desc = "As Revenge double_team_grapple_start (0x800CD80C), matched by call graph (score 1.03). Revenge: Sets the left/right double-team context bits (0x4000 / 0x8000) by facing and puts the attacker in state 0x76."
+status = "likely"
+
+[[func]]
+addr = 0x80129B10
+name = "move_walk_target"
+desc = "As Revenge move_walk_target (0x800D1B5C), matched by call graph (score 1.30). Revenge: Matches World Tour move_walk_target (0x800C9110), call-graph score 0.92."
+status = "likely"
+
+[[func]]
+addr = 0x80129E30
+name = "move_walk_step"
+desc = "As Revenge move_walk_step (0x800D1EA8), matched by call graph (score 1.69). Revenge: State 0x46 walk: walk speed (run with move flag +0x3AC & 1), toward the side point (flag 0x1000) or a corner direction, then translate."
+status = "likely"
+
+[[func]]
+addr = 0x8012A114
+name = "double_team_place"
+desc = "As Revenge double_team_place (0x800CE124), matched by call graph (score 1.25). Revenge: Matches World Tour double_team_place (0x800C4964), call-graph score 1.16."
+status = "likely"
+
+[[func]]
+addr = 0x8012A308
+name = "double_team_slide"
+desc = "As Revenge double_team_slide (0x800CE2C8), matched by call graph (score 0.94). Revenge: Matches World Tour double_team_slide (0x800C4BC4), call-graph score 0.98."
+status = "guess"
+
+[[func]]
+addr = 0x8012BF50
+name = "wrestler_translate_pushed"
+desc = "As Revenge wrestler_translate_pushed (0x800D26A0), matched by call graph (score 2.02). Revenge: Matches World Tour wrestler_translate_pushed (0x800A45A0), call-graph score 1.12."
+status = "likely"
+
+[[func]]
+addr = 0x8012C00C
+name = "wrestler_slide"
+desc = "As Revenge wrestler_slide (0x800D25D0), matched by call graph (score 1.11). Revenge: sub_800D2758(w, a2, 0, -1): the plain form of the per-frame slide / movement step used by most states."
+status = "likely"
+
+[[func]]
+addr = 0x8012C044
+name = "wrestler_slide_with"
+desc = "As Revenge wrestler_slide_with (0x800D2600), matched by call graph (score 1.10). Revenge: sub_800D2758 with an extra partner argument (carry and hold-for-partner walks)."
+status = "likely"
+
+[[func]]
+addr = 0x8012C0A0
+name = "wrestler_slide_b"
+desc = "As Revenge wrestler_slide_b (0x800D2670), matched by call graph (score 1.61). Revenge: wrestler_move_step(w, a2, 0, -1), used by state 0x70."
+status = "likely"
+
+[[func]]
+addr = 0x8012C474
+name = "wrestler_move_step"
+desc = "As Revenge wrestler_move_step (0x800D2758), matched by call graph (score 1.36). Revenge: The per-frame movement step behind wrestler_slide / wrestler_slide_with (speed, partner, turn)."
+status = "likely"
+
+[[func]]
+addr = 0x8012C884
+name = "wrestler_translate_bounded"
+desc = "As Revenge wrestler_translate_bounded (0x800D2ACC), matched by call graph (score 2.01). Revenge: Matches World Tour wrestler_translate_bounded (0x800A4638), call-graph score 1.78."
+status = "likely"
+
+[[func]]
+addr = 0x8012C928
+name = "keep_in_bounds_self"
+desc = "As Revenge keep_in_bounds_self (0x800D2B64), matched by call graph (score 1.12). Revenge: Matches World Tour keep_in_bounds_self (0x800A46F0), call-graph score 1.39."
+status = "likely"
+
+[[func]]
+addr = 0x8012C974
+name = "keep_in_bounds_pair"
+desc = "As Revenge keep_in_bounds_pair (0x800D2BAC), matched by call graph (score 1.12). Revenge: keep_in_bounds(w, opp, 0, factor)."
+status = "likely"
+
+[[func]]
+addr = 0x8012C9B0
+name = "pair_follow"
+desc = "As Revenge pair_follow (0x800D2BEC), matched by call graph (score 1.25). Revenge: keep_in_bounds with all arguments passed through."
+status = "likely"
+
+[[func]]
+addr = 0x8012C9F4
+name = "keep_in_bounds_masked"
+desc = "As Revenge keep_in_bounds_masked (0x800D2C2C), matched by call graph (score 1.12). Revenge: keep_in_bounds wrapper used by double_team_slide."
+status = "likely"
+
+[[func]]
+addr = 0x8012CA34
+name = "keep_in_bounds_pair_c"
+desc = "As Revenge keep_in_bounds_pair_c (0x800D2C68), matched by call graph (score 1.12). Revenge: Matches World Tour keep_in_bounds_pair_c (0x800A4924), call-graph score 1.03."
+status = "likely"
+
+[[func]]
+addr = 0x8012D404
+name = "run_step_corner"
+desc = "As Revenge run_step_corner (0x800B6114), matched by constants (score 0.80). Revenge: Matches World Tour run_step_corner (0x800B92D4), call-graph score 1.11."
+status = "guess"
+
+[[func]]
+addr = 0x8012DF70
+name = "rng_seed_match"
+desc = "As Revenge rng_seed_match (0x800D4088), matched by call graph (score 1.53). Revenge: Matches World Tour rng_seed_match (0x800A02D4), call-graph score 1.37."
+status = "likely"
+
+[[func]]
+addr = 0x8012DFF4
+name = "rand_pool_next"
+desc = "As Revenge rand_pool_next (0x800D4148), matched by call graph (score 2.25). Revenge: Matches World Tour rand_pool_next (0x800A039C), call-graph score 1.89."
+status = "likely"
+
+[[func]]
+addr = 0x8012E0DC
+name = "abs_i"
+desc = "As Revenge abs_i (0x800D3550), matched by call graph (score 1.20). Revenge: Matches World Tour abs_i (0x8009F650), call-graph score 1.00."
+status = "likely"
+
+[[func]]
+addr = 0x8012E11C
+name = "angle_wrap"
+desc = "As Revenge angle_wrap (0x800D3590), matched by identical machine code. Revenge: Sign-extends a 12-bit angle (4096 = full turn)."
+status = "likely"
+
+[[func]]
+addr = 0x8012E158
+name = "angle_to_float"
+desc = "As Revenge angle_to_float (0x800D35D4), matched by identical machine code. Revenge: Converts a 12-bit angle to radians (or degrees) by a double constant."
+status = "likely"
+
+[[func]]
+addr = 0x8012E178
+name = "float_to_angle"
+desc = "As Revenge float_to_angle (0x800D35F4), matched by identical machine code. Revenge: Inverse of angle_to_float."
+status = "likely"
+
+[[func]]
+addr = 0x8012E198
+name = "angle_dir8_back"
+desc = "As Revenge angle_dir8_back (0x800D3614), matched by call graph (score 2.06). Revenge: angle_dir8 of the angle turned half a turn."
+status = "likely"
+
+[[func]]
+addr = 0x8012E1CC
+name = "angle_dir8"
+desc = "As Revenge angle_dir8 (0x800D3638), matched by identical machine code. Revenge: Octant 0-7 of an angle ((a + 256) / 512, wrapped)."
+status = "likely"
+
+[[func]]
+addr = 0x8012E374
+name = "point_at_offset"
+desc = "As Revenge point_at_offset (0x800D3E40), matched by call graph (score 1.07). Revenge: Matches World Tour point_at_offset (0x800A000C), call-graph score 1.34."
+status = "likely"
+
+[[func]]
+addr = 0x8012ED0C
+name = "vec2_len"
+desc = "As Revenge vec2_len (0x800D371C), matched by identical machine code. Revenge: sqrt(x*x + z*z)."
+status = "likely"
+
+[[func]]
+addr = 0x8012FA78
+name = "wrestlers_ground_contact"
+desc = "As Revenge wrestlers_ground_contact (0x800D43DC), matched by call graph (score 1.05). Revenge: Matches World Tour wrestlers_ground_contact (0x800A1070), call-graph score 1.33."
+status = "likely"
+
+[[func]]
+addr = 0x8012FBD0
+name = "wrestler_floor_height"
+desc = "As Revenge wrestler_floor_height (0x800D4604), matched by call graph (score 0.96). Revenge: Matches World Tour wrestler_floor_height (0x800A13A4), call-graph score 1.46."
+status = "guess"
+
+[[func]]
+addr = 0x801301F4
+name = "dazed_turn_target"
+desc = "As Revenge dazed_turn_target (0x800A9208), matched by call graph (score 0.99). Revenge: For C-up on a dazed opponent: facing to use, adjusted by +872 when the opponent animation is in the table at 0x800E3270."
+status = "guess"
+
+[[func]]
+addr = 0x8013026C
+name = "anim_is_dazed_like"
+desc = "As Revenge anim_is_dazed_like (0x800A9290), matched by call graph (score 1.34). Revenge: True when the wrestler animation is in the zero-ended list at 0x800E3270."
+status = "likely"
+
+[[func]]
+addr = 0x80131BA0
+name = "match_hud_hidden"
+desc = "As Revenge match_hud_hidden (0x800D633C), matched by identical machine code. Revenge: True while bit 2 of the match flags 0x800FABD8 is set (HUD and clock skip drawing)."
+status = "likely"
+
+[[func]]
+addr = 0x80131BB4
+name = "match_flag_100"
+desc = "As Revenge match_flag_100 (0x800D6350), matched by call graph (score 1.06). Revenge: Returns bit 0x100 of the match flags 0x800FABD8 (read by match_draw)."
+status = "likely"
+
+[[func]]
+addr = 0x80131DC8
+name = "side_input_check"
+desc = "As Revenge side_input_check (0x800D65D0), matched by call graph (score 1.10). Revenge: Tests input bits against the per-side tables at 0x800E3F84 / 0x800E3F8C for the wrestler side (+0x3C): 1 toward, 2 away, 0 neither."
+status = "likely"
+
+[[func]]
+addr = 0x80131E08
+name = "walk_step"
+desc = "As Revenge walk_step (0x800D6658), matched by call graph (score 0.91). Revenge: Matches World Tour walk_step (0x800A2964), call-graph score 1.05."
+status = "guess"
+
+[[func]]
+addr = 0x80132700
+name = "side_point"
+desc = "As Revenge side_point (0x800D746C), matched by constants (score 0.83). Revenge: Matches World Tour side_point (0x800A37F8), call-graph score 2.03."
+status = "likely"
+
+[[func]]
+addr = 0x80132940
+name = "input_remap"
+desc = "As Revenge input_remap (0x800BC69C), matched by constants (score 0.86). Revenge: Matches World Tour input_remap (0x800B4C38), call-graph score 1.80."
+status = "likely"
+
+[[func]]
+addr = 0x80132C30
+name = "mash_count"
+desc = "As Revenge mash_count (0x800D7690), matched by call graph (score 1.23). Revenge: Matches World Tour mash_count (0x800A3B40), call-graph score 1.22."
+status = "likely"
+
+[[func]]
+addr = 0x80132E24
+name = "recover_tick"
+desc = "As Revenge recover_tick (0x800D7894), matched by call graph (score 1.57). Revenge: recover_count (+0x18) -= 1, once more when mash_count counts a press."
+status = "likely"
+
+[[func]]
+addr = 0x80132EEC
+name = "dpad_to_side"
+desc = "As Revenge dpad_to_side (0x800D7A2C), matched by identical machine code. Revenge: Matches World Tour dpad_to_side (0x800A3FA4), call-graph score 2.03."
+status = "likely"
+
+[[func]]
+addr = 0x80132F28
+name = "dpad_dir8"
+desc = "As Revenge dpad_dir8 (0x800D7A68), matched by constants (score 1.00). Revenge: Matches World Tour dpad_dir8 (0x800A4010), call-graph score 2.05."
+status = "likely"
+
+[[func]]
+addr = 0x80132F90
+name = "dpad_diagonal_quadrant"
+desc = "As Revenge dpad_diagonal_quadrant (0x800D7B08), matched by constants (score 1.00). Revenge: Matches World Tour dpad_diagonal_quadrant (0x800A40EC), call-graph score 2.04."
+status = "likely"
+
+[[func]]
+addr = 0x80134420
+name = "pair_scripted_place"
+desc = "As Revenge pair_scripted_place (0x800D7E80), matched by call graph (score 1.06). Revenge: Matches World Tour pair_scripted_place (0x800D6EA0), call-graph score 1.09."
+status = "likely"
+
+[[func]]
+addr = 0x801356A4
+name = "pair_slide_step"
+desc = "As Revenge pair_slide_step (0x800D8D74), matched by call graph (score 1.01). Revenge: Moves the wrestler (and the partner a2) by the slide vector while the state timer runs down, turning by +840."
+status = "likely"
+
+[[func]]
+addr = 0x80136FBC
+name = "ground_grapple_defend"
+desc = "As Revenge ground_grapple_defend (0x800CBD5C), matched by call graph (score 1.60). Revenge: Matches World Tour ground_grapple_defend (0x800D1CE8), call-graph score 1.60."
+status = "likely"
+
+[[func]]
+addr = 0x80137D90
+name = "wrestler_may_act"
+desc = "As Revenge wrestler_may_act (0x800D8DF0), matched by call graph (score 1.25). Revenge: Matches World Tour wrestler_may_act (0x800DD200), call-graph score 1.45."
+status = "likely"
+
+[[func]]
+addr = 0x80137FD0
+name = "illegal_man_check"
+desc = "As Revenge illegal_man_check (0x800D93DC), matched by call graph (score 1.15). Revenge: In tag rules (0x8007E280 0x200): checks whether a wrestler who is not the legal man should leave the ring."
+status = "likely"
+
+[[func]]
+addr = 0x801380F8
+name = "illegal_man_leave"
+desc = "As Revenge illegal_man_leave (0x800D9568), matched by call graph (score 1.06). Revenge: Makes an illegal wrestler head back to the apron (tag rules)."
+status = "likely"
+
+[[func]]
+addr = 0x801381E0
+name = "apron_side_ok"
+desc = "As Revenge apron_side_ok (0x800D9814), matched by call graph (score 1.12). Revenge: Tag rules: whether the wrestler is on its own team side of the apron."
+status = "likely"
+
+[[func]]
+addr = 0x801384E4
+name = "tag_exchange"
+desc = "As Revenge tag_exchange (0x800D9E1C), matched by call graph (score 0.92). Revenge: Matches World Tour tag_exchange (0x800DE564), call-graph score 0.96."
+status = "guess"
+
+[[func]]
+addr = 0x80138994
+name = "tag_in"
+desc = "As Revenge tag_in (0x800DA3D8), matched by call graph (score 1.10). Revenge: Matches World Tour tag_in (0x800DEC6C), call-graph score 1.07."
+status = "likely"
+
+[[func]]
+addr = 0x80138B14
+name = "apron_walk_dpad"
+desc = "As Revenge apron_walk_dpad (0x800DA5E8), matched by call graph (score 1.58). Revenge: Matches World Tour apron_walk_dpad (0x800B9954), call-graph score 0.93."
+status = "likely"
+
+[[func]]
+addr = 0x80138BE0
+name = "idle_check"
+desc = "As Revenge idle_check (0x800DA6DC), matched by call graph (score 0.91). Revenge: Calls sub_800D96A0 when the wrestler is not on the floor, has no +0x358 bits 0x6000 and may not act."
+status = "guess"
+
+[[func]]
+addr = 0x80138C54
+name = "may_stay_inside"
+desc = "As Revenge may_stay_inside (0x800D96A0), matched by call graph (score 1.26). Revenge: Tag rules: whether a wrestler may stay in the ring (rules 0x200 / 0x40 and +0x358 bits)."
+status = "likely"
+
+[[func]]
+addr = 0x80138E30
+name = "clock_tick"
+desc = "As Revenge clock_tick (0x800DA850), matched by call graph (score 2.06). Revenge: Matches World Tour clock_tick (0x8009DE70), call-graph score 2.08."
+status = "likely"
+
+[[func]]
+addr = 0x80138E80
+name = "match_flags_clear"
+desc = "As Revenge match_flags_clear (0x800D548C), matched by call graph (score 1.16). Revenge: Clears the match flags 0x800FABD8 and 0x800F97D2."
+status = "likely"
+
+[[func]]
+addr = 0x80138F54
+name = "dive_aim"
+desc = "As Revenge dive_aim (0x800DACE4), matched by call graph (score 0.95). Revenge: Matches World Tour dive_aim (0x800BC888), call-graph score 1.56."
+status = "guess"
+
+[[func]]
+addr = 0x8013A1A4
+name = "dive_counter"
+desc = "As Revenge dive_counter (0x800DB72C), matched by call graph (score 0.93). Revenge: Matches World Tour dive_counter (0x800BD684), call-graph score 1.28."
+status = "guess"
+
+[[func]]
+addr = 0x8013A2F0
+name = "dive_land_hit"
+desc = "As Revenge dive_land_hit (0x800DB874), matched by call graph (score 0.99). Revenge: Matches World Tour dive_land_hit (0x800BD810), call-graph score 1.02."
+status = "guess"
+
+[[func]]
+addr = 0x8013D630
+name = "input_apron_moves"
+desc = "As Revenge input_apron_moves (0x800DE9C0), matched by call graph (score 0.92). Revenge: Matches World Tour input_apron_moves (0x800B93F0), call-graph score 1.17."
+status = "guess"
+
+[[func]]
+addr = 0x8013E108
+name = "input_leapfrog"
+desc = "As Revenge input_leapfrog (0x800DF214), matched by call graph (score 1.46). Revenge: From stand / taunt with C-down pressed: d-pad direction; facing a runner within 512 starts state 0x89 (hop over / leapfrog the runner)."
+status = "likely"
+
+[[func]]
+addr = 0x8013E280
+name = "input_climb_turnbuckle"
+desc = "As Revenge input_climb_turnbuckle (0x800DF5C4), matched by call graph (score 1.03). Revenge: Matches World Tour input_climb_turnbuckle (call graph; calls can_climb_turnbuckle and the side check). With header trait 0x400000 and the opponent lying in the ring it starts state 0x66 instead: a trait-gated climb or springboard onto a downed opponent."
+status = "likely"
+
+[[func]]
+addr = 0x8013E4C4
+name = "input_cup_opponent"
+desc = "As Revenge input_cup_opponent (0x800DF99C), matched by call graph (score 1.54). Revenge: Matches World Tour input_cup_opponent (0x800BADA4), call-graph score 1.07."
+status = "likely"
+
+[[func]]
+addr = 0x8013E6C0
+name = "strike_across_ropes"
+desc = "As Revenge strike_across_ropes (0x800DFC8C), matched by call graph (score 1.03). Revenge: Matches World Tour strike_across_ropes (0x800BA694), call-graph score 1.13."
+status = "likely"
+
+[[func]]
+addr = 0x8013E798
+name = "taunt_stir_opponent"
+desc = "As Revenge taunt_stir_opponent (0x800A7828), matched by call graph (score 0.93). Revenge: Matches World Tour taunt_stir_opponent (0x800A5DEC), call-graph score 0.97."
+status = "guess"
+
+[[func]]
+addr = 0x8013E9C4
+name = "input_strike"
+desc = "As Revenge input_strike (0x800DF3E4), matched by call graph (score 1.01). Revenge: Matches World Tour input_strike (0x800BA448), call-graph score 1.29."
+status = "likely"
+
+[[func]]
+addr = 0x8013EB58
+name = "input_l"
+desc = "As Revenge input_l (0x800E022C), matched by call graph (score 1.49). Revenge: Matches World Tour input_l (0x800BAC04), call-graph score 1.29."
+status = "likely"
+
+[[func]]
+addr = 0x8013F538
+name = "input_grapple_attempt"
+desc = "As Revenge input_grapple_attempt (0x800E06C0), matched by call graph (score 1.46). Revenge: From stand: starts the grapple attempt 0x44 (step 3, grapple ctx 0x200000) when sub_800A94B4(w, opp, 86) holds, else state 0x17."
+status = "likely"
+
+[[func]]
+addr = 0x8013F820
+name = "corner_free"
+desc = "As Revenge corner_free (0x800E07DC), matched by call graph (score 1.18). Revenge: Matches World Tour corner_free (0x800BB194), call-graph score 0.90."
+status = "likely"
+
+[[func]]
+addr = 0x80142730
+name = "weapon_tip_point"
+desc = "As Revenge weapon_tip_point (0x800E2230), matched by call graph (score 1.32). Revenge: Matches World Tour weapon_tip_point (0x800D8210), call-graph score 1.11."
+status = "likely"
+
+[[func]]
+addr = 0x80142AE4
+name = "wrestler_set_move_from"
+desc = "As Revenge wrestler_set_move_from (0x800A7D1C), matched by call graph (score 1.00). Revenge: Selects move slot a2 of the wrestler move set (+902) and unpacks its record (move_record_unpack, 24-byte table at 0x8007BD78) into +908."
+status = "likely"
+
+[[func]]
+addr = 0x80142E24
+name = "wrestler_move_anim"
+desc = "As Revenge wrestler_move_anim (0x800D5438), matched by call graph (score 1.23). Revenge: Animation id for part a2 of the current move: move set table at 0x8007C5B8 (1536 bytes per set) + 4363."
+status = "likely"

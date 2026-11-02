@@ -39,8 +39,17 @@ other findings go in MD files right in this folder?
 - `individual_games/wcw_world_tour/outside_ring.md`: climbing in and out, crowd weapons, the turnbuckle.
 - `individual_games/wcw_world_tour/body_parts.md`: body-part condition: how parts get hurt, the four effects (weaker attacks, slower legs, injured idle, submissions), carry-over between matches.
 - `individual_games/wcw_world_tour/match_end.md`: pin count and kick-out formula, submissions, TKO, count-out and time-limit decisions, the rule switches and how results are recorded.
-- `individual_games/wcw_revenge/README.md`: Revenge compared with World Tour: tooling (IDA build,
-  symbols), memory layout, first landmarks (146 states, 62 AI modes, 944-byte wrestler).
+- `individual_games/wcw_revenge/README.md`: Revenge compared with World Tour: index of the Revenge
+  pages, tooling (IDA build, symbols, function matching), memory layout, first landmarks (146
+  states, 62 AI modes, 944-byte wrestler). Per-system pages beside it: `states.md`, `wrestler.md`,
+  `strikes.md`, `weapons.md`, `matches.md` (match types, falls, run-ins, battle royal), `ai.md`,
+  `moves.md`, `controls.md`, `models.md` (attires, palette recolouring), `arena.md`.
+- `individual_games/wwf_no_mercy/README.md`: No Mercy compared with Revenge: ROM revision, tooling,
+  memory layout, first landmarks (211 states, 145 AI modes, 856-byte wrestler) and the engine changes.
+- `individual_games/wwf_no_mercy/wrestler_models.md`: how No Mercy builds a wrestler's model from a
+  63-byte appearance (attire records in file 1, the builder, part slots and texture layers).
+- `symbols/nomercy/`: WWF No Mercy symbols (USA **Rev 1** addresses), same format; IDA build
+  `py tools/sym/build.py --game nomercy --ida` (main + match overlay ovl_e).
 - `file_formats/asset_archive.md`: the ROM's numbered file archive, its LZSS compression and a
   map of which files hold what (tool: `tools/rom/aki_archive.py`, with `survey` for the map).
 - `file_formats/wrestler_models.md`: wrestler mesh parts, seam skinning, CI4 textures, and

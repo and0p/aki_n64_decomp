@@ -27,6 +27,8 @@ REPO = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), 
 TOOLS = os.path.join(REPO, "_tools", "libretro")
 DEFAULT_ROM = os.path.join(REPO, "_roms", "WCW vs. nWo - World Tour (USA).z64")
 RAM_SIZE = 0x800000
+# The libretro core's file extension on this platform (the buildbot has the same core for each).
+CORE_EXT = {"win32": ".dll", "darwin": ".dylib"}.get(sys.platform, ".so")
 
 # World Tour addresses (see _re_docs). A game frame is one pass of the frame loop: the game logic
 # runs at 30 fps, every second VI. The graphics thread flips to the next of its three framebuffers
@@ -49,6 +51,12 @@ GAMES = {
                 FB_INDEX=0x8002D2B0, IDLE_RNG_CALL=0x80000584, JAL_RNG_MAIN=0x0C0046FC),
     "revenge": dict(rom="WCW-nWo Revenge (USA).z64", title="WCW/nWo Revenge",
                     FB_INDEX=0x8002EEC8, IDLE_RNG_CALL=0x80000560, JAL_RNG_MAIN=0x0C007160),
+    # Not analysed yet: no frame counter (a game frame is counted per VI) and no --no-idle-rng.
+    "wm2000": dict(rom="WWF WrestleMania 2000 (USA).z64", title="WWF WrestleMania 2000",
+                   FB_INDEX=None, IDLE_RNG_CALL=None, JAL_RNG_MAIN=None),
+    # No Mercy uses the USA Rev 1 ROM (Rev A), the revision the recomp and the symbols are for.
+    "nomercy": dict(rom="WWF No Mercy (USA) (Rev A).z64", title="WWF No Mercy",
+                    FB_INDEX=None, IDLE_RNG_CALL=None, JAL_RNG_MAIN=None),
 }
 GAME_TITLE = GAMES["wcw"]["title"]
 
@@ -106,8 +114,12 @@ class Emu:
         self.event_seq = 0
         self.jobs = []
         self.quit = False
-        self.window_keys = 0      # N64 buttons held from the window's keyboard
-        self.window_stick = [0, 0]
+        self.window_keys = [0] * 4      # N64 buttons held from the window (keyboard and mouse)
+        self.window_stick = [[0, 0] for _ in range(4)]
+        self.fast_forward = False       # held F7: 4x speed
+        # The window's auto input: press `what` on `port` for `hold` VIs, release for `wait`, repeat.
+        self.auto = {"enabled": False, "port": 0, "what": 0x8000, "hold": 4, "wait": 4}
+        self.auto_t = 0                 # VIs since auto input was switched on
         self.qm = args.quickmatch
         self.qm_state = {"screen": -1, "idle": 0, "since": 999, "seq": 0, "press": 0}
         self.last_fb = None
@@ -151,13 +163,18 @@ class Emu:
     def _set_input(self):
         for port in range(4):
             held, sx, sy = 0, 0, 0
-            if port == 0:
-                held, (sx, sy) = self.window_keys, self.window_stick
+            held, (sx, sy) = self.window_keys[port], self.window_stick[port]
             o = self.pads[port]
             if o:
                 held, sx, sy = o["held"], o["sx"], o["sy"]
             if port == 0 and self.qm_state["press"]:
                 held |= self.qm_state["press_buttons"]
+            a = self.auto
+            if a["enabled"] and a["port"] == port and self.auto_t % (a["hold"] + a["wait"]) < a["hold"]:
+                if isinstance(a["what"], tuple):  # ("stick", x, y)
+                    sx, sy = a["what"][1], a["what"][2]
+                else:
+                    held |= a["what"]
             bits = 0
             for b, id_ in N64_TO_RETROPAD.items():
                 if held & b:
@@ -212,6 +229,8 @@ class Emu:
 
     def _game_frame_started(self):
         """True on the VI where the graphics thread flipped to a new frame (a game frame passed)."""
+        if FB_INDEX is None:  # a game without a known frame counter: every VI counts
+            return True
         word = self.read(FB_INDEX, 2)
         changed = self.last_fb is not None and word != self.last_fb
         self.last_fb = word
@@ -222,7 +241,9 @@ class Emu:
         self._set_input()
         self.core.run()
         self.vi += 1
-        if self.args.no_idle_rng and self.u(IDLE_RNG_CALL, 4) == JAL_RNG_MAIN:
+        if self.auto["enabled"]:
+            self.auto_t += 1
+        if self.args.no_idle_rng and IDLE_RNG_CALL and self.u(IDLE_RNG_CALL, 4) == JAL_RNG_MAIN:
             self._patch_idle_rng()
         if self.qm:
             self._quickmatch()
@@ -312,7 +333,7 @@ class Emu:
                         self.paused, self.reason = True, "vi_step"
                         self.lock.notify_all()
             if not self.args.fast:
-                next_t += vi_time
+                next_t += vi_time / (4 if self.fast_forward else 1)
                 delay = next_t - time.perf_counter()
                 if delay > 0:
                     time.sleep(delay)
@@ -348,13 +369,13 @@ class Emu:
         self.core.unserialize(data)
         self.frame = meta.get("frame", self.frame)
         self.vi = meta.get("vi", self.vi)
-        self.last_fb = self.read(FB_INDEX, 2)
+        self.last_fb = self.read(FB_INDEX, 2) if FB_INDEX is not None else None
         for b in self.breaks:
             if b["kind"] == "change":
                 b["value"] = self.u(b["addr"], b["size"])
 
     def status(self):
-        idle_rng = self._base() is not None and self.u(IDLE_RNG_CALL, 4) == JAL_RNG_MAIN
+        idle_rng = IDLE_RNG_CALL is not None and self._base() is not None and self.u(IDLE_RNG_CALL, 4) == JAL_RNG_MAIN
         return {"backend": "akiemu", "frame": self.frame, "vi": self.vi, "paused": self.paused,
                 "idle_rng": idle_rng,
                 "at_hook": self.paused, "attached": self._base() is not None, "reason": self.reason,
@@ -562,22 +583,40 @@ def hard_exit():
     # The core's own threads make a normal interpreter exit hang.
     sys.stdout.flush()
     sys.stderr.flush()
-    k32 = C.windll.kernel32
-    k32.GetCurrentProcess.restype = C.c_void_p
-    k32.TerminateProcess.argtypes = [C.c_void_p, C.c_uint]
-    k32.TerminateProcess(k32.GetCurrentProcess(), 0)
+    if sys.platform == "win32":
+        k32 = C.windll.kernel32
+        k32.GetCurrentProcess.restype = C.c_void_p
+        k32.TerminateProcess.argtypes = [C.c_void_p, C.c_uint]
+        k32.TerminateProcess(k32.GetCurrentProcess(), 0)
+    else:
+        import signal
+        os.kill(os.getpid(), signal.SIGKILL)
 
 
 # ---- window ----
 
-KEYMAP = {  # Tk keysym -> N64 button
-    "x": 0x8000, "c": 0x4000, "z": 0x2000, "Return": 0x1000, "Up": 0x0800, "Down": 0x0400, "Left": 0x0200,
-    "Right": 0x0100, "a": 0x0020, "s": 0x0010, "i": 0x0008, "k": 0x0004, "j": 0x0002, "l": 0x0001,
+KEYMAP = {  # P1 keyboard: Tk keysym (lower case) -> N64 button
+    "k": 0x8000, "j": 0x4000, "o": 0x2000, "e": 0x1000,                  # A, B, Z, Start
+    "w": 0x0800, "s": 0x0400, "a": 0x0200, "d": 0x0100,                  # D-pad
+    "up": 0x0008, "down": 0x0004, "left": 0x0002, "right": 0x0001,       # C buttons
+    "u": 0x0020, "i": 0x0010,                                            # L, R
 }
+STICK_KEYS = {"q": (0, 72)}  # P1 analog stick: key -> (x, y), N64 units (72 = pushed fully)
+
+# The clickable pads under the picture: rows of (label, N64 button, or ("stick", x, y)).
+PAD_ROWS = [
+    [("L", 0x0020), ("Z", 0x2000), ("R", 0x0010), ("Start", 0x1000)],
+    [("D\u2191", 0x0800), ("D\u2193", 0x0400), ("D\u2190", 0x0200), ("D\u2192", 0x0100)],
+    [("C\u2191", 0x0008), ("C\u2193", 0x0004), ("C\u2190", 0x0002), ("C\u2192", 0x0001)],
+    [("A", 0x8000), ("B", 0x4000)],
+    [("Stick\u2191", ("stick", 0, 72)), ("Stick\u2193", ("stick", 0, -72)),
+     ("Stick\u2190", ("stick", -72, 0)), ("Stick\u2192", ("stick", 72, 0))],
+]
 
 
-def run_window(emu, scale):
+def run_window(emu, size):
     import tkinter as tk
+    from tkinter import filedialog
     root = tk.Tk()
     root.title("akiemu - " + GAME_TITLE)
     label = tk.Label(root, bg="black")
@@ -585,8 +624,69 @@ def run_window(emu, scale):
     status = tk.Label(root, anchor="w", font=("Consolas", 9))
     status.pack(fill="x")
     img = {"photo": None, "vf": -1}
+    states_dir = os.path.join(TOOLS, "states")
+    held_keys = set()  # P1 keyboard keys held
+    mouse = [0] * 4    # buttons held with the mouse, per port
+    mouse_stick = [[0, 0] for _ in range(4)]
+
+    def update_input():
+        stick = [0, 0]
+        keys = 0
+        for k in held_keys:
+            keys |= KEYMAP.get(k, 0)
+            if k in STICK_KEYS:
+                stick = [stick[0] + STICK_KEYS[k][0], stick[1] + STICK_KEYS[k][1]]
+        with emu.lock:
+            for port in range(4):
+                st = stick if port == 0 else [0, 0]
+                emu.window_keys[port] = (keys if port == 0 else 0) | mouse[port]
+                emu.window_stick[port] = [max(-80, min(80, st[0] + mouse_stick[port][0])),
+                                          max(-80, min(80, st[1] + mouse_stick[port][1]))]
+
+    def state_file_dialog(save):
+        with emu.lock:
+            was_paused = emu.paused
+            emu.paused = True  # hold the game still while the dialog is up
+        try:
+            ask = filedialog.asksaveasfilename if save else filedialog.askopenfilename
+            path = ask(parent=root, initialdir=states_dir, defaultextension=".state",
+                       filetypes=[("akiemu state", "*.state"), ("All files", "*.*")],
+                       title="Save state" if save else "Load state")
+            if path:
+                try:
+                    # The core only works from the emulation thread.
+                    emu.run_job((lambda: emu.save_state(file=path)) if save else (lambda: emu.load_state(file=path)))
+                    msg = ("saved " if save else "loaded ") + path
+                except (OSError, ValueError, RuntimeError, TimeoutError) as err:
+                    msg = "%s failed: %s" % ("save" if save else "load", err)
+                with emu.lock:
+                    emu.add_event(msg)
+        finally:
+            with emu.lock:
+                emu.paused = was_paused
+                emu.lock.notify_all()
+
+    def quick(save):
+        quick_file = os.path.join(states_dir, "quick.state")
+
+        def job():  # on the emulation thread: the core only works from there
+            if save:
+                emu.save_state("quick", quick_file)
+                return "F5 quick save (also _tools/libretro/states/quick.state)"
+            in_memory = "quick" in emu.snaps
+            emu.load_state("quick" if in_memory else None, None if in_memory else quick_file)
+            return "F9 quick load"
+        try:
+            msg = emu.run_job(job)
+        except (OSError, ValueError, RuntimeError, TimeoutError) as err:
+            msg = "%s failed: %s" % ("F5 quick save" if save else "F9 quick load", err)
+        with emu.lock:
+            emu.add_event(msg)
 
     def hotkey(name):
+        if name in ("F5", "F9"):
+            quick(name == "F5")
+            return
         with emu.lock:
             if name == "F2":
                 if emu.paused:
@@ -603,47 +703,111 @@ def run_window(emu, scale):
             elif name == "F4":
                 emu.paused, emu.reason = True, "F4 mark"
                 emu.add_event("F4 mark")
-            elif name == "F5":
-                emu.save_state("quick", os.path.join(TOOLS, "states", "quick.state"))
-                emu.add_event("F5 quick save (also _tools/libretro/states/quick.state)")
-            elif name == "F9":
-                try:
-                    emu.load_state("quick" if "quick" in emu.snaps else None,
-                                   None if "quick" in emu.snaps else os.path.join(TOOLS, "states", "quick.state"))
-                    emu.add_event("F9 quick load")
-                except (OSError, ValueError, RuntimeError) as err:
-                    emu.add_event("F9 quick load failed: %s" % err)
             emu.lock.notify_all()
 
     def key(ev, down):
-        k = ev.keysym
-        if down and k in ("F2", "F3", "F4", "F5", "F9"):
-            hotkey(k)
-            return
-        b = KEYMAP.get(k)
-        if b:
+        k = ev.keysym.lower()
+        if k == "f7":  # fast forward while held (key repeat just sends the press again)
             with emu.lock:
-                emu.window_keys = emu.window_keys | b if down else emu.window_keys & ~b
+                emu.fast_forward = down
+            return
+        if down and k in ("f2", "f3", "f4", "f5", "f9"):
+            hotkey(k.upper())
+            return
+        if k in KEYMAP or k in STICK_KEYS:
+            (held_keys.add if down else held_keys.discard)(k)
+            update_input()
     root.bind("<KeyPress>", lambda ev: key(ev, True))
     root.bind("<KeyRelease>", lambda ev: key(ev, False))
+    root.bind("<Control-s>", lambda ev: state_file_dialog(True))
+    root.bind("<Control-o>", lambda ev: state_file_dialog(False))
     root.protocol("WM_DELETE_WINDOW", hard_exit)
+
+    bar = tk.Frame(root)
+    bar.pack(fill="x")
+    tk.Button(bar, text="Save state... (Ctrl+S)", takefocus=0, command=lambda: state_file_dialog(True)).pack(side="left")
+    tk.Button(bar, text="Load state... (Ctrl+O)", takefocus=0, command=lambda: state_file_dialog(False)).pack(side="left")
+
+    # Click-and-hold pads for players 1 and 2.
+    pads = tk.Frame(root)
+    pads.pack(fill="x")
+    for port in range(2):
+        frame = tk.LabelFrame(pads, text="P%d" % (port + 1))
+        frame.pack(side="left", padx=4, pady=2, anchor="n")
+        for r, row in enumerate(PAD_ROWS):
+            for c, (text, what) in enumerate(row):
+                btn = tk.Button(frame, text=text, width=6, takefocus=0)
+                btn.grid(row=r, column=c, padx=1, pady=1)
+
+                def press(ev, port=port, what=what, down=True):
+                    if isinstance(what, tuple):
+                        mouse_stick[port] = [what[1], what[2]] if down else [0, 0]
+                    elif down:
+                        mouse[port] |= what
+                    else:
+                        mouse[port] &= ~what
+                    update_input()
+                btn.bind("<ButtonPress-1>", press)
+                btn.bind("<ButtonRelease-1>", lambda ev, p=press: p(ev, down=False))
+
+    # Auto input: one player's button pressed and released in a loop.
+    auto = tk.LabelFrame(pads, text="Auto input")
+    auto.pack(side="left", padx=4, pady=2, anchor="n")
+    choices = [(text, what) for row in PAD_ROWS for (text, what) in row]
+    v_port = tk.StringVar(value="P1")
+    v_button = tk.StringVar(value="A")
+    v_hold = tk.StringVar(value="4")
+    v_wait = tk.StringVar(value="4")
+    v_on = tk.BooleanVar(value=False)
+
+    def apply_auto(*_):
+        def count(v, default):
+            try:
+                return max(1, min(9999, int(v.get())))
+            except ValueError:
+                return default
+        with emu.lock:
+            was_on = emu.auto["enabled"]
+            emu.auto = {"enabled": v_on.get(), "port": int(v_port.get()[1]) - 1,
+                        "what": dict(choices)[v_button.get()],
+                        "hold": count(v_hold, 4), "wait": count(v_wait, 4)}
+            if emu.auto["enabled"] and not was_on:
+                emu.auto_t = 0  # start with a press
+
+    tk.Label(auto, text="Player").grid(row=0, column=0, sticky="w")
+    tk.OptionMenu(auto, v_port, *("P%d" % i for i in range(1, 5))).grid(row=0, column=1, sticky="we")
+    tk.Label(auto, text="Button").grid(row=1, column=0, sticky="w")
+    tk.OptionMenu(auto, v_button, *(t for t, _ in choices)).grid(row=1, column=1, sticky="we")
+    tk.Label(auto, text="Hold (VIs)").grid(row=2, column=0, sticky="w")
+    tk.Spinbox(auto, from_=1, to=9999, width=6, textvariable=v_hold).grid(row=2, column=1, sticky="w")
+    tk.Label(auto, text="Wait (VIs)").grid(row=3, column=0, sticky="w")
+    tk.Spinbox(auto, from_=1, to=9999, width=6, textvariable=v_wait).grid(row=3, column=1, sticky="w")
+    tk.Checkbutton(auto, text="Enabled", variable=v_on, takefocus=0).grid(row=4, column=0, columnspan=2, sticky="w")
+    tk.Label(auto, text="1 VI = 1/60 s (a game frame is 2)", fg="gray").grid(row=5, column=0, columnspan=2, sticky="w")
+    for v in (v_port, v_button, v_hold, v_wait, v_on):
+        v.trace_add("write", apply_auto)
 
     def refresh():
         with emu.lock:
             vf = emu.core.video_frames
             f = emu.core.frame_rgb() if vf != img["vf"] else None
-            st = "frame %d  vi %d  %s %s" % (emu.frame, emu.vi, "PAUSED" if emu.paused else "running", emu.reason)
+            st = "frame %d  vi %d  %s%s %s" % (emu.frame, emu.vi, "PAUSED" if emu.paused else "running",
+                                               " x4" if emu.fast_forward and not emu.paused else "", emu.reason)
         if f:
             img["vf"] = vf
             w, h, rgb = f
             photo = tk.PhotoImage(data=b"P6 %d %d 255\n" % (w, h) + rgb, format="PPM")
-            yscale = scale * (2 if h <= 240 and w >= 480 else 1)  # 640x240: double the lines
-            xs = max(1, scale)
-            if xs > 1 or yscale > 1:
-                photo = photo.zoom(xs, yscale)
+            # The core hands over 640x480 or 640x240 (one field); size 1 shows it as 320x240.
+            xs, ys = size * 320, size * 240
+            if w > xs or h > ys:
+                dx, dy = max(1, w // xs), max(1, h // ys)
+                photo = photo.subsample(dx, dy)
+                w, h = w // dx, h // dy
+            if w < xs or h < ys:
+                photo = photo.zoom(max(1, xs // w), max(1, ys // h))
             img["photo"] = photo
             label.configure(image=photo)
-        status.configure(text=st + "   F2 pause  F3 step  F4 mark  F5 save  F9 load")
+        status.configure(text=st + "   F2 pause  F3 step  F4 mark  F5 save  F9 load  F7 (hold) x4")
         root.after(33, refresh)
     refresh()
     root.mainloop()
@@ -653,10 +817,11 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--game", default="wcw", choices=sorted(GAMES), help="which game's addresses to use")
     ap.add_argument("--rom", help="ROM file (default: the game's ROM in _roms)")
-    ap.add_argument("--core", default=os.path.join(TOOLS, "mupen64plus_next_libretro.dll"))
+    ap.add_argument("--core", default=os.path.join(TOOLS, "mupen64plus_next_libretro" + CORE_EXT))
     ap.add_argument("--port", type=int, default=int(os.environ.get("AKIDBG_PORT", "5664")))
     ap.add_argument("--headless", action="store_true", help="no window")
-    ap.add_argument("--scale", type=int, default=1, help="window zoom")
+    ap.add_argument("--size", "--scale", dest="size", type=int, default=1, choices=range(1, 5),
+                    help="window size: 1 = 320x240, up to 4x")
     ap.add_argument("--fast", action="store_true", help="run as fast as possible instead of 60 VIs a second")
     ap.add_argument("--quickmatch", action="store_true", help="walk the menus to a CPU-vs-CPU single match")
     ap.add_argument("--venue", type=int, choices=range(5), help="quick match mat: 0 WCW, 1 NWO, 2 DOA, 3 IU, 4 random")
@@ -674,6 +839,8 @@ def main():
         args.rom = os.path.join(REPO, "_roms", g["rom"])
     if args.quickmatch and args.game != "wcw":
         ap.error("--quickmatch is World Tour only")
+    if args.no_idle_rng and g["IDLE_RNG_CALL"] is None:
+        ap.error("--no-idle-rng: the idle loop of %s isn't known yet" % g["title"])
     os.makedirs(os.path.join(TOOLS, "states"), exist_ok=True)
 
     emu = Emu(args)
@@ -688,7 +855,7 @@ def main():
             while True:
                 time.sleep(3600)
         else:
-            run_window(emu, args.scale)
+            run_window(emu, args.size)
     except KeyboardInterrupt:
         pass
     hard_exit()

@@ -1,3 +1,5 @@
 _roms/*
 _tools/
 __pycache__/
+_re_docs/gamefaq/*
+*.state

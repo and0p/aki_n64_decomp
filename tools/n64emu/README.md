@@ -15,7 +15,9 @@ in IDA and `_re_docs`, since this is the original MIPS code.
   `https://buildbot.libretro.com/nightly/windows/x86_64/latest/mupen64plus_next_libretro.dll.zip`
   (the build tested on 2026-10-31 reports `3.0-Vulkan 15bada8`). Save states only load into the
   same core build, so keep the DLL with the states.
-- Python 3 (standard library only; the window uses tkinter).
+- Python 3 (standard library only; the window uses tkinter). Nothing is Windows-only: on Linux or
+  macOS, put the core's `.so` / `.dylib` build (same buildbot, `linux/x86_64` or `apple/osx/...`)
+  in `_tools/libretro/` under the same name. Only Windows has been tested.
 - The ROM, `_roms/WCW vs. nWo - World Tour (USA).z64` by default (`--rom`).
 
 ## Running
@@ -29,14 +31,14 @@ py tools\n64emu\akiemu.py --headless --fast --state <file> --paused
 
 | Option | |
 |---|---|
-| `--game wcw\|revenge` | Which game (default `wcw`): picks the ROM in `_roms` and the game's frame-counter and idle-loop addresses. Revenge has no `--quickmatch` |
+| `--game wcw\|revenge\|wm2000\|nomercy` | Which game (default `wcw`): picks the ROM in `_roms` and the game's frame-counter and idle-loop addresses. Only World Tour has `--quickmatch`. WrestleMania 2000 and No Mercy aren't analysed yet: they boot and play, but `frame` counts VIs and `--no-idle-rng` is refused |
 | `--headless` | No window |
 | `--fast` | Run as fast as possible (about 5x real time headless) instead of 60 VIs a second |
 | `--quickmatch` | Walk the menus to an Exhibition single match, CPU vs CPU (the recomp Quick Match mod's steps); `--venue 0..4` picks the mat |
 | `--state FILE` / `--paused` | Load a state once booted / start paused |
 | `--no-idle-rng` | NOP the idle loop's `rng_main` call (`0x80000584`), so `rng_main` only advances through game code, as in the recomp and the library; `/status` `idle_rng` says whether the call is still there. Use it for traces (`_re_docs/state_comparison.md`) |
 | `--port N` | HTTP port (default 5664, or `AKIDBG_PORT`); the recomp's mod uses 5664 too, so run one at a time or pick another |
-| `--scale N` | Window zoom |
+| `--size N` | Window picture size, 1 to 4 (1 = 320x240) |
 
 `_tools/libretro/states/wt_singles_start.state` is a single match a few seconds after the bell,
 made with `--quickmatch`. Making another: drive the game (or `--quickmatch`) to the moment you
@@ -56,17 +58,29 @@ wrestlers are at `0x800F9D10`, 944 bytes each (anim +8, state +0xA, step +0xC).
 
 ## The window
 
-| Key | N64 | | Key | Does |
-|---|---|---|---|---|
-| X | A | | F2 | Pause / resume |
-| C | B | | F3 | Step one game frame |
-| Z | Z | | F4 | Mark: pause and log a `mark` event |
-| Enter | Start | | F5 | Save state to the slot `quick` and `_tools/libretro/states/quick.state` |
-| Arrows | D-pad | | F9 | Load `quick` (the slot, or the file after a restart) |
-| A / S | L / R | | | |
-| I J K L | C up/left/down/right | | | |
+`--size 1..4` sets the picture size (1 = 320x240, 2 = 640x480, ...).
 
-The stick isn't on the keyboard (`/pad` sets it). Hotkey actions show up in `/status` `events`.
+| Key (P1) | N64 | | Key | Does |
+|---|---|---|---|---|
+| K | A | | F2 | Pause / resume |
+| J | B | | F3 | Step one game frame |
+| O | Z | | F4 | Mark: pause and log a `mark` event |
+| E | Start | | F5 | Save state to the slot `quick` and `_tools/libretro/states/quick.state` |
+| W A S D | D-pad | | F9 | Load `quick` (the slot, or the file after a restart) |
+| Arrows | C up/down/left/right | | F7 (held) | Fast forward, 4x |
+| U / I | L / R | | Ctrl+S | Save state to a file (dialog) |
+| Q | Stick up | | Ctrl+O | Load state from a file (dialog) |
+
+The Save and Load buttons above the pads do the same as Ctrl+S / Ctrl+O; the dialogs open in
+`_tools/libretro/states/` (git-ignored, as is `*.state`), and the game is held still while they're
+up. Under the picture are clickable pads for P1 and P2: every N64 button and four stick directions,
+held for as long as the mouse button is. Hotkey and dialog actions show up in `/status` `events`.
+`/pad` overrides still win over the window's input.
+
+To the right of the pads, **Auto input** presses one button (or stick direction) for one player
+in a loop: held for *Hold* VIs, released for *Wait* VIs, while *Enabled* is ticked (1 VI = 1/60 s, a
+World Tour game frame is 2 VIs). The loop counts emulated VIs, so it stops while paused and speeds
+up with F7; switching it on starts with a press. Useful for mashing or walking through menus.
 
 ## The API
 

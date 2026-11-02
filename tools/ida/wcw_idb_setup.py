@@ -43,6 +43,38 @@ if GAME == "revenge":
         (0x800FAFA0, 0x80100000, "heap_hi", "BSS"),
     ]
     TEXT = []  # main mixes code and data, so functions come only from the recomp's list
+elif GAME == "nomercy":
+    # From the recomp's splat config (disasm/nomercy.yaml, Rev 1): main text and data, then the
+    # match overlay ovl_e, which spans both overlay slots (ovl_a-ovl_d are left out).
+    SEGMENTS = [
+        (0x80000000, 0x80000400, "lowmem", "BSS"),
+        (0x80000400, 0x80040380, "main_text", "CODE"),
+        (0x80040380, 0x80056670, "main_data", "DATA"),
+        (0x80056670, 0x800BD960, "main_bss", "BSS"),
+        (0x800BD960, 0x800D9960, "heap_lo", "BSS"),
+        (0x800D9960, 0x80144670, "ovle_text", "CODE"),
+        (0x80144670, 0x80151ED0, "ovle_data", "DATA"),
+        (0x80151ED0, 0x8016B9F0, "ovle_bss", "BSS"),
+        (0x8016B9F0, 0x80170000, "heap_hi", "BSS"),
+    ]
+    TEXT = []  # functions come only from the recomp's list, as for Revenge
+elif GAME == "wm2000":
+    # From the recomp's splat config (disasm/wm2k.yaml, V1.2): main is two runs of code each
+    # followed by data, then the match overlay ovl_d, which spans both overlay slots.
+    SEGMENTS = [
+        (0x80000000, 0x80000400, "lowmem", "BSS"),
+        (0x80000400, 0x80038840, "main_text", "CODE"),
+        (0x80038840, 0x800395D8, "main_data", "DATA"),
+        (0x800395D8, 0x8003BA28, "main_text2", "CODE"),
+        (0x8003BA28, 0x8004B4C0, "main_data2", "DATA"),
+        (0x8004B4C0, 0x800B1390, "main_bss", "BSS"),
+        (0x800B1390, 0x800E1B90, "heap_lo", "BSS"),
+        (0x800E1B90, 0x8014C640, "ovld_text", "CODE"),
+        (0x8014C640, 0x80153F10, "ovld_data", "DATA"),
+        (0x80153F10, 0x8016F170, "ovld_bss", "BSS"),
+        (0x8016F170, 0x80170000, "heap_hi", "BSS"),
+    ]
+    TEXT = []
 else:
     SEGMENTS = [
         # start, end, name, class
@@ -113,6 +145,18 @@ def find_functions(sym):
         idc.create_insn(K(t))
         ida_funcs.add_func(K(t))
     log("seeded", len(starts), "function starts")
+    sizes = os.environ.get("AKI_SEED_SIZES")
+    if sizes:
+        # Some leaf functions right after another's "jr ra" are refused by add_func until it is
+        # given their end (No Mercy: three AI mode handlers); retry those with the dump's size.
+        with open(sizes, encoding="utf-8") as fp:
+            sizes = {int(k): v for k, v in json.load(fp).items()}
+        fixed = 0
+        for t, n in sorted(sizes.items()):
+            if not ida_funcs.get_func(K(t)):
+                idc.create_insn(K(t))
+                fixed += bool(ida_funcs.add_func(K(t), K(t + n)))
+        log("created", fixed, "more functions from the dump's sizes")
 
 
 def data_decl(name, ctype):

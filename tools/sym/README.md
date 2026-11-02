@@ -14,7 +14,8 @@ py tools/sym/build.py --ida
 ```
 That rebuilds the IDA database, the export and the index, and takes about a minute. Every
 command takes `--game` (default `wcw`); `--game revenge` uses `tools/ida/revenge_build_idb.py`
-and `_re_docs/symbols/revenge/`. After
+and `_re_docs/symbols/revenge/`. `--game nomercy` uses `tools/ida/nomercy_build_idb.py` and
+`_re_docs/symbols/nomercy/` (USA Rev 1 ROM, main + the match overlay ovl_e). After
 editing only TOML or `types.h`, `sym.py` re-indexes by itself in a second or so. Rebuild with
 `--ida` when prototypes or types change, so the pseudocode and field xrefs pick them up.
 
@@ -47,3 +48,5 @@ In lists, `*` marks a documented function. Undocumented ones show as `sub_<addr>
 - `match_consts.py`: pairs functions of two games by their constant sets.
 - `match_calls.py`: spreads names from already-paired functions along the call graph (constants,
   size and agreeing neighbours); output TSV `name, src addr, dst addr, doc, score`.
+- `merge_matches.py`: merges the three matchers' Revenge -> No Mercy output into
+  `_re_docs/symbols/nomercy/from_revenge.toml` (drops clashes and names already given by hand).

@@ -1,0 +1,296 @@
+# No Mercy main-segment library functions, named as in the No Mercy recomp's symbol dump
+# (_recomps/WWFNoMercyRecomp/syms/dump.toml: libultra and boot code it identified). Rev 1.
+
+[[func]]
+addr = 0x80026BE0
+name = "osDriveRomInit"
+desc = "Named osDriveRomInit in the No Mercy recomp's symbol dump (libultra / boot)."
+status = "likely"
+
+[[func]]
+addr = 0x8002E8F0
+name = "__osDisableInt"
+desc = "Named __osDisableInt in the No Mercy recomp's symbol dump (libultra / boot)."
+status = "likely"
+
+[[func]]
+addr = 0x8002E960
+name = "__osRestoreInt"
+desc = "Named __osRestoreInt in the No Mercy recomp's symbol dump (libultra / boot)."
+status = "likely"
+
+[[func]]
+addr = 0x8002E980
+name = "osSetIntMask"
+desc = "Named osSetIntMask in the No Mercy recomp's symbol dump (libultra / boot)."
+status = "likely"
+
+[[func]]
+addr = 0x8002EA20
+name = "osCreatePiManager"
+desc = "Named osCreatePiManager in the No Mercy recomp's symbol dump (libultra / boot)."
+status = "likely"
+
+[[func]]
+addr = 0x8002EDA0
+name = "osEPiStartDma"
+desc = "Named osEPiStartDma in the No Mercy recomp's symbol dump (libultra / boot)."
+status = "likely"
+
+[[func]]
+addr = 0x8002EE40
+name = "osCartRomInit"
+desc = "Named osCartRomInit in the No Mercy recomp's symbol dump (libultra / boot)."
+status = "likely"
+
+[[func]]
+addr = 0x8002FED0
+name = "osFlashInit"
+desc = "Named osFlashInit in the No Mercy recomp's symbol dump (libultra / boot)."
+status = "likely"
+
+[[func]]
+addr = 0x8002FFE0
+name = "osFlashReadId"
+desc = "Named osFlashReadId in the No Mercy recomp's symbol dump (libultra / boot)."
+status = "likely"
+
+[[func]]
+addr = 0x800300E0
+name = "osFlashAllErase"
+desc = "Named osFlashAllErase in the No Mercy recomp's symbol dump (libultra / boot)."
+status = "likely"
+
+[[func]]
+addr = 0x80030220
+name = "osFlashSectorErase"
+desc = "Named osFlashSectorErase in the No Mercy recomp's symbol dump (libultra / boot)."
+status = "likely"
+
+[[func]]
+addr = 0x80030370
+name = "osFlashWriteBuffer"
+desc = "Named osFlashWriteBuffer in the No Mercy recomp's symbol dump (libultra / boot)."
+status = "likely"
+
+[[func]]
+addr = 0x80030410
+name = "osFlashWriteArray"
+desc = "Named osFlashWriteArray in the No Mercy recomp's symbol dump (libultra / boot)."
+status = "likely"
+
+[[func]]
+addr = 0x80030560
+name = "osFlashReadArray"
+desc = "Named osFlashReadArray in the No Mercy recomp's symbol dump (libultra / boot)."
+status = "likely"
+
+[[func]]
+addr = 0x80030710
+name = "osAiGetLength"
+desc = "Named osAiGetLength in the No Mercy recomp's symbol dump (libultra / boot)."
+status = "likely"
+
+[[func]]
+addr = 0x80030720
+name = "osAiGetStatus"
+desc = "Named osAiGetStatus in the No Mercy recomp's symbol dump (libultra / boot)."
+status = "likely"
+
+[[func]]
+addr = 0x80030730
+name = "osAiSetFrequency"
+desc = "Named osAiSetFrequency in the No Mercy recomp's symbol dump (libultra / boot)."
+status = "likely"
+
+[[func]]
+addr = 0x80030850
+name = "osAiSetNextBuffer"
+desc = "Named osAiSetNextBuffer in the No Mercy recomp's symbol dump (libultra / boot)."
+status = "likely"
+
+[[func]]
+addr = 0x80034770
+name = "osContInit"
+desc = "Named osContInit in the No Mercy recomp's symbol dump (libultra / boot)."
+status = "likely"
+
+[[func]]
+addr = 0x80036B60
+name = "osCreateMesgQueue"
+desc = "Named osCreateMesgQueue in the No Mercy recomp's symbol dump (libultra / boot)."
+status = "likely"
+
+[[func]]
+addr = 0x80036B90
+name = "osJamMesg"
+desc = "Named osJamMesg in the No Mercy recomp's symbol dump (libultra / boot)."
+status = "likely"
+
+[[func]]
+addr = 0x80036CD0
+name = "osRecvMesg"
+desc = "Named osRecvMesg in the No Mercy recomp's symbol dump (libultra / boot)."
+status = "likely"
+
+[[func]]
+addr = 0x80036E00
+name = "osSendMesg"
+desc = "Named osSendMesg in the No Mercy recomp's symbol dump (libultra / boot)."
+status = "likely"
+
+[[func]]
+addr = 0x80036F30
+name = "osSetEventMesg"
+desc = "Named osSetEventMesg in the No Mercy recomp's symbol dump (libultra / boot)."
+status = "likely"
+
+[[func]]
+addr = 0x80036FE0
+name = "osSpTaskLoad"
+desc = "Named osSpTaskLoad in the No Mercy recomp's symbol dump (libultra / boot)."
+status = "likely"
+
+[[func]]
+addr = 0x800371EC
+name = "osSpTaskStartGo"
+desc = "Named osSpTaskStartGo in the No Mercy recomp's symbol dump (libultra / boot)."
+status = "likely"
+
+[[func]]
+addr = 0x80037220
+name = "osSpTaskYield"
+desc = "Named osSpTaskYield in the No Mercy recomp's symbol dump (libultra / boot)."
+status = "likely"
+
+[[func]]
+addr = 0x80037240
+name = "osSpTaskYielded"
+desc = "Named osSpTaskYielded in the No Mercy recomp's symbol dump (libultra / boot)."
+status = "likely"
+
+[[func]]
+addr = 0x80037290
+name = "__osSiRawStartDma"
+desc = "Named __osSiRawStartDma in the No Mercy recomp's symbol dump (libultra / boot)."
+status = "likely"
+
+[[func]]
+addr = 0x80037520
+name = "osCreateThread"
+desc = "Named osCreateThread in the No Mercy recomp's symbol dump (libultra / boot)."
+status = "likely"
+
+[[func]]
+addr = 0x800375F0
+name = "osGetThreadPri"
+desc = "Named osGetThreadPri in the No Mercy recomp's symbol dump (libultra / boot)."
+status = "likely"
+
+[[func]]
+addr = 0x80037610
+name = "osSetThreadPri"
+desc = "Named osSetThreadPri in the No Mercy recomp's symbol dump (libultra / boot)."
+status = "likely"
+
+[[func]]
+addr = 0x800376E0
+name = "osStartThread"
+desc = "Named osStartThread in the No Mercy recomp's symbol dump (libultra / boot)."
+status = "likely"
+
+[[func]]
+addr = 0x80037890
+name = "osGetTime"
+desc = "Named osGetTime in the No Mercy recomp's symbol dump (libultra / boot)."
+status = "likely"
+
+[[func]]
+addr = 0x80037E30
+name = "osViGetCurrentFramebuffer"
+desc = "Named osViGetCurrentFramebuffer in the No Mercy recomp's symbol dump (libultra / boot)."
+status = "likely"
+
+[[func]]
+addr = 0x80037E70
+name = "osViGetNextFramebuffer"
+desc = "Named osViGetNextFramebuffer in the No Mercy recomp's symbol dump (libultra / boot)."
+status = "likely"
+
+[[func]]
+addr = 0x80037EB0
+name = "osCreateViManager"
+desc = "Named osCreateViManager in the No Mercy recomp's symbol dump (libultra / boot)."
+status = "likely"
+
+[[func]]
+addr = 0x800381F0
+name = "osViSetEvent"
+desc = "Named osViSetEvent in the No Mercy recomp's symbol dump (libultra / boot)."
+status = "likely"
+
+[[func]]
+addr = 0x80038250
+name = "osViSetMode"
+desc = "Named osViSetMode in the No Mercy recomp's symbol dump (libultra / boot)."
+status = "likely"
+
+[[func]]
+addr = 0x800382A0
+name = "osViSetSpecialFeatures"
+desc = "Named osViSetSpecialFeatures in the No Mercy recomp's symbol dump (libultra / boot)."
+status = "likely"
+
+[[func]]
+addr = 0x80038410
+name = "osViSetYScale"
+desc = "Named osViSetYScale in the No Mercy recomp's symbol dump (libultra / boot)."
+status = "likely"
+
+[[func]]
+addr = 0x80038460
+name = "osViSwapBuffer"
+desc = "Named osViSwapBuffer in the No Mercy recomp's symbol dump (libultra / boot)."
+status = "likely"
+
+[[func]]
+addr = 0x800387C0
+name = "osViBlack"
+desc = "Named osViBlack in the No Mercy recomp's symbol dump (libultra / boot)."
+status = "likely"
+
+[[func]]
+addr = 0x8003C478
+name = "osInitialize"
+desc = "Named osInitialize in the No Mercy recomp's symbol dump (libultra / boot)."
+status = "likely"
+
+[[func]]
+addr = 0x8003D660
+name = "osFlashReadStatus"
+desc = "Named osFlashReadStatus in the No Mercy recomp's symbol dump (libultra / boot)."
+status = "likely"
+
+[[func]]
+addr = 0x8003D700
+name = "osFlashClearStatus"
+desc = "Named osFlashClearStatus in the No Mercy recomp's symbol dump (libultra / boot)."
+status = "likely"
+
+[[func]]
+addr = 0x8003E270
+name = "osGetCount"
+desc = "Named osGetCount in the No Mercy recomp's symbol dump (libultra / boot)."
+status = "likely"
+
+[[func]]
+addr = 0x8003E470
+name = "osDestroyThread"
+desc = "Named osDestroyThread in the No Mercy recomp's symbol dump (libultra / boot)."
+status = "likely"
+
+[[func]]
+addr = 0x8003FBE0
+name = "__osSiDeviceBusy"
+desc = "Named __osSiDeviceBusy in the No Mercy recomp's symbol dump (libultra / boot)."
+status = "likely"
