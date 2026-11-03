@@ -35,10 +35,17 @@ Every frame, in this order (the first that acts ends the frame):
 12. **Only with a d-pad direction held**: `input_climb_turnbuckle`, `input_apron_moves`, `input_c_up`
     (climb / exit / table / tag by zone flags), `input_weapon_grab` (C-left at the steps or crowd),
     `input_weapon_grab_zone`, `cage_climb_check`.
-13. Always: `input_leapfrog` (C-down at a runner), `input_r` (R held: the block and its special cases, `strikes.md`; this was `input_strike`, but it tests R, not B), `taunt_stir_opponent`,
-    `input_cup_opponent` (C-up at the opponent), `input_l` (L: evade, counters), `guest_referee_call`
+13. Always: `input_leapfrog` (C-down at a runner), `input_r` (R held: the block and its special cases, `strikes.md`; this was `input_strike`, but it tests R, not B), `input_a`,
+    `input_cup_opponent` (C-up at the opponent), `input_l` (L: evade, counters), `input_c_left_held`
     (C-left, guest referee only), `input_tag` (C-up), `input_ladder_climb` (C-up at a ladder),
-    `input_grapple_attempt` (A).
+    `input_stick` (A).
+
+Corrections from the decompilation (2026-11-02): step 10 stores walk_step's result in +0x98, and that is
+**the direction bits of the walls keep_in_bounds pushed the wrestler off** (wall +0x26 & 0xF00), not the
+d-pad: so the place checks of step 12 run only against a wall. In step 13, C-down is tested *held*
+(input_leapfrog: the run, or the leapfrog over a downed wrestler ahead), B, L and C-left held, C-up
+pressed; `input_a` is A held (the grapple attempt 0x50) and the last check,
+`input_stick`, is the control stick (the taunt).
 
 So a d-pad direction is needed for the place actions (climbing, apron moves, weapons, the cage), and
 the button checks run in a fixed priority: C-down, B, taunts, C-up, L, C-left, tag, ladder, A.
@@ -229,6 +236,14 @@ mat**, the y = 90 square. The ring set (0x80146BF0) is the rope group. The other
 | floor, by area and zone (0x8014D290 + 16 × area) | the ringside floor (area 0: 3-12 walls per side, the barricades about x ±530, z −690 to 530) and the 9 backstage areas (3-17 walls each) | y 0-100 ringside, 0-1000 backstage |
 | object surfaces (0x80147BB4, 8 sets by `arena_area_lookup`) | what thrown objects land on: the floor (y 0, x ±530, z −690 to 800), the ring block (x / z ±280, up to 220) and the barricades by side; ladders use a variant with the ring block's sides only up to the mat (90) | |
 
+
+**Pushing apart** (`wrestler_slide` -> `wrestler_move_step`, every walk frame): each wrestler is an ellipse
+(33 x 33 standing; lying and cage bodies come from lying_body_axis) round point_120; everyone within the
+two radii (+20 for a downed one) pushes it straight out of the overlap, the sum capped at 7.5 a frame;
+ladders standing on the floor count as 60 x 60 bodies. The walk's result is kept in +0x68 (the slot it
+touched). **The walls** (`keep_in_bounds`): a sphere of radius 30 round point_120 (10 above the feet),
+the nearest wall then the nearest other one, each pushing out by its overlap; the wall the wrestler faces
+more squarely becomes zone_info (+0x348), the other +0x34C.
 
 ## Open
 

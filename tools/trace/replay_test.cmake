@@ -1,0 +1,13 @@
+# CTest driver: replay a trace with nm_replay, then diff it against the recording.
+if(NOT EXISTS "${TRACE}")
+  message("trace ${TRACE} not found: record it with tools/trace/record.py")
+  cmake_language(EXIT 77)
+endif()
+execute_process(COMMAND "${REPLAY}" "${TRACE}" "${OUT}" --${MODE} --rom "${ROM}" RESULT_VARIABLE rc)
+if(NOT rc EQUAL 0)
+  message(FATAL_ERROR "nm_replay failed (${rc})")
+endif()
+execute_process(COMMAND "${PYTHON}" "${DIFF}" "${TRACE}" "${OUT}" RESULT_VARIABLE rc)
+if(NOT rc EQUAL 0)
+  message(FATAL_ERROR "the replay differs from the recording")
+endif()

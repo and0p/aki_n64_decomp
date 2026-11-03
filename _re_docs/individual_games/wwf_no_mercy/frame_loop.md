@@ -8,6 +8,18 @@ Addresses are USA Rev 1. Names are in `symbols/nomercy/` (`match.toml`, `states.
 The game logic runs at **30 frames a second** (akiemu counts VIs, 2 per game frame). Timers below
 are in game frames unless they say otherwise.
 
+**Slowdown stretches time; nothing catches up.** `match_frame` (0x800D9AB0) loops `pads_read`, then
+one `match_tick` (its only call, 0x800D9DFC), then the drawing; there is no count of elapsed VIs, and
+`osGetTime` is only used by `osContInit`. So a slow frame just makes the match run slower in real
+time, and the port can step the logic at a fixed 30 Hz. Measured in akiemu with `--tick-hook`
+(COP0 Count stamped around `match_tick`, 2026-11-03): singles and the 4-CPU tag save average exactly
+2.000 VIs a tick (single periods 1.8 to 2.2, jitter around the 2-VI pace); the save with P2 down at 0
+health and both run-ins on the floor runs at 2.12 VIs a tick idle (28.3 Hz, longest 2.32) and 2.04
+with P1 / P2 striking and grappling (29.4 Hz, longest 2.43). `match_tick` itself takes 0.2 VIs
+(singles) to 0.87 VIs (the longest, 4 wrestlers), so the rest of the frame (drawing, waits) is what
+runs long. Emulator timing (dynarec cycle counts, HLE RSP) is not the console's, so hardware may
+differ; frame-exactness does not depend on it.
+
 ## match_tick (0x80114514)
 
 A switch on the phase word `0x801591FC` (0-4):
@@ -147,9 +159,44 @@ at step 5 (12564, a grapple straight from the pose); default 0x01. It clears fla
 
 - `rng_match` (0x8012E07C): the LCG of World Tour and Revenge, `s = s × 0x5D588B65 + inc` (state
   0x80159350, increment 0x80159354), returning `(s & 0xFFFFF) / 1000` and rerolling 1000 and up.
-- `rand_pool_next`: a pool of pre-drawn values (the AI and some states).
+- `rng_main` (0x80036110, state 0x80053780): World Tour's generator, identical machine code. As in the earlier
+  games the idle thread calls it in a busy loop (`jal` at 0x80000570), so its sequence depends on spare CPU
+  time; `akiemu --no-idle-rng` turns that call off for replayable traces.
+- `rng_seed_match(n)` (0x8012DF70, from `match_load`): as in World Tour: s = rng_main(), n more draws,
+  inc = rng_main() | 1, then the 32-entry pool (0x80159358) filled with `rng_match`. World Tour passes a
+  constant 10 (used as n & 15); No Mercy passes (the sum of the words at 0x800A4038-0x800A4044) & 31, not
+  identified yet (code 2026-11-02).
+- `rand_pool_next` (0x8012DFF4): returns the pool entry at `rng_main() & 31` and refills it with
+  `rng_match`, as in World Tour. `chance_check(n)` succeeds when that value is <= n, so (n + 1) / 1000.
 - `chance_check(n)`: true with probability n / 1000. `chance_roll(kind, ...)` first turns a stat into a
   per-mille chance (tables in `damage_and_spirit.md`).
+
+## The rest of the update pass (decompiled 2026-11-02, `src/nomercy/`)
+
+After the four update passes `wrestlers_update_all` turns wrestlers with flags8a 0x200 toward their
+opponents, runs `objects_cleanup` and `objects_wrestler_contact`, sets `g_cpu_flags` (0x8009ED20, 1 for
+each slot the CPU does not play), then:
+
+- `wrestlers_ground_contact`: per wrestler `head_look_update` (the head-look lean toward the opponent,
+  0x801593A8), the restart of a looping animation that ran out (anim player byte 5), the posing
+  (`model_pose_in_place` -> `model_animate` with the slot's posing mode from wrestler_set_anim,
+  0x801593D8), then **the frame advance: anim_frame + 1, anim_frames_left - 1**. model_animate gets a
+  copy of the position and the copy is stored back: when a new animation starts (frame 0) in a posing
+  mode with bit 0 it moves the copy so the model's root stays where it was (x / z, and y with mode bit
+  3). So **positions change inside the posing** on animation switches. model_animate itself (main
+  segment, decompiled 2026-11-02 in `src/nomercy/nm_model.cpp`; `animation_data.md`, "Posing") streams
+  the keyframes from the ROM, decodes or interpolates the frame, blends a new animation's first five
+  frames from the old pose (mode bit 1), builds the skin matrices and the render tree and fires the
+  frame events; its state is `struct ModelBlock` (0x800A1130) and `struct AnimStream` (0x80069F20) in
+  `types.h`. The posing modes seen: bit 0 anchor the root, bit 1 blend, bit 2 no re-centring of the
+  old pose, bit 3 anchor y as well.
+- `replay_record` (0x8013092C, was wrestlers_collide): the instant-replay ring buffer and its trigger
+  (`symbols/nomercy/bulk.toml`).
+- the state history (0x8016B5A0, 16 states a slot, not counting standing and 0x30).
+
+`wrestler_tick` ends each slot's update with the animation-end bookkeeping: once anim_frame reaches the
+player's byte 0x14 (and the animation is not 12519 / 12745) flags80 gets 0x08 and the end place and
+lying side are applied; without flags80 0x01, frames inside the active window (bytes 0x0E-0x0F) set it.
 
 ## Other per-frame pieces
 

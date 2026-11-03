@@ -1,0 +1,28 @@
+{
+ "game": "nomercy",
+ "state": "_tools/libretro/states/nm_1p_2p_normal_match_start.state",
+ "note": "P1 and P2 walk to each other (up+right is +x +z), then trade strikes: P1 weak B, P2 weak B, P1 held B (strong), a blocked strike (P2 holds R while P1 taps B), then more weak strikes. Milestone 2 of the No Mercy decompilation: strikes, hit reactions, blocks.",
+ "steps": [
+  {"frames": 20},
+  {"frames": 34, "pads": {"0": "up+right", "1": "down+left"}},
+  {"frames": 10},
+  {"frames": 2, "pads": {"0": "b"}},
+  {"frames": 50},
+  {"frames": 2, "pads": {"1": "b"}},
+  {"frames": 50},
+  {"frames": 20, "pads": {"0": "b"}},
+  {"frames": 70},
+  {"frames": 4, "pads": {"1": "r"}},
+  {"frames": 2, "pads": {"0": "b", "1": "r"}},
+  {"frames": 10, "pads": {"1": "r"}},
+  {"frames": 60},
+  {"frames": 2, "pads": {"1": "b"}},
+  {"frames": 50},
+  {"frames": 2, "pads": {"0": "b"}},
+  {"frames": 50},
+  {"frames": 2, "pads": {"1": "b+down"}},
+  {"frames": 50},
+  {"frames": 2, "pads": {"0": "b"}},
+  {"frames": 108}
+ ]
+}

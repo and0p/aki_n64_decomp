@@ -89,7 +89,7 @@ Results in `symbols/revenge/from_wcw.toml` (272 names; score >= 1.0 `likely`, be
 - **Accuracy.** A first, looser version (constant-free functions scored as similar, size ratio
   down to 0.4) got about 1 in 25 wrong on small functions, mainly where the optimised build
   inlined a helper (`angle_diff` landed on a function that inlines it; `recover_tick`, which
-  Revenge has twice, was taken for `wrestler_set_move_from`). The current scoring fixes those;
+  Revenge has twice, was taken for `move_texture_stamp`). The current scoring fixes those;
   the few wrong ones found by hand since (`wrestler_add_health`, `chance_check`) are corrected
   in `bulk.toml`. Treat `guess` entries as unchecked.
 - **Independent agreement.** 36 state bodies paired by the call graph land exactly on the

@@ -4,20 +4,26 @@
 [[func]]
 addr = 0x800FD98C
 name = "ai_mode_1_engage"
-desc = "Standing close to the opponent: with chance = skill it reacts to what the opponent is doing (striking, situation 8: mode 46 block; grapple attempt, 11: mode 21 L counter 75% or 43), otherwise presses A to grapple. From code 2026-11-02. Presses A (with chance_check): a grapple attempt. From a profile of the mode's code: the buttons it writes to AI block +0x0C, the situation (+0x24) and states it checks, the modes it goes to (2026-11-02). AI mode 1 in No Mercy's table (0x80145A10). Not identified."
-status = "likely"
+proto = "void ai_mode_1_engage(void)"
+desc = "Standing close to the opponent: with chance = skill it reacts to what the opponent is doing (striking, situation 8: mode 46 block; grapple attempt, 11: mode 21 L counter 75% or 43), otherwise presses A to grapple. From code 2026-11-02. Presses A (with chance_check): a grapple attempt. From a profile of the mode's code: the buttons it writes to AI block +0x0C, the situation (+0x24) and states it checks, the modes it goes to (2026-11-02). AI mode 1 in No Mercy's table (0x80145A10). Not identified. Decompiled 2026-11-03 (src/nomercy/nm_ai.cpp, from the code and asm; its comment there has the full reading)."
+status = "confirmed"
+port = "src/nomercy/nm_ai.cpp"
 
 [[func]]
 addr = 0x800FDA7C
 name = "ai_mode_2_grapple_approach"
-desc = "Grapple (code 2026-11-02): step 0 detours first: a dazed opponent (situation 16) in the ring, in finisher mode, facing it, with attrs +0x3C bit 0x01 and not 0x02 -> mode 100 (saving 2 to come back to); opponent situation 20 in finisher mode with the finish plan 15% -> mode 94; a face-down opponent (flags8a 0x01) with attrs +0x3C 0x600000 == 0x200000, or face-up with == 0x400000 -> mode 94 (saved); step 1 presses A; step 2 holds A in the attempt (state 0x50) and goes to mode 1 once standing again."
-status = "likely"
+proto = "void ai_mode_2_grapple_approach(void)"
+desc = "Grapple (code 2026-11-02): step 0 detours first: a dazed opponent (situation 16) in the ring, in finisher mode, facing it, with attrs +0x3C bit 0x01 and not 0x02 -> mode 100 (saving 2 to come back to); opponent situation 20 in finisher mode with the finish plan 15% -> mode 94; a face-down opponent (flags8a 0x01) with attrs +0x3C 0x600000 == 0x200000, or face-up with == 0x400000 -> mode 94 (saved); step 1 presses A; step 2 holds A in the attempt (state 0x50) and goes to mode 1 once standing again. Decompiled 2026-11-03 (src/nomercy/nm_ai.cpp, from the code and asm; its comment there has the full reading)."
+status = "confirmed"
+port = "src/nomercy/nm_ai.cpp"
 
 [[func]]
 addr = 0x800FDCD8
 name = "ai_mode_3_defend"
-desc = "Run in and counter (code 2026-11-02): step 0 presses C-down (run) when in the ring; step 1 by its own situation: a rebound (4) -> mode 119, still running (2 / 5 / 11) stays; at run step 2 close to the opponent with a skill chance against a striking / grappling opponent (8 / 11) presses L; near an opponent in a move (flags80 0x03) or situation 15: with chance skill a roll under 200 R, under 600 L, else mode 119; otherwise presses A (the running grapple)."
-status = "likely"
+proto = "void ai_mode_3_defend(void)"
+desc = "Run in and counter (code 2026-11-02): step 0 presses C-down (run) when in the ring; step 1 by its own situation: a rebound (4) -> mode 119, still running (2 / 5 / 11) stays; at run step 2 close to the opponent with a skill chance against a striking / grappling opponent (8 / 11) presses L; near an opponent in a move (flags80 0x03) or situation 15: with chance skill a roll under 200 R, under 600 L, else mode 119; otherwise presses A (the running grapple). Decompiled 2026-11-03 (src/nomercy/nm_ai.cpp, from the code and asm; its comment there has the full reading)."
+status = "confirmed"
+port = "src/nomercy/nm_ai.cpp"
 
 [[func]]
 addr = 0x800FDEB8
@@ -28,8 +34,10 @@ status = "likely"
 [[func]]
 addr = 0x800FE508
 name = "ai_mode_6_strike"
-desc = "A strike (code 2026-11-02): step 0 presses B (R under rule 0x2000; against a carried opponent, situation 20, a move from ai_pick_grapple_move kind 4 / 5), then waits for its own striking situation (8); afterwards, standing again: a knocked-back / off-balance opponent (17 / 18) in the ring beyond 0x8014FCA0 -> ai_try_grapple(1) with a skill chance; close: 25% strike again, else unarmed with a skill chance R against a striker (8), or A / L 50 / 50 against 1 / 11 / 14; then mode 0."
-status = "likely"
+proto = "void ai_mode_6_strike(void)"
+desc = "A strike (code 2026-11-02): step 0 presses B (R under rule 0x2000; against a carried opponent, situation 20, a move from ai_pick_grapple_move kind 4 / 5), then waits for its own striking situation (8); afterwards, standing again: a knocked-back / off-balance opponent (17 / 18) in the ring beyond 0x8014FCA0 -> ai_try_grapple(1) with a skill chance; close: 25% strike again, else unarmed with a skill chance R against a striker (8), or A / L 50 / 50 against 1 / 11 / 14; then mode 0. Decompiled 2026-11-03 (src/nomercy/nm_ai.cpp, from the code and asm; its comment there has the full reading)."
+status = "confirmed"
+port = "src/nomercy/nm_ai.cpp"
 
 [[func]]
 addr = 0x800FEA94
@@ -46,14 +54,18 @@ status = "likely"
 [[func]]
 addr = 0x800FEC98
 name = "ai_mode_9_strike_follow"
-desc = "Following a strike (code 2026-11-02): step 0 presses B; step 1 in its own strike (situation 8) prepares the next input: B on a raised place (where 0x80), else a grapple move from ai_pick_grapple_move (kind 1 with the finish plan, 2 with +0x80 0x02) or B / R (rule 0x2000) when armed; step 2 holds it while still striking in state 0x22; afterwards, standing, a knocked-back / off-balance opponent (17 / 18) beyond 0x8014FCE8 gets ai_try_grapple(1) at 50%; then mode 0."
-status = "likely"
+proto = "void ai_mode_9_strike_follow(void)"
+desc = "Following a strike (code 2026-11-02): step 0 presses B; step 1 in its own strike (situation 8) prepares the next input: B on a raised place (where 0x80), else a grapple move from ai_pick_grapple_move (kind 1 with the finish plan, 2 with +0x80 0x02) or B / R (rule 0x2000) when armed; step 2 holds it while still striking in state 0x22; afterwards, standing, a knocked-back / off-balance opponent (17 / 18) beyond 0x8014FCE8 gets ai_try_grapple(1) at 50%; then mode 0. Decompiled 2026-11-03 (src/nomercy/nm_ai.cpp, from the code and asm; its comment there has the full reading)."
+status = "confirmed"
+port = "src/nomercy/nm_ai.cpp"
 
 [[func]]
 addr = 0x800FEE64
 name = "ai_mode_10_evade"
-desc = "Evade and counter (code 2026-11-02): step 0 presses C-down with the direction from ai_evade_direction and prepares the follow-up in +0x10: B on a raised place, B / R when armed (no finish plan), else a grapple move (ai_pick_grapple_move kind 1 / 2, list 2 or 3); the reach (+0xA0) comes from the move's record; step 1 by its own situation: a rebound (4) -> 119, running (2 / 5 / 8) stays: at run step 2 close with a skill chance L (the C buttons 3840 when armed) against a striker / grappler (8 / 11), within reach of an opponent in a move (flags80 0x05) a skill roll under 200 R / 600 L / else 119, otherwise the prepared input; mode 0 when it ends."
-status = "likely"
+proto = "void ai_mode_10_evade(void)"
+desc = "Evade and counter (code 2026-11-02): step 0 presses C-down with the direction from ai_evade_direction and prepares the follow-up in +0x10: B on a raised place, B / R when armed (no finish plan), else a grapple move (ai_pick_grapple_move kind 1 / 2, list 2 or 3); the reach (+0xA0) comes from the move's record; step 1 by its own situation: a rebound (4) -> 119, running (2 / 5 / 8) stays: at run step 2 close with a skill chance L (the C buttons 3840 when armed) against a striker / grappler (8 / 11), within reach of an opponent in a move (flags80 0x05) a skill roll under 200 R / 600 L / else 119, otherwise the prepared input; mode 0 when it ends. Decompiled 2026-11-03 (src/nomercy/nm_ai.cpp, from the code and asm; its comment there has the full reading)."
+status = "confirmed"
+port = "src/nomercy/nm_ai.cpp"
 
 [[func]]
 addr = 0x800FF288
@@ -70,8 +82,10 @@ status = "likely"
 [[func]]
 addr = 0x800FFB98
 name = "ai_mode_15_partner_decide"
-desc = "Tag / partner decisions (g_match_type 0x1000, AI block +0x80 0x40, attrs +0x34 bits 0x700000): picks mode 114 or 16 by chance and position. Read from code 2026-11-02 (quick pass). AI mode 15 in No Mercy's table (0x80145A10). Not identified."
-status = "likely"
+proto = "void ai_mode_15_partner_decide(void)"
+desc = "Tag / partner decisions (g_match_type 0x1000, AI block +0x80 0x40, attrs +0x34 bits 0x700000): picks mode 114 or 16 by chance and position. Read from code 2026-11-02 (quick pass). AI mode 15 in No Mercy's table (0x80145A10). Not identified. Decompiled 2026-11-03 (src/nomercy/nm_ai.cpp, from the code and asm; its comment there has the full reading)."
+status = "confirmed"
+port = "src/nomercy/nm_ai.cpp"
 
 [[func]]
 addr = 0x80100174
@@ -100,8 +114,10 @@ status = "likely"
 [[func]]
 addr = 0x80100624
 name = "ai_mode_22_strike"
-desc = "A strike (code 2026-11-02): step 0 presses B unless the opponent's situation is 15; step 1 waits for its own situation 9, else clears the saved mode (+0x86) and ends; step 2 when the strike situation ends goes to the saved mode."
-status = "likely"
+proto = "void ai_mode_22_strike(void)"
+desc = "Mode 22, a strike on a downed opponent: step 0 holds B at an opponent down (15), else back to mode 0 (clearing AI +0x86); step 1 waits for its own strike (situation 9), else mode 0; step 2 when the strike is over, the mode saved in +0x86. Decompiled 2026-11-03 (src/nomercy/nm_ai.cpp, from the code and asm)."
+status = "confirmed"
+port = "src/nomercy/nm_ai.cpp"
 
 [[func]]
 addr = 0x801006E0
@@ -112,14 +128,18 @@ status = "likely"
 [[func]]
 addr = 0x801009B0
 name = "ai_mode_25_lockup_choose"
-desc = "In the lock-up (situation 13): waits a time from the style tables (word_80145C54 by attrs +0x15) and then picks the grapple move (a long mode with many helpers). Read from code 2026-11-02 (quick pass). AI mode 25 in No Mercy's table (0x80145A10). Not identified."
-status = "likely"
+proto = "void ai_mode_25_lockup_choose(void)"
+desc = "In the lock-up (situation 13): waits a time from the style tables (word_80145C54 by attrs +0x15) and then picks the grapple move (a long mode with many helpers). Read from code 2026-11-02 (quick pass). AI mode 25 in No Mercy's table (0x80145A10). Not identified. Written in C 2026-11-03 (src/nomercy/nm_ai.cpp) from the pseudocode, then checked branch by branch against the asm the same day (all steps match); its helpers (ai_lockup_*) are decompiled too."
+status = "confirmed"
+port = "src/nomercy/nm_ai.cpp"
 
 [[func]]
 addr = 0x80101590
 name = "ai_mode_26_lockup_press_move"
-desc = "In the lock-up (situation 13; code 2026-11-02): step 0 takes the list of (move, input) pairs from ai_lockup_wait_time; with the finish plan (0x8016B718) the finisher's input, else with chance 300 the first preferred move (record flags 0x8000), else a random one, into +0x10; step 1 presses and holds that input (+0x0C / +0x0E) while still in the lock-up, then mode 0."
-status = "likely"
+proto = "void ai_mode_26_lockup_press_move(void)"
+desc = "In the lock-up (situation 13; code 2026-11-02): step 0 takes the list of (move, input) pairs from ai_lockup_move_list; with the finish plan (0x8016B718) the finisher's input, else with chance 300 the first preferred move (record flags 0x8000), else a random one, into +0x10; step 1 presses and holds that input (+0x0C / +0x0E) while still in the lock-up, then mode 0. Decompiled 2026-11-03 (src/nomercy/nm_ai.cpp, from the code and asm; its comment there has the full reading)."
+status = "confirmed"
+port = "src/nomercy/nm_ai.cpp"
 
 [[func]]
 addr = 0x801023CC
@@ -136,32 +156,42 @@ status = "likely"
 [[func]]
 addr = 0x80102404
 name = "ai_mode_29_grappled_struggle"
-desc = "While held in a lock-up (own situation 6): presses A, B, L and R at once (0xC030) with a chance from skill, the perceived health (< 65, < 128), the CPU level and traits attrs +36 / +37: the struggle to reverse. Read from code 2026-11-02 (quick pass). AI mode 29 in No Mercy's table (0x80145A10). Not identified."
-status = "likely"
+proto = "void ai_mode_29_grappled_struggle(void)"
+desc = "While held in a lock-up (own situation 6): presses A, B, L and R at once (0xC030) with a chance from skill, the perceived health (< 65, < 128), the CPU level and traits attrs +36 / +37: the struggle to reverse. Read from code 2026-11-02 (quick pass). AI mode 29 in No Mercy's table (0x80145A10). Not identified. Decompiled 2026-11-03 (src/nomercy/nm_ai.cpp, from the code and asm; its comment there has the full reading)."
+status = "confirmed"
+port = "src/nomercy/nm_ai.cpp"
 
 [[func]]
 addr = 0x8010257C
 name = "ai_mode_30_whip_reverse"
-desc = "Being whipped (own situation 3): presses A or B with a chance from skill and sub_80107584; on a rebound in the ring goes to mode 107 or 108. Read from code 2026-11-02 (quick pass). AI mode 30 in No Mercy's table (0x80145A10). Not identified."
-status = "likely"
+proto = "void ai_mode_30_whip_reverse(void)"
+desc = "Being whipped (own situation 3): presses A or B with a chance from skill and sub_80107584; on a rebound in the ring goes to mode 107 or 108. Read from code 2026-11-02 (quick pass). AI mode 30 in No Mercy's table (0x80145A10). Not identified. Decompiled 2026-11-03 (src/nomercy/nm_ai.cpp, from the code and asm; its comment there has the full reading)."
+status = "confirmed"
+port = "src/nomercy/nm_ai.cpp"
 
 [[func]]
 addr = 0x80102660
 name = "ai_mode_31_ground_hold"
-desc = "In a hold (code 2026-11-02): step 0, in state 0x49 (the ground hold), stores the d-pad toward the nearest ring side (by the perceived zone +0x42) in +0x10; step 1 while held (situations 7 / 15 / 20 / 38 / 40 / 59-61): gives up (mode 0) against a holder in state 0xC6 with own spirit below 51, or in 0xC7; in 0x49 holds the stored d-pad (the crawl to the ropes) unless that direction is blocked; and mashes A+B+L+R (0xC030) with chance skill x ai_struggle_rate (1000 for a losing CPU, +0x1C 5-6, against a CPU-controlled opponent with 41 more health)."
-status = "likely"
+proto = "void ai_mode_31_ground_hold(void)"
+desc = "In a hold (code 2026-11-02): step 0, in state 0x49 (the ground hold), stores the d-pad toward the nearest ring side (by the perceived zone +0x42) in +0x10; step 1 while held (situations 7 / 15 / 20 / 38 / 40 / 59-61): gives up (mode 0) against a holder in state 0xC6 with own spirit below 51, or in 0xC7; in 0x49 holds the stored d-pad (the crawl to the ropes) unless that direction is blocked; and mashes A+B+L+R (0xC030) with chance skill x ai_struggle_rate (1000 for a losing CPU, +0x1C 5-6, against a CPU-controlled opponent with 41 more health). Decompiled 2026-11-03 (src/nomercy/nm_ai.cpp, from the code and asm; its comment there has the full reading)."
+status = "confirmed"
+port = "src/nomercy/nm_ai.cpp"
 
 [[func]]
 addr = 0x801028F0
 name = "ai_mode_32_wait"
-desc = "Stands and watches while the opponent's state stays the same, reacting to some of its states (running 0x03 / 0x04 / 0x0C by chance). From code 2026-11-02. AI mode 32 in No Mercy's table (0x80145A10). Not identified."
-status = "likely"
+proto = "void ai_mode_32_wait(void)"
+desc = "Stands and watches while the opponent's state stays the same, reacting to some of its states (running 0x03 / 0x04 / 0x0C by chance). From code 2026-11-02. AI mode 32 in No Mercy's table (0x80145A10). Not identified. Decompiled 2026-11-03 (src/nomercy/nm_ai.cpp, from the code and asm). Step 0: a wait of rand % 28 + 8 frames (AI block +0x18). Step 1: back to mode 0 when not standing, the wait runs out, wrestler_may_act fails or the opponent's state changed since the mode was set; the opponent standing, taunting or in the TKO check just waits; running or whipped (0x03 / 0x04 / 0x0C), half the time in team / tag matches with the teammate in the ring: mode 143 (same opponent) or a skill roll to press C-right; else beyond 170 (where-class 0x101) a 20% roll (0 for a weapon holder with trait +38 == 3 unless the opponent is down) to ai_try_grapple(1). Checked against the 4-CPU recording: 871 starts all with a wait of 8-35, the timer down one a frame, and every end explained (728 of them illegal men on the apron, who may not act)."
+status = "confirmed"
+port = "src/nomercy/nm_ai.cpp"
 
 [[func]]
 addr = 0x80102C4C
 name = "ai_mode_33_apron"
-desc = "Code 2026-11-02 (first read): heads for the ring. It holds the d-pad toward the ring centre (angle_dir8_back of the position's angle, d-pad bits 0x8014D258); mode 34 adds C-down (held 0x04), mode 33 presses C-up (pressed 0x08, at 35% when in play). With the standing / climbing rules (movement.md) that is: 33 gets back in (onto the apron, through the ropes), 34 climbs the corner from the apron. It gives up when its fall is lost. Shared by 33 / 34; apron_walk_dpad, R or L, opponent in state 0x20; set by ai_think. From a profile of the mode's code: the buttons it writes to AI block +0x0C, the situation (+0x24) and states it checks, the modes it goes to (2026-11-02). AI mode 33, 34 in No Mercy's table (0x80145A10). Not identified."
-status = "likely"
+proto = "void ai_mode_33_apron(void)"
+desc = "Code 2026-11-02 (first read): heads for the ring. It holds the d-pad toward the ring centre (angle_dir8_back of the position's angle, d-pad bits 0x8014D258); mode 34 adds C-down (held 0x04), mode 33 presses C-up (pressed 0x08, at 35% when in play). With the standing / climbing rules (movement.md) that is: 33 gets back in (onto the apron, through the ropes), 34 climbs the corner from the apron. It gives up when its fall is lost. Shared by 33 / 34; apron_walk_dpad, R or L, opponent in state 0x20; set by ai_think. From a profile of the mode's code: the buttons it writes to AI block +0x0C, the situation (+0x24) and states it checks, the modes it goes to (2026-11-02). AI mode 33, 34 in No Mercy's table (0x80145A10). Not identified. Decompiled 2026-11-03 (src/nomercy/nm_ai.cpp, from the code and asm; its comment there has the full reading)."
+status = "confirmed"
+port = "src/nomercy/nm_ai.cpp"
 
 [[func]]
 addr = 0x80103120
@@ -184,32 +214,40 @@ status = "likely"
 [[func]]
 addr = 0x80103A5C
 name = "ai_mode_38_evade_unless_special"
-desc = "Runs ai_mode_11_evade unless the meter is in a mode (flags_ee & 6) or trait attrs +39 is 2, then mode 0. Read from code 2026-11-02 (quick pass). AI mode 38 in No Mercy's table (0x80145A10). Not identified."
+desc = "Runs ai_stick_taunt unless the meter is in a mode (flags_ee & 6) or trait attrs +39 is 2, then mode 0. Read from code 2026-11-02 (quick pass). AI mode 38 in No Mercy's table (0x80145A10). Not identified."
 status = "likely"
 
 [[func]]
 addr = 0x80103AA8
 name = "ai_mode_39_fetch_weapon"
-desc = "Walks to a point; in the ring-steps zones (46-48, 51-53, 188-195) it presses C-left: going for the steps or a weapon. Picked 35-65% when out on the floor. From code 2026-11-02. AI mode 39 in No Mercy's table (0x80145A10). Not identified."
-status = "likely"
+proto = "void ai_mode_39_fetch_weapon(void)"
+desc = "Walks to a point; in the ring-steps zones (46-48, 51-53, 188-195) it presses C-left: going for the steps or a weapon. Picked 35-65% when out on the floor. From code 2026-11-02. AI mode 39 in No Mercy's table (0x80145A10). Not identified. Decompiled 2026-11-03 (src/nomercy/nm_ai.cpp, from the code and asm; its comment there has the full reading)."
+status = "confirmed"
+port = "src/nomercy/nm_ai.cpp"
 
 [[func]]
 addr = 0x80103F4C
 name = "ai_mode_40_run"
-desc = "Run (code 2026-11-02): step 0 presses C-down (with the direction to the opponent's zone when both are on the floor, where 0x100); step 1 while running (situation 2): when the opponent comes within 0x801500E8 presses the C buttons (3840, the stop) and goes to 119; a rebound (4) -> 119, else 0."
-status = "likely"
+proto = "void ai_mode_40_run(void)"
+desc = "Run (code 2026-11-02): step 0 presses C-down (with the direction to the opponent's zone when both are on the floor, where 0x100); step 1 while running (situation 2): when the opponent comes within 0x801500E8 presses the C buttons (3840, the stop) and goes to 119; a rebound (4) -> 119, else 0. Decompiled 2026-11-03 (src/nomercy/nm_ai.cpp, from the code and asm; its comment there has the full reading)."
+status = "confirmed"
+port = "src/nomercy/nm_ai.cpp"
 
 [[func]]
 addr = 0x80104024
 name = "ai_mode_41_approach"
-desc = "Walks toward the opponent (dir8_to the target, d-pad held from AI block +0x10) for a timer while the opponent's state stays the same; when close with both in the ring (where-class 0x101) it tries a grapple (sub_800F2968) at 40%. The most common pick in the weighted tables. From code 2026-11-02. AI mode 41 in No Mercy's table (0x80145A10). Not identified."
-status = "likely"
+proto = "void ai_mode_41_approach(void)"
+desc = "Walks toward the opponent (dir8_to the target, d-pad held from AI block +0x10) for a timer while the opponent's state stays the same; when close with both in the ring (where-class 0x101) it tries a grapple (sub_800F2968) at 40%. The most common pick in the weighted tables. From code 2026-11-02. AI mode 41 in No Mercy's table (0x80145A10). Not identified. Decompiled 2026-11-03 (src/nomercy/nm_ai.cpp, from the code and asm; its comment there has the full reading)."
+status = "confirmed"
+port = "src/nomercy/nm_ai.cpp"
 
 [[func]]
 addr = 0x801042F4
 name = "ai_mode_42_evade_grapple"
-desc = "Waits a timer (sub_801043B4) and presses L, expecting the grapple evade state 0x6B. Read from code 2026-11-02 (quick pass). AI mode 42 in No Mercy's table (0x80145A10). Not identified."
-status = "likely"
+proto = "void ai_mode_42_evade_grapple(void)"
+desc = "Mode 42, the grapple evade: step 0 the wait (ai_evade_timer); step 1 when it runs out, L; step 2 back to mode 0 unless the CPU is in the evade (0x6B). Decompiled 2026-11-03 (src/nomercy/nm_ai.cpp, from the code and asm)."
+status = "confirmed"
+port = "src/nomercy/nm_ai.cpp"
 
 [[func]]
 addr = 0x80104428
@@ -226,8 +264,10 @@ status = "likely"
 [[func]]
 addr = 0x80104648
 name = "ai_mode_45_back_off"
-desc = "Walks away from the opponent (direction from the opponent to itself, sidestepping by chance when that points the same way) for 15-30 frames while standing. From code 2026-11-02. AI mode 45 in No Mercy's table (0x80145A10). Not identified."
-status = "likely"
+proto = "void ai_mode_45_back_off(void)"
+desc = "Walks away from the opponent (direction from the opponent to itself, sidestepping by chance when that points the same way) for 15-30 frames while standing. From code 2026-11-02. AI mode 45 in No Mercy's table (0x80145A10). Not identified. Decompiled 2026-11-03 (src/nomercy/nm_ai.cpp, from the code and asm; its comment there has the full reading)."
+status = "confirmed"
+port = "src/nomercy/nm_ai.cpp"
 
 [[func]]
 addr = 0x801047C4
@@ -238,20 +278,26 @@ status = "likely"
 [[func]]
 addr = 0x80104860
 name = "ai_mode_47_block_dive"
-desc = "Blocking (own situation 14) against a diving opponent (25): holds R with a timer, reads the opponent's move record. Read from code 2026-11-02 (quick pass). AI mode 47 in No Mercy's table (0x80145A10). Not identified."
-status = "likely"
+proto = "void ai_mode_47_block_dive(void)"
+desc = "Blocking (own situation 14) against a diving opponent (25): holds R with a timer, reads the opponent's move record. Read from code 2026-11-02 (quick pass). AI mode 47 in No Mercy's table (0x80145A10). Not identified. Decompiled 2026-11-03 (src/nomercy/nm_ai.cpp, from the code and asm; its comment there has the full reading)."
+status = "confirmed"
+port = "src/nomercy/nm_ai.cpp"
 
 [[func]]
 addr = 0x80104BB8
 name = "ai_mode_48_approach_downed"
-desc = "Walks to a downed opponent (situation 15: to its body via lying_body_dist) until close, then mode 0. From code 2026-11-02. AI mode 48 in No Mercy's table (0x80145A10). Name from its Revenge match ai_mode_33 (0x800B16D0), unchecked. As World Tour ai_mode_33 (0x800E36EC), matched by call graph (score 1.11). World Tour: AI mode 33: walk to a downed opponent (ai.md)."
-status = "likely"
+proto = "void ai_mode_48_approach_downed(void)"
+desc = "Walks to a downed opponent (situation 15: to its body via lying_body_dist) until close, then mode 0. From code 2026-11-02. AI mode 48 in No Mercy's table (0x80145A10). Name from its Revenge match ai_mode_33 (0x800B16D0), unchecked. As World Tour ai_mode_33 (0x800E36EC), matched by call graph (score 1.11). World Tour: AI mode 33: walk to a downed opponent (ai.md). Decompiled 2026-11-03 (src/nomercy/nm_ai.cpp, from the code and asm; its comment there has the full reading)."
+status = "confirmed"
+port = "src/nomercy/nm_ai.cpp"
 
 [[func]]
 addr = 0x80104CDC
 name = "ai_mode_49_apron_wait_taunt"
-desc = "Shared by 49 / 50: waits up to 60 frames on the apron (own situation 43); mode 50 with SPECIAL (flags_ee 0x02) pushes the stick (+0x13 = 80) and evades: a taunt to start finisher mode. Read from code 2026-11-02 (quick pass). AI mode 49, 50 in No Mercy's table (0x80145A10). Not identified."
-status = "likely"
+proto = "void ai_mode_49_apron_wait_taunt(void)"
+desc = "Shared by 49 / 50: waits up to 60 frames on the apron (own situation 43); mode 50 with SPECIAL (flags_ee 0x02) pushes the stick (+0x13 = 80) and evades: a taunt to start finisher mode. Read from code 2026-11-02 (quick pass). AI mode 49, 50 in No Mercy's table (0x80145A10). Not identified. Decompiled 2026-11-03 (src/nomercy/nm_ai.cpp, from the code and asm; its comment there has the full reading)."
+status = "confirmed"
+port = "src/nomercy/nm_ai.cpp"
 
 [[func]]
 addr = 0x80104E18
@@ -268,20 +314,26 @@ status = "likely"
 [[func]]
 addr = 0x80105134
 name = "ai_mode_53_react_dazed"
-desc = "When the opponent is dazed / knocked back / off balance (situations 16-18): with a skill chance presses B, R, L or A by the opponent's situation (striking, grapple attempt, diving). Read from code 2026-11-02 (quick pass). AI mode 53 in No Mercy's table (0x80145A10). Not identified."
-status = "likely"
+proto = "void ai_mode_53_react_dazed(void)"
+desc = "When the opponent is dazed / knocked back / off balance (situations 16-18): with a skill chance presses B, R, L or A by the opponent's situation (striking, grapple attempt, diving). Read from code 2026-11-02 (quick pass). AI mode 53 in No Mercy's table (0x80145A10). Not identified. Decompiled 2026-11-03 (src/nomercy/nm_ai.cpp, from the code and asm; its comment there has the full reading)."
+status = "confirmed"
+port = "src/nomercy/nm_ai.cpp"
 
 [[func]]
 addr = 0x80105354
 name = "ai_mode_54_get_up"
-desc = "The get-up (code 2026-11-02, first read): at step 0 while down at state_step 2: with the opponent far, in a tag match with the partner near on the same side presses R and ai_can_act; else with a skill chance and facing the opponent (within 15 degrees) presses R with B (opponent situations 1 / 8 / 11) or A (14) or by the finisher-move record (800 / 500) -> the get-up attack; without the chance a random roll 450-900 adds L (the roll); step 1 (situation 1 / 24): with a skill chance against a striking (8) or grappling (11) opponent modes 42 / 43, else R again; mode 0 otherwise."
-status = "likely"
+proto = "void ai_mode_54_get_up(void)"
+desc = "The get-up (code 2026-11-02, first read): at step 0 while down at state_step 2: with the opponent far, in a tag match with the partner near on the same side presses R and ai_press_focus_switch; else with a skill chance and facing the opponent (within 15 degrees) presses R with B (opponent situations 1 / 8 / 11) or A (14) or by the finisher-move record (800 / 500) -> the get-up attack; without the chance a random roll 450-900 adds L (the roll); step 1 (situation 1 / 24): with a skill chance against a striking (8) or grappling (11) opponent modes 42 / 43, else R again; mode 0 otherwise. Decompiled 2026-11-03 (src/nomercy/nm_ai.cpp, from the code and asm; its comment there has the full reading)."
+status = "confirmed"
+port = "src/nomercy/nm_ai.cpp"
 
 [[func]]
 addr = 0x801057BC
 name = "ai_mode_55_wait_long"
-desc = "Waits up to 150 frames while standing and the opponent is not dazed (situation 16); then mode 0 (code 2026-11-02)."
-status = "likely"
+proto = "void ai_mode_55_wait_long(void)"
+desc = "Mode 55, a long wait: up to 150 frames while standing (situation 1), the opponent not dazed (16) and in the state it was in when the mode began (AI +0x56); then mode 0. Decompiled 2026-11-03 (src/nomercy/nm_ai.cpp, from the code and asm)."
+status = "confirmed"
+port = "src/nomercy/nm_ai.cpp"
 
 [[func]]
 addr = 0x80105854
@@ -298,8 +350,10 @@ status = "likely"
 [[func]]
 addr = 0x80105AD0
 name = "ai_mode_59_strike_facing"
-desc = "Strike when facing (code 2026-11-02): step 0, standing, presses B when the opponent faces away (facings 90 degrees or more apart) and is within the move's reach (record +0x50 + +0x54 x k), ending when the opponent is not standing / running (situations 2-3); step 1 holds through its own strike (8); mode 0."
-status = "likely"
+proto = "void ai_mode_59_strike_facing(void)"
+desc = "Strike when facing (code 2026-11-02): step 0, standing, presses B when the opponent faces away (facings 90 degrees or more apart) and is within the move's reach (record +0x50 + +0x54 x k), ending when the opponent is not standing / running (situations 2-3); step 1 holds through its own strike (8); mode 0. Decompiled 2026-11-03 (src/nomercy/nm_ai.cpp, from the code and asm; its comment there has the full reading)."
+status = "confirmed"
+port = "src/nomercy/nm_ai.cpp"
 
 [[func]]
 addr = 0x80105BDC
@@ -328,7 +382,7 @@ status = "likely"
 [[func]]
 addr = 0x801068AC
 name = "ai_mode_65_vs_runner"
-desc = "Modes 65 / 66, meeting a runner (code 2026-11-02): step 0 (in the ring, a runner found by ai_runner_target, not in a hold) presses C-down with the d-pad toward the perceived corner (+0x52 + 8) and saves the pad; step 1 holds it for 30 frames while standing / running; step 2 by its own state: a rebound (4) -> 119, 158-159 stay, 10 -> step 3 (C-down while flags_f4 0x02); step 4 in situation 25: against a down / lying / dazed opponent (15 / 16 / 19) 20% ai_mode_11_evade (not with trait byte_8016B9CE 2, SPECIAL or low spirit); otherwise C-down plus R when the opponent is within reach (record +0x60 + k) or running; mode 0."
+desc = "Modes 65 / 66, meeting a runner (code 2026-11-02): step 0 (in the ring, a runner found by ai_runner_target, not in a hold) presses C-down with the d-pad toward the perceived corner (+0x52 + 8) and saves the pad; step 1 holds it for 30 frames while standing / running; step 2 by its own state: a rebound (4) -> 119, 158-159 stay, 10 -> step 3 (C-down while flags_f4 0x02); step 4 in situation 25: against a down / lying / dazed opponent (15 / 16 / 19) 20% ai_stick_taunt (not with trait byte_8016B9CE 2, SPECIAL or low spirit); otherwise C-down plus R when the opponent is within reach (record +0x60 + k) or running; mode 0."
 status = "likely"
 
 [[func]]
@@ -484,8 +538,10 @@ status = "likely"
 [[func]]
 addr = 0x8010A1D0
 name = "ai_mode_105_running"
-desc = "Modes 105-109, run and stop (code 2026-11-02): step 0 prepares A (105) or the entry of the table word_80145C54 + 716 for the mode (a move and its input, the reach from the record); below 110 presses C-down toward the opponent (dir8 / 2 + 4), already running -> step 3; step 1 waits for the run; step 2 while running: at run step 2 close with a skill chance L against a striker / grappler, within the reach the prepared input; a rebound -> 119; step 3 waits for the rebound; mode 0."
-status = "likely"
+proto = "void ai_mode_105_running(void)"
+desc = "Modes 105-109, a run with a move at its end. Step 0: the move: 109 A with reach 160, the others the entry for the mode in 0x80145F20 (s16 mode, s16 list index, u16 buttons; the reach from the list block's entry); 105 / 106 press C-down (step 3), 107-109 press C-down with the d-pad side toward the opponent (0x8014D220 by dir8 / 2; step 1), or step 3 when already running. Step 1 waits for the run (situation 2 stays, 4 step 2, else 0); step 2 for the run's start (situation 2: step 3, 4 stays, else 0). Step 3 while running (2): at run step 2 within 170 a skill roll against a striking or grappling opponent (8 / 11) presses L, else within the reach + 100 the prepared buttons; a rebound (4) mode 119; situations 5 / 8 / 11 wait; others mode 0. Decompiled 2026-11-03 (src/nomercy/nm_ai.cpp, from the code and asm)."
+status = "confirmed"
+port = "src/nomercy/nm_ai.cpp"
 
 [[func]]
 addr = 0x8010A474
@@ -532,14 +588,16 @@ status = "likely"
 [[func]]
 addr = 0x8010B544
 name = "ai_mode_118_apron_walk_b"
-desc = "Apron walk to the partner's side and tag (code 2026-11-02): step 0 presses C-down (4) with the apron pad for its ring zone (word_80145C54 + 772) and sets the target point at +-265 beside the partner (0x8016B71C), timer 100; step 1 in situation 2 within 0x80150610 of it presses the C buttons (3840), then with the opponent flags_e9 0x10 ai_can_act, else mode 68 (run) when far or 0; step 2 counts the timer down, near the point (0x80150618) presses the C buttons and step 3; step 3 presses C-up with the d-pad toward its zone (apron_walk_dpad) when the timer runs out; mode 0."
+desc = "Apron walk to the partner's side and tag (code 2026-11-02): step 0 presses C-down (4) with the apron pad for its ring zone (word_80145C54 + 772) and sets the target point at +-265 beside the partner (0x8016B71C), timer 100; step 1 in situation 2 within 0x80150610 of it presses the C buttons (3840), then with the opponent flags_e9 0x10 ai_press_focus_switch, else mode 68 (run) when far or 0; step 2 counts the timer down, near the point (0x80150618) presses the C buttons and step 3; step 3 presses C-up with the d-pad toward its zone (apron_walk_dpad) when the timer runs out; mode 0."
 status = "likely"
 
 [[func]]
 addr = 0x8010B8B0
 name = "ai_mode_119_keep_running"
-desc = "While running (own situation 2) holds the whole d-pad (+0x0E 0xF00); rebound (4) keeps it; anything else, mode 0. Read from code 2026-11-02 (quick pass). AI mode 119 in No Mercy's table (0x80145A10). Not identified."
-status = "likely"
+proto = "void ai_mode_119_keep_running(void)"
+desc = "While running (own situation 2) holds the whole d-pad (+0x0E 0xF00); rebound (4) keeps it; anything else, mode 0. Read from code 2026-11-02 (quick pass). AI mode 119 in No Mercy's table (0x80145A10). Not identified. Decompiled 2026-11-03 (src/nomercy/nm_ai.cpp, from the code and asm; its comment there has the full reading)."
+status = "confirmed"
+port = "src/nomercy/nm_ai.cpp"
 
 [[func]]
 addr = 0x8010B8F8

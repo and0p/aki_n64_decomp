@@ -215,3 +215,7 @@ falling as if knocked out (from a run); 0x2E failing to get up (12611-12616, the
 
 - Strike frame windows per move: record bytes 3 / 4 of ROM file 703 (`animation_data.md`); dump them per
   strike move once the converter reads that file.
+- Decompiled and trace-checked 2026-11-02 (`src/nomercy/nm_strike.cpp`): the hit test, damage and
+  spirit, the reactions 0x22 / 0x23 / 0x2D / 0x33 / 0x35 / 0x4C, the slide and the ropes. Not reached
+  by a trace yet: strike_hit_test's thrown-object kind (24) and the weapon tip, chance_roll kind 6,
+  strikes across the ropes at a wrestler on the apron, the running ground attack on a lying opponent.

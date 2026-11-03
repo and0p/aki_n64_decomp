@@ -1,0 +1,62 @@
+{
+ "game": "nomercy",
+ "state": "_tools/libretro/states/nm_p2_about_to_be_slammed_down.state",
+ "steps": [
+  {
+   "frames": 62
+  },
+  {
+   "frames": 42,
+   "pads": {
+    "1": "sx=-80"
+   }
+  },
+  {
+   "frames": 45,
+   "pads": {
+    "0": "up",
+    "1": "sx=-80"
+   }
+  },
+  {
+   "frames": 45,
+   "pads": {
+    "0": "left",
+    "1": "sx=-80"
+   }
+  },
+  {
+   "frames": 10,
+   "pads": {
+    "0": "down",
+    "1": "sx=-80"
+   }
+  },
+  {
+   "frames": 5,
+   "pads": {
+    "0": "a",
+    "1": "sx=-80"
+   }
+  },
+  {
+   "frames": 200,
+   "pads": {
+    "1": "sx=-80"
+   }
+  },
+  {
+   "frames": 300,
+   "pads": {
+    "1": "sx=-80"
+   },
+   "poke": [
+    {
+     "addr": "0x80159FB8",
+     "f32": 0.5
+    }
+   ]
+  }
+ ],
+ "note": "From the slam save: P2 holds the stick (stays down, never escapes), P1 walks round to the legs and ground-grapples them (move 240), which chains into the leg submission hold 318 (0x48 / 0x49). After 200 frames of the hold P2's leg region (region[3]) is poked to 0.5 so the next damage tick takes it below 0: the give-up."
+}

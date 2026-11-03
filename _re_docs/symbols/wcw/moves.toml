@@ -17,8 +17,8 @@ status = "confirmed"
 
 [[func]]
 addr = 0x800A649C
-name = "wrestler_set_move_from"
-proto = "void wrestler_set_move_from(struct Wrestler *w, struct Wrestler *src, s16 slot)"
+name = "move_texture_stamp"
+proto = "void move_texture_stamp(struct Wrestler *w, struct Wrestler *src, s16 slot)"
 desc = "Like wrestler_set_move but takes the move set from src->slot."
 status = "likely"
 
@@ -74,7 +74,7 @@ status = "confirmed"
 [[data]]
 addr = 0x800F8600
 name = "g_global_moves"
-desc = "File 221 loaded at +8: 42 generic move records (24 bytes, same packing as move sets) used by wrestler_set_move_from for crashes, block spirit (2/3: power 0), pins, ropes and the like."
+desc = "File 221 loaded at +8: 42 generic move records (24 bytes, same packing as move sets) used by move_texture_stamp for crashes, block spirit (2/3: power 0), pins, ropes and the like."
 status = "confirmed"
 
 [[func]]

@@ -1,0 +1,19 @@
+{
+ "game": "nomercy",
+ "state": "_tools/libretro/states/nm_p1_stepping_into_place_for_ground_grapple_head_laying_face_up.state",
+ "note": "From the ground grapple save (P1 stepping into place at the head of P2, lying face up): P1 presses A with up for a ground move at the head, then the pair is left alone to see whether it chains into the ground hold 0x48 / 0x49.",
+ "steps": [
+  {
+   "frames": 30
+  },
+  {
+   "frames": 4,
+   "pads": {
+    "0": "up+a"
+   }
+  },
+  {
+   "frames": 300
+  }
+ ]
+}

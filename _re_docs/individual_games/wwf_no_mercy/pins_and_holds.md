@@ -14,7 +14,7 @@ All in frames; negative results become 0; every op except 1 and 3 is **0 in fini
 | 1 | the pin (0x45) | 95 + other.spirit / 5 + finisher bonus + 2 × w.pin_count − (w.spirit / 3 + w.health / 2) + max(0, damage_history_ratio − 15); 90+ with w.spirit 90+ becomes 87 |
 | 2, 9 | 0x56 / 0x3F / 0x18 (2), 0x17 (9) | 100 − (spirit / 2 + health / 4) |
 | 3 | the ground hold (0x49) | 60 in finisher mode, else op 6 |
-| 4 | 0x15 | 180 − (spirit / 2 + health / 4), only with count-outs on and 6+ counts left |
+| 4 | 0x15 | 180 − (spirit / 2 + health / 4); with count-outs on, 0 once fewer than 6 counts are left |
 | 5 | escaping the rear lift (0x80) | (200 + other.spirit / 2 − (w.spirit / 4 + w.health)) / 2 |
 | 6 | the carry (0x82) | (300 + other.spirit / 2 − (w.spirit / 4 + w.health)) / 2 |
 | 7 | held upside down (0x34) | (100 − (spirit / 2 + health / 4)) × 4, × 8 against a strong hold (flags78 0x04) |
@@ -131,30 +131,85 @@ Per slot: a press counter (0x80159420), a raw press counter (0x80159430) and a c
   one a frame per two presses early, two or three frames per press at two.
 - op 2 / op 3 count raw presses (no cooldown) for states that read the total.
 
-## Holds: the ground hold 0x48 / 0x49
+## Holds: 0x48 / 0x49 (on the ground and in the corner)
 
-- 0x46 / 0x47 step into place, then **0x48** (attacker, flags80 0x40) and **0x49** (held, flags80 0x80).
-- The held wrestler escapes on escape_time op 3 (60 frames in finisher mode, else (300 + other.spirit
-  / 2 − (w.spirit / 4 + w.health)) / 2), counted down by frames and mashing.
-- `apply_damage` uses health mode 1 in states 0x45 / 0x49 / 0x4B, and in 0x49 the region damage is
-  raised by the two wrestlers' attrs +0x16 classes (float table 0x801461C0); `spirit_exchange` gives
-  the receiver no low-health bonus there.
-- **Giving up** (read 2026-11-02): every **31 frames** the hold applies its damage again (a per-slot
-  frame counter at 0x801594C0, `apply_damage`). After that, a hold whose move is a submission (move flags
-  0x80) makes the held wrestler **give up when the region it works on (move +0x0C indexes `region[]`)
-  is at 0 or below and its spirit is 90 or less**: the holder's state_flags 0x08, and with submissions
-  allowed (g_match_rules 0x10), outside guest-referee matches, in the ring (or rules 0x4000) and both
-  in play, 0x408: the submission fall (end_flags 0x20, `fall_count_add`).
-- **Escaping:** escape (op 3) counts down by frames and `recover_tick`'s mashing; below 0 the holder's
-  state_flags 0x02 (escaped).
-- **Rope breaks:** under g_match_rules 0x02, in the ring, for moves with flags 0x100 (and not 0x400000):
-  if any of the 20 joints of either wrestler is within 230 of the ring's edge in x or z, the hold breaks.
-  Pressing A / B / L / R / a C button under rule 0x02 calls `ground_hold_crawl` (code 2026-11-02): with the
-  holder in the ring both wrestlers move 2.5 toward the nearest ring side (the held wrestler crawls for
-  the ropes), and d-pad right / left turn the pair by about 1 degree a frame round the holder.
-- At the start of a submission hold outside guest-referee matches (move flags 0x80) the referee's count
-  display is reset (`ref_count_reset(4)`).
-- Rope breaks are `state_bounds` again; the CPU in the hold decides by chance each frame (AI mode 31).
+(The states were named state_48_ground_hold / state_49_ground_held until 2026-11-03; they also run standing
+holds: in RAM the corner moves 108 / 113, A / B at an opponent slumped in the corner, chain into holds 305 / 307,
+record flags 0xE0240C: no rope break, no crawl, `tools/trace/scripts/nm_corner_lockup.json`.)
+
+Read from the code and decompiled 2026-11-03 (`src/nomercy/nm_hold.cpp`), checked against the emulator
+(`tools/trace/scripts/nm_ground_hold.json`, `nm_submission.json`; not replayed, since 0x46 / 0x47 are not ported).
+
+- **How a hold starts.** A ground grapple (0x46 / 0x47; L or A near a lying opponent) plays one fixed
+  move per position (`ground_grapple_start`: table 0x8014DC90 by head / legs, face up / down and sitting:
+  240, 242, 248, 250 at the legs, 236, 238, 244, 246 at the head; the four ground specials 155-158 in
+  finisher mode). The direction pressed does not change it. When that move (or any move) has record
+  flags 0x400 / 0x800 / 0x1000, `move_chain_check` sends the pair to **0x48 / 0x49** (0x200 goes to the
+  pin pair 0x4A / 0x4B). The hold's move is **292 + the move's follow-up variant** (byte table 0x800A5720
+  by slot and move, the same table the pin reads): moves 292-322 of each move set are its pins
+  (record flags 0x2300) and holds (0x2500, 0x2580, ...).
+- In RAM (2026-11-03, the default move set of slot 0): the head move 236 (flags 0xA501) chains into
+  hold 316 (0x2500: breaks at the ropes, no submission, no region damage), the leg move 240 into hold 318
+  (0x2580: a submission on region 3, the legs, 0.7 off the region a tick).
+- **Record flags the hold reads:** 0x02 the holder ends lying down, 0x04 the held wrestler stays down,
+  0x08 flags80 0x400 on both, 0x80 a submission, 0x100 breaks at the ropes, 0x200000 no crawl,
+  0x400000 no bounds while held (after it, only past the player's frame 0x11).
+- **Escaping:** escape = escape_time op 3 (60 frames in finisher mode, else (300 + other.spirit / 2 −
+  (w.spirit / 4 + w.health)) / 2: 85 and 77 at the start of the two holds in RAM), down one a frame and one
+  more per four counted presses (`recover_tick`, `mash_count`); below 0 the holder's state_flags 0x02
+  (mashed out). **The held wrestler's stick pushed keeps escape at 0**, so it never escapes (as in the pin).
+- **Damage:** every **31 frames** (per-slot clock 0x801594C0) `hit_move_copy` + `apply_damage`.
+  `apply_damage` uses health mode 1 in states 0x45 / 0x49 / 0x4B, and in 0x49 the region damage is
+  raised by the two wrestlers' attrs +0x16 classes (float table 0x801461C0); `spirit_exchange` gives the
+  receiver no low-health bonus there. In RAM the leg hold took 3-7 health a tick, all the way to 0.
+- **Giving up:** after a damage tick, a submission (record flag 0x80) gives up when **region[hit_kind]
+  (the hold's MoveRecord +0x0C) is 0 or below and spirit is 90 or less**, unless **the holder pushes its
+  stick** (in 0x48 the stick sets state_flags 0x100, which blocks the give-up: the holder can keep a hold on
+  for the damage). The holder gets 0x08, and with submissions on (g_match_rules 0x10), outside
+  guest-referee matches, in the ring (or rule 0x4000) and both in play 0x408. 0x48 then writes the give-up
+  as the whole word on both. The fall comes at the holder animation's event-2 frame (or its end): the bell
+  and end_flags 0x20, or under rule 0x80000 (ironman: falls counted) `fall_count_add` and the region reset
+  to 5.0, after which the held wrestler stands up through 0x30. A give-up that is not a fall sets flags8c
+  0x800. **Checked in RAM 2026-11-03** (`nm_submission.json`, the leg region poked to 0.5 after 200 frames
+  of the hold): at the next tick the region went to 0 (it does not go below), the holder's state_flags
+  became 0x408 that frame and the held wrestler's the next; the holder's end animation started 27 frames
+  later, the bell (state_counter 0x01) came at its event-2 frame, `match_end(0x20)` turned the cause into the
+  fall the same frame (end_flags 0x01 on the loser, 0x04 on the winner), and the winner went into the
+  post-match pose (0x1B steps 4-6) while the loser lay down (0x31).
+- **Rope breaks:** under rule 0x02, in the ring, for record flag 0x100: if any of the held wrestler's 19
+  body points (point_120 and joints[0..17]) or its model's 19 joint points (`pt_b_world`) has **|x| or |z|
+  over 230** (the ring centre is 0), the hold breaks (the holder's 0x04 and the HUD message; in a
+  guest-referee match 0x200, for the referee to call). Pressing A / B / L / R / a C button under rule 0x02
+  calls `ground_hold_crawl`: with the holder in the ring both wrestlers move 2.5 toward the nearest ring
+  side (x when |z| <= |x|), and d-pad right / left turn the pair by 11 (about 1 degree) round the holder.
+- **Letting go:** R pressed (or a pause) sets 0x01 on both.
+- **The end:** once anything ended it (bits 0x1F) and the hold's animation has run out, the holder plays
+  its style animation + 6 (0x10: the held wrestler slipped the ground grapple, set in 0x47, or a third
+  wrestler broke the hold up, `state_29_break_up`; seen in RAM when the opponent's ally ran in), + 4 (gave up)
+  or + 2 (everything else; seen in RAM for a mash-out), the held wrestler + 7 / + 5 / + 3; then the holder
+  goes to 0x30 (or lies down for record flag 0x02) and the held wrestler to 0x30 / down, with
+  `move_aftermath_check`.
+- `ref_count_reset(4)` at the start of a submission is a no-op in No Mercy (only kind 9 does anything).
+- The CPU in the hold decides by chance each frame (AI mode 31).
 
 ## Open
 
+- Decompiled and trace-checked 2026-11-02 (`src/nomercy/nm_down.cpp`): lying 0x31, getting up 0x4F,
+  the counts (`down_count_allowed`, `down_count_others`), mashing and the escape times (ops 0, 1, 2, 8,
+  9), the pin from a move (0x44 / 0x45, also 0x4A / 0x4B), 0x4E and 0x6B, through a roll-up and the
+  strong grapple that rolls into a pin (`tools/trace/scripts/nm_pins.json`, `nm_pin_move.json`).
+- ~~The cover from standing (L over a lying opponent, states 0x42 / 0x43) is not traced yet~~ (code and
+  trace 2026-11-02, `tools/trace/scripts/nm_cover.json`): from a slam that puts both down, the lying
+  wrestler holding the control stick keeps its down time reset (state_31_down step 3 zeroes `escape`
+  while the stick is pushed), so the other can get up, walk over and cover. The approach is a
+  quadratic curve through three control points (`ground_approach_plan`, Wrestler +0x264 / +0x2BC), the
+  side by `cover_side_pick` (tables 0x80146330 / 0x8014D1D8), the cover 12358 + 2 * side (face up) or
+  the turn-over 12256 + 10 * side first; the count then runs in 0x44 / 0x45. With the stick held
+  through the count (`nm_count3.json`) the three lands: end_flags 0x08 on the loser, match_end records
+  the fall (`match_rules.md`), the match goes to its end phases, the winner poses (the taunt state
+  0x1B, steps 4-6; `nm_match_end.json`) and the results are copied out: a singles match replays end
+  to end.
+- ~~Holds and submissions (0x72-0x75) and the other escape-time ops~~ (the hold states are 0x48 / 0x49;
+  0x72-0x75 are not holds): decompiled 2026-11-03 from the code with every escape_time op, checked against
+  the emulator but not replayed (`src/nomercy/nm_hold.cpp`). A replay needs 0x46 / 0x47 (the ground grapple:
+  `ground_grapple_defend`, `recover_tick_ground`, `ground_grapple_start`) first.

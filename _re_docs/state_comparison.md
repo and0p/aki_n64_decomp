@@ -1,5 +1,11 @@
 # Comparing game state with our recreation (ideas)
 
+**Built for No Mercy (2026-11-02):** the field list (`tools/trace/fields.py` from `types.h` and
+`tools/trace/nomercy_regions.toml`), the recorder (`tools/trace/record.py`, keyed on the match clock),
+the diff (`tools/trace/diff.py`), the RAM-snapshot importer (the trace's RDRAM image, `state_import` in
+`src/nomercy/`) and the CTest wiring. The replay is the decompilation (`src/nomercy/README.md`); a
+600-frame walk / run trace replays exactly. The rest of this page is the original sketch.
+
 A sketch, not a plan yet (2026-10-31). The goal from `AGENTS.md`: game logic, AI and animation are
 frame-exact with the original. That needs a way to run the original and our library side by side
 and say, frame by frame, where they differ. These are the pieces that seem worth building, roughly

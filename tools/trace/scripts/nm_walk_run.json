@@ -1,0 +1,99 @@
+{
+ "game": "nomercy",
+ "state": "_tools/libretro/states/nm_1p_2p_normal_match_start.state",
+ "note": "P1 and P2 walk around the ring and run (C-down with a direction) without touching each other: standing 0x01, walking, the run 0x03 and rope rebounds 0x04. Milestone 1 of the No Mercy decompilation.",
+ "steps": [
+  {
+   "frames": 20
+  },
+  {
+   "frames": 45,
+   "pads": {
+    "0": "right",
+    "1": "left"
+   }
+  },
+  {
+   "frames": 40,
+   "pads": {
+    "0": "up",
+    "1": "down"
+   }
+  },
+  {
+   "frames": 30,
+   "pads": {
+    "0": "up+left",
+    "1": "down+right"
+   }
+  },
+  {
+   "frames": 20
+  },
+  {
+   "frames": 30,
+   "pads": {
+    "0": "down",
+    "1": "up"
+   }
+  },
+  {
+   "frames": 2,
+   "pads": {
+    "0": "cdown"
+   }
+  },
+  {
+   "frames": 70
+  },
+  {
+   "frames": 2,
+   "pads": {
+    "1": "up+cdown"
+   }
+  },
+  {
+   "frames": 70
+  },
+  {
+   "frames": 40,
+   "pads": {
+    "0": "left",
+    "1": "right"
+   }
+  },
+  {
+   "frames": 2,
+   "pads": {
+    "0": "up+cdown",
+    "1": "down+cdown"
+   }
+  },
+  {
+   "frames": 60
+  },
+  {
+   "frames": 35,
+   "pads": {
+    "0": "down+right",
+    "1": "up+left"
+   }
+  },
+  {
+   "frames": 2,
+   "pads": {
+    "0": "up+cdown"
+   }
+  },
+  {
+   "frames": 60
+  },
+  {
+   "frames": 72,
+   "pads": {
+    "0": "left",
+    "1": "right"
+   }
+  }
+ ]
+}

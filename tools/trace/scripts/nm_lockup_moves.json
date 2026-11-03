@@ -1,0 +1,20 @@
+{
+ "game": "nomercy",
+ "state": "_tools/libretro/states/nm_p1_p2_fresh_almost_touching_middle_of_ring.state",
+ "note": "From Andrew's close-up save (both standing in the middle): P1 taps A (the lock-up), then A+up for the weak grapple move; after the move and the get-up P1 holds A (strong lock-up) and does B+down; then P2 locks up and does A+left. Milestone 3b: grapple moves, the down and get-up states.",
+ "steps": [
+  {"frames": 10},
+  {"frames": 2, "pads": {"0": "a"}},
+  {"frames": 28},
+  {"frames": 3, "pads": {"0": "a+up"}},
+  {"frames": 180},
+  {"frames": 20, "pads": {"0": "a"}},
+  {"frames": 10},
+  {"frames": 3, "pads": {"0": "b+down"}},
+  {"frames": 180},
+  {"frames": 2, "pads": {"1": "a"}},
+  {"frames": 28},
+  {"frames": 3, "pads": {"1": "a+left"}},
+  {"frames": 131}
+ ]
+}

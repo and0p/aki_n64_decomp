@@ -6,7 +6,7 @@ Part of the WCW/nWo Revenge notes (index: `README.md`). Written as differences f
 ## Wrestler struct (first fields mapped)
 
 From `wrestler_update`, `wrestler_set_state` (`0x800A6C48`), `wrestler_set_move`
-(`0x800A7C40`), `wrestler_set_move_from` (`0x800A7D1C`), `move_count_stats` (`0x800A7F6C`)
+(`0x800A7C40`), `move_texture_stamp` (`0x800A7D1C`), `move_count_stats` (`0x800A7F6C`)
 and the facing update `0x800D4AD0`, compared with World Tour. The layout is **reordered**, not
 just shifted:
 

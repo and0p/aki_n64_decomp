@@ -1,0 +1,33 @@
+{
+ "game": "nomercy",
+ "state": "_tools/libretro/states/nm_p2_about_to_be_slammed_down.state",
+ "note": "From the slam save: the move puts both down. P2 holds the stick while lying (the down time stays reset), P1 gets up, walks over and covers from standing (L: states 0x42 / 0x43, the referee count); P2 then lets go. Milestone 5: the cover from standing.",
+ "steps": [
+  {
+   "frames": 62
+  },
+  {
+   "frames": 42,
+   "pads": {
+    "1": "sx=-80"
+   }
+  },
+  {
+   "frames": 16,
+   "pads": {
+    "0": "up+left",
+    "1": "sx=-80"
+   }
+  },
+  {
+   "frames": 5,
+   "pads": {
+    "0": "l",
+    "1": "sx=-80"
+   }
+  },
+  {
+   "frames": 175
+   }
+ ]
+}

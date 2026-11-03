@@ -111,7 +111,7 @@ status = "likely"
 
 [[func]]
 addr = 0x800A7D1C
-name = "wrestler_set_move_from"
+name = "move_texture_stamp"
 desc = "Selects move slot a2 of the wrestler move set (+902) and unpacks its record (move_record_unpack, 24-byte table at 0x8007BD78) into +908."
 status = "confirmed"
 
@@ -465,7 +465,7 @@ status = "guess"
 
 [[func]]
 addr = 0x800E06C0
-name = "input_grapple_attempt"
+name = "input_stick"
 desc = "From stand: starts the grapple attempt 0x44 (step 3, grapple ctx 0x200000) when sub_800A94B4(w, opp, 86) holds, else state 0x17."
 status = "guess"
 

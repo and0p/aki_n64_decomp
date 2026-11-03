@@ -140,6 +140,41 @@ animation reaches that frame (16,665 events in all). Same scheme as World Tour, 
 | 200-219 | 206 | **rope push**: as World Tour (`ring_rope_push` on the nearest side; kind from 0x80047F20) |
 | 220-243 | 511 | **ropes**: 221-229 a hand grabs a rope, 231-239 a foot, 220 / 230 release all hands / feet, 240-243 release one limb (`rope_release`), as World Tour |
 
+## Posing (`model_animate`, 0x80012130; decompiled 2026-11-02, `src/nomercy/nm_model.cpp`)
+
+The animation files have World Tour's format (`../../file_formats/animations.md`: a 4-byte header,
+then 98-byte keyframes two frames apart; the same 19-joint skeleton, bind pose at 0x80047ED0, joint
+order 0x80047EF8, parents 0x80047F0C). What the main segment does with them each frame, per slot:
+
+- **The stream** (`struct AnimStream`, 0x80069F20 + 192 × slot): keyframes are DMA'd from the ROM one
+  at a time (98 bytes) into two 128-byte heap buffers; `buf[cur_buf]` is the keyframe being posed, the
+  other the next one in flight (`anim_stream_open`, `anim_stream_fetch`, `anim_stream_advance`). An
+  animation change, or a restart at frame 0, reopens the stream, releases the ropes and the hand shape.
+- **The frame:** even frames and the last one decode `buf[cur_buf]` (`model_decode_frame`); odd ones
+  move the stream on and go halfway to the next keyframe (`model_decode_frame_interp`: positions of
+  the parentless joints, every rotation the short way round, with a 180-degree flip of x and z when
+  either differs by more than 120). At frame count - 2 the stream is moved on for the last frame.
+- **The blend:** frames 0-4 of a new animation (not a restart, not the slot's first) lean toward the
+  previous pose by 0.75 / 0.6 / 0.45 / 0.3 / 0.15 when the posing mode has bit 1 (`model_blend_prev`);
+  the old pose is first re-centred on its pelvis unless mode bit 2.
+- **The head look** (`head_look_update`, ovl_e) is written straight into joint 5's rotation.
+- **The skin** (`model_build_skin`): as World Tour, plus a per-build part fit (scale 0x80047F54 and
+  offsets 0x80047FB8 / 0x80047FCC / 0x80047FE0 by the slot's build byte 0x8006A268) for the joints in
+  0x80047F40; the result is the render node's local matrix. The render tree (`struct ModelNode`,
+  0x80091CC0, 28 nodes a slot) gets its world matrices from `node_tree_update`.
+- **The root anchoring** (mode bit 0): on a switch the body is moved so that joint 1's world point
+  stays where the old animation left it (x and z; y too with mode bit 3), by posing the root under the
+  old translation first. This is why a position changes inside the posing.
+- **The body:** the block's translation is (-pos.x, pos.y + a carry offset, pos.z), its yaw
+  -(facing + 2048) × 360 / 4096 degrees; the body matrix is scale × (tilt(x, 0, z) × yaw) with the
+  tilts only on a ladder (Wrestler +0x108 / +0x110). Each joint's world points (+0x54, +0x6C of its
+  record) come out x-mirrored; `wrestler_joints_update` copies them into the wrestler record.
+- **The events** fire for frame + 1 (`anim_frame_events`): 1-169 sounds, 170-175 specials
+  (`anim_event_special`: a rumble / shake value or a texture swap), 176-195 hand shapes, 200-219 rope
+  pushes (`ring_rope_push`, the side from joint 1's position and the body's facing), 220-243 limbs
+  grabbing (221-229 hands, 231-239 feet: limb (k-1)/3 + 1 or (k-11)/3 + 5, rope 2 - (k-1) % 3) or
+  releasing (220 / 230 all hands / feet, 240-243 one limb) the ropes.
+
 ## The follow-up variant sets (files 498-503)
 
 `move_anim_offset` (0x800EC7D8) picks follow-up, chain and reversal moves: base move + **1-4**, from a

@@ -1,0 +1,87 @@
+# What a No Mercy trace records every frame (tools/trace/fields.py, record.py, diff.py).
+# Addresses are USA Rev 1. A region with `type` is laid out by that struct from types.h; one without is
+# laid out by the [[data]] symbols inside it plus its own `fields`; bytes nothing covers become runs
+# compared with `gap_rule` (default "unknown": reported, never failing).
+
+[[region]]
+name = "wrestlers"
+addr = 0x80159990
+size = 0xD60                 # 4 x 856
+type = "struct Wrestler[4]"
+
+[[region]]
+name = "match_a"             # the context, the rotating start slot, the match phase, rng_match and its
+addr = 0x80159080            # pool, the input entries and the AI blocks
+size = 0x910
+[region.fields]
+g_match_phase = { addr = 0x801591FC, type = "s32" }
+g_phase_wait = { addr = 0x801591E0, type = "s32" }
+g_phase_timer = { addr = 0x801591E4, type = "s32" }
+g_rng_match_state = { addr = 0x80159350, type = "u32" }
+g_rng_match_inc = { addr = 0x80159354, type = "u32" }
+g_rand_pool = { addr = 0x80159358, type = "u16[32]" }
+g_last_anim = { addr = 0x801593A0, type = "s16[4]" }
+g_input = { addr = 0x80159518, type = "struct InputSlot[4]" }
+
+[[region]]
+name = "match_b"             # objects, the match flag bytes, the state history, the counts and the clock
+addr = 0x8016AE10
+size = 0xBE0
+[region.fields]
+g_match_flags = { addr = 0x8016B598, type = "u8[2]" }
+g_runin_flags = { addr = 0x8016B650, type = "u16" }
+g_state_history = { addr = 0x8016B5A0, type = "s16[4][16]" }
+
+[[region]]
+name = "pads"                # the four controllers as the game read them (0x8009EDA4, 12 bytes each)
+addr = 0x8009ED20
+size = 0xC0
+[region.fields]
+g_cpu_flags = { addr = 0x8009ED20, type = "u8[4]" }
+g_pads = { addr = 0x8009EDA0, type = "struct Pad[4]" }
+
+[[region]]
+name = "models"              # the four 2852-byte model blocks (from 0x800A1130): posed joints (model_animate)
+addr = 0x800A1130
+size = 0x2C90
+type = "struct ModelBlock[4]"
+
+[[region]]
+name = "anim_streams"        # the four 192-byte animation stream states model_animate keeps (0x80069F20)
+addr = 0x80069F20
+size = 0x300
+type = "struct AnimStream[4]"
+
+[[region]]
+name = "match_c"             # the per-slot frame bits and the count-out option
+addr = 0x80162A7C
+size = 0x8
+[region.fields]
+g_frame_bits = { addr = 0x80162A7C, type = "u32" }
+
+[[region]]
+name = "main_misc"           # rng_main's state (main segment): rand_pool_next draws from it, and so does the camera
+addr = 0x80053780
+size = 0x4
+[region.fields]
+g_rng_main_state = { addr = 0x80053780, type = "u32" }
+
+[[region]]
+name = "object_models"       # the seven objects' 140-byte model records (main segment): the place in the holder's hand
+addr = 0x800A9C70            # (object_model_update); added 2026-11-03
+size = 0x3D4
+
+[[region]]
+name = "object_debris"       # s8 per object: the debris model picked (object_model_update, type 32)
+addr = 0x80088268
+size = 0x8
+
+[rules]
+# "Struct.field" or a global's name = rule, overriding the defaults (f32 bits, _unk unknown, others exact).
+# rng_main is an input the host gives the replay each frame: the camera draws from it outside the match
+# logic (a camera cut at the start of a grapple move), so its end-of-frame value is not the oracle's.
+g_rng_main_state = "ignore"
+
+[header]
+# Structs the C++ header gives host pointers instead of N64 addresses (not N64-layout mirrors).
+host_structs = ["WrestlerCtx"]

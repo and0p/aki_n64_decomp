@@ -1,0 +1,36 @@
+{
+ "game": "nomercy",
+ "state": "_tools/libretro/states/nm_p2_about_to_be_slammed_down.state",
+ "note": "As nm_count3.json but recorded on past the fall: the winner's post-match pose (0x1B steps 4-6), the end timer to 271 and the results copy. Milestone 7: the match end.",
+ "steps": [
+  {
+   "frames": 62
+  },
+  {
+   "frames": 42,
+   "pads": {
+    "1": "sx=-80"
+   }
+  },
+  {
+   "frames": 16,
+   "pads": {
+    "0": "up+left",
+    "1": "sx=-80"
+   }
+  },
+  {
+   "frames": 5,
+   "pads": {
+    "0": "l",
+    "1": "sx=-80"
+   }
+  },
+  {
+   "frames": 400,
+   "pads": {
+    "1": "sx=-80"
+   }
+  }
+ ]
+}

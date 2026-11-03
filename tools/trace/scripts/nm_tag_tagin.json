@@ -1,0 +1,12 @@
+{
+ "game": "nomercy",
+ "state": "_tools/libretro/states/nm_tag_p1_near_partner_match_almost_done_loading.state",
+ "note": "P1 tags the CPU partner (d-pad toward the partner's apron side, down, with C-up) once its hand is out, then P2 (up + C-up); record with akiemu --tick-hook. Not a CTest trace.",
+ "steps": [
+  {"frames": 60},
+  {"frames": 4, "pads": {"0": "down+cup"}},
+  {"frames": 220},
+  {"frames": 4, "pads": {"1": "up+cup"}},
+  {"frames": 260}
+ ]
+}

@@ -12,6 +12,7 @@ import argparse
 import ctypes as C
 import http.server
 import json
+import math
 import os
 import struct
 import sys
@@ -55,16 +56,101 @@ GAMES = {
     "wm2000": dict(rom="WWF WrestleMania 2000 (USA).z64", title="WWF WrestleMania 2000",
                    FB_INDEX=None, IDLE_RNG_CALL=None, JAL_RNG_MAIN=None),
     # No Mercy uses the USA Rev 1 ROM (Rev A), the revision the recomp and the symbols are for.
+    # Its graphics thread keeps no framebuffer index, so a game frame is counted when libultra's
+    # next VI context (__osViNext, pointer at 0x80054BF4) gets a new framep (+4) from
+    # osViSwapBuffer (0x80038460). The idle thread (0x800004D0) calls rng_main 0x80036110 at
+    # 0x80000570 (found 2026-11-02).
     "nomercy": dict(rom="WWF No Mercy (USA) (Rev A).z64", title="WWF No Mercy",
-                    FB_INDEX=None, IDLE_RNG_CALL=None, JAL_RNG_MAIN=None),
+                    FB_INDEX=("ptr", 0x80054BF4, 4), IDLE_RNG_CALL=0x80000570, JAL_RNG_MAIN=0x0C00D844,
+                    TICK_CALL=0x800D9DFC, TICK_FUNC=0x80114514),
 }
+# --tick-hook (No Mercy): match_frame (ovl_e) calls match_tick (0x80114514) from one place,
+# 0x800D9DFC (`jal match_tick`, nop in the delay slot). The hook points that call at a wrapper in
+# the top of the expansion RAM, which the game never touches (checked 2026-11-03: 0x80400100 up
+# stays zero through play). The wrapper sets "in a tick", stamps COP0 Count, calls match_tick, stamps
+# Count again, bumps the tick counter and clears the flag. A finished tick then ends a game frame
+# (the framebuffer flip is only the fallback before the overlay is loaded), so a pause always falls
+# between two whole ticks, and the ring of Count stamps gives each tick's length and start-to-start
+# period. Nothing the match logic reads is touched.
+# The wrapper also copies the pads the tick reads (g_pads, which pads_read fills just before
+# match_frame calls match_tick: words +4 (held, pressed) and +8 (released, stick x, y) of each
+# port's 12 bytes) into a second ring, for the input recorder (F8 in the window).
+TICK_CAVE = 0x807FF000
+TICK_DATA = 0x807FF100   # +0 ticks done, +4 in a tick (1), +8 ring of 64 x (Count at entry, at exit)
+TICK_RING = 64
+TICK_PADS = TICK_DATA + 8 + 8 * TICK_RING  # ring of 64 x 4 ports x (word +4, word +8) of g_pads
+G_PADS = 0x8009EDA0      # No Mercy's struct Pad[4] (12 bytes each)
 GAME_TITLE = GAMES["wcw"]["title"]
+TICK_CALL = TICK_FUNC = None
+
+
+def _jal(target):
+    return 0x0C000000 | (target & 0x0FFFFFFF) >> 2
+
+
+def tick_wrapper(func):
+    """The MIPS words of the tick wrapper at TICK_CAVE (t0-t3 are free around a call)."""
+    def i(op, rs, rt, imm):
+        return op << 26 | rs << 21 | rt << 16 | imm & 0xFFFF
+    sp, ra, zero, t0, t1, t2, t3 = 29, 31, 0, 8, 9, 10, 11
+    data = [i(0x0F, 0, t0, TICK_DATA >> 16), i(0x0D, t0, t0, TICK_DATA & 0xFFFF)]  # t0 = TICK_DATA
+    slot = [i(0x23, t0, t1, 0), i(0x0C, t1, t3, TICK_RING - 1),      # lw t1, 0(t0); andi t3, t1, 63
+            t3 << 16 | t3 << 11 | 3 << 6,                            # sll t3, t3, 3
+            t0 << 21 | t3 << 16 | t3 << 11 | 0x21]                   # addu t3, t0, t3
+    mfc0 = 0x40000000 | t2 << 16 | 9 << 11                           # mfc0 t2, Count
+    pads = [i(0x0C, t1, t3, TICK_RING - 1), t3 << 16 | t3 << 11 | 5 << 6,  # t3 = TICK_DATA + 32 * k
+            t0 << 21 | t3 << 16 | t3 << 11 | 0x21,
+            i(0x0F, 0, t1, G_PADS >> 16), i(0x0D, t1, t1, G_PADS & 0xFFFF)]  # t1 = g_pads
+    for p in range(4):
+        for w in range(2):                                           # lw t2, 12p+4+4w(t1); sw t2, ...(t3)
+            pads += [i(0x23, t1, t2, 12 * p + 4 + 4 * w), i(0x2B, t3, t2, TICK_PADS - TICK_DATA + 8 * p + 4 * w)]
+    return ([i(0x09, sp, sp, -24), i(0x2B, sp, ra, 20)] + data
+            + [i(0x09, zero, t2, 1), i(0x2B, t0, t2, 4)] + slot      # in a tick = 1
+            + [mfc0, i(0x2B, t3, t2, 8)]                             # ring[k].entry = Count
+            + pads                                                   # pad ring[k] = g_pads
+            + [_jal(func), 0] + data + slot
+            + [mfc0, i(0x2B, t3, t2, 12),                            # ring[k].exit = Count
+               i(0x09, t1, t1, 1), i(0x2B, t0, t1, 0),               # ticks += 1
+               i(0x2B, t0, zero, 4),                                 # in a tick = 0
+               i(0x23, sp, ra, 20), ra << 21 | 8, i(0x09, sp, sp, 24)])  # jr ra; addiu sp, sp, 24
 
 # N64 button bit -> RetroPad joypad id, as mupen64plus_next maps them by default.
 N64_TO_RETROPAD = {0x8000: 0, 0x4000: 1, 0x2000: 12, 0x1000: 3, 0x0800: 4, 0x0400: 5, 0x0200: 6,
                    0x0100: 7, 0x0020: 10, 0x0010: 11}
 # C buttons come from the right analog stick: bit -> (axis, sign).
 N64_C_BUTTONS = {0x0008: (1, -1), 0x0004: (1, 1), 0x0002: (0, -1), 0x0001: (0, 1)}
+
+# The core's analog stick -> N64 stick (mupen64plus_next emulate_game_controller_via_libretro.c,
+# with the default deadzone 15% and sensitivity 100%): polar, the deadzone cut out and the rest
+# scaled to 80, rounded per axis, y flipped.
+ASTICK_MAX = 0x8000
+ASTICK_DEADZONE = int(15 * 0.01 * ASTICK_MAX)
+
+
+def n64_stick(ax, ay):
+    r = math.hypot(ax, ay)
+    if r <= ASTICK_DEADZONE:
+        return 0, 0
+    a = math.atan2(ay, ax)
+    r = (r - ASTICK_DEADZONE) * (ASTICK_MAX / (ASTICK_MAX - ASTICK_DEADZONE)) * 80.0 / ASTICK_MAX
+    return int(math.floor(r * math.cos(a) + 0.5)), -int(math.floor(r * math.sin(a) + 0.5))
+
+
+def analog_for(nx, ny):
+    """The core analog values (x, y) that the game reads as N64 stick (nx, ny), or ValueError."""
+    if nx == 0 and ny == 0:
+        return 0, 0
+    a = math.atan2(-ny, nx)
+    r = math.hypot(nx, ny) * ASTICK_MAX / 80.0 * (ASTICK_MAX - ASTICK_DEADZONE) / ASTICK_MAX + ASTICK_DEADZONE
+    cx, cy = round(r * math.cos(a)), round(r * math.sin(a))
+    # The centre of the target's cell (one N64 unit is about 350 here), then squares round it.
+    for d in range(0, 400, 8):
+        ring = [(x, y) for x in range(cx - d, cx + d + 1, 8) for y in (cy - d, cy + d)]
+        ring += [(x, y) for x in (cx - d, cx + d) for y in range(cy - d, cy + d + 1, 8)]
+        for x, y in ring:
+            if -32768 <= x <= 32767 and -32768 <= y <= 32767 and n64_stick(x, y) == (nx, ny):
+                return x, y
+    raise ValueError("the stick (%d, %d) can't be fed through the core" % (nx, ny))
 
 # Quick match: the menu walk of the recomp's Quick Match mod (AkiMods mods/quickmatch, World Tour).
 QM_MODE = 0x80034820          # s32: nonzero while leaving the menus
@@ -81,6 +167,62 @@ QM_CORNERS = (0x0400, 0x0100, 0x0400, 0x8000)
 # Title (screen 0): with no Controller Pak the game first asks "play without saving?" (Up = Yes, A),
 # then the title takes Start. Cycled until the screen changes.
 QM_TITLE = (0x0800, 0x8000, 0x1000)
+
+
+# The input recorder's output. pads_read gets the data of the controller read it started on the
+# previous pass of match_frame, so what is fed while the emulator runs game frame k is read by
+# tick k + 1 (measured 2026-11-03: a pad fed for one frame step shows in g_pads one step later).
+PAD_LATENCY = 1
+SCRIPTS = os.path.join(REPO, "tools", "trace", "scripts")
+BUTTON_NAMES = [("a", 0x8000), ("b", 0x4000), ("z", 0x2000), ("start", 0x1000), ("up", 0x0800),
+                ("down", 0x0400), ("left", 0x0200), ("right", 0x0100), ("l", 0x0020), ("r", 0x0010),
+                ("cup", 0x0008), ("cdown", 0x0004), ("cleft", 0x0002), ("cright", 0x0001)]
+
+
+def pad_text(held, nx, ny):
+    """A pad as tools/trace/record.py writes it: buttons joined by '+', and the exact stick."""
+    parts = [n for n, b in BUTTON_NAMES if held & b]
+    parts += ["nx=%d" % nx] if nx else []
+    parts += ["ny=%d" % ny] if ny else []
+    return "+".join(parts)
+
+
+def recording_script(rec, name, game):
+    """Writes a recording as _tools/libretro/states/<name>.state and tools/trace/scripts/<name>.json.
+
+    record.py loads the state and steps one frame (tick 1 of the recording, which reads the pads
+    the state already holds), with "load_pads" fed, then one scripted frame per tick. So the pads
+    fed on a frame are the ones the next tick read; the last tick's are never fed and the script is
+    one tick shorter than the recording. "ram_crc"[k] is the RDRAM CRC at trace record k."""
+    pads = rec["pads"]
+    if len(pads) < PAD_LATENCY + 2:
+        raise ValueError("the recording is too short (%d ticks)" % len(pads))
+
+    def pad_map(t):
+        return {str(p): pad_text(*t[p]) for p in range(4) if pad_text(*t[p])}
+    steps = []
+    for t in pads[PAD_LATENCY + 1:]:
+        m = pad_map(t)
+        if steps and steps[-1].get("pads", {}) == m:
+            steps[-1]["frames"] += 1
+        else:
+            steps.append(dict(frames=1, **({"pads": m} if m else {})))
+    state_file = os.path.join(TOOLS, "states", name + ".state")
+    script_file = os.path.join(SCRIPTS, name + ".json")
+    with open(state_file, "wb") as f:
+        f.write(rec["state"])
+    script = {"game": game, "state": os.path.relpath(state_file, REPO).replace("\\", "/"),
+              "note": "Recorded in akiemu (F8) from frame %d: %d ticks. Record with akiemu --tick-hook --no-idle-rng."
+                      % (rec["frame"], len(pads)),
+              "load_pads": pad_map(pads[PAD_LATENCY]), "steps": steps,
+              "ram_crc": rec["crc"][:len(pads) - PAD_LATENCY]}
+    with open(script_file, "w", encoding="utf-8") as f:
+        f.write("{\n")
+        for k in ("game", "state", "note", "load_pads"):
+            f.write(" %s: %s,\n" % (json.dumps(k), json.dumps(script[k])))
+        f.write(' "steps": [\n%s\n ],\n' % ",\n".join("  " + json.dumps(s) for s in steps))
+        f.write(' "ram_crc": %s\n}\n' % json.dumps(script["ram_crc"]))
+    return state_file, script_file
 
 
 class Emu:
@@ -123,6 +265,11 @@ class Emu:
         self.qm = args.quickmatch
         self.qm_state = {"screen": -1, "idle": 0, "since": 999, "seq": 0, "press": 0}
         self.last_fb = None
+        self.last_ticks = None    # --tick-hook: the wrapper's tick counter when last seen
+        self.ticks_in_frame = None
+        self.tick_log = []        # --tick-hook: dict(tick, vi, entry, exit, pads) per tick, oldest first
+        self.rec = None           # the input recording running (see _recorder_frame)
+        self.rec_request = None   # "start": begin one at the end of the next game frame
 
     def _log(self, line):
         self.log_lines.append(line)
@@ -184,8 +331,10 @@ class Emu:
                 if held & b:
                     right[axis] = sign * 32767
             self.core.buttons[port] = bits
-            # The stick: 72 units on the N64 for 30000 here (measured), y up on the N64.
-            self.core.analog[port] = [max(-32768, min(32767, sx * 416)), max(-32768, min(32767, -sy * 416)),
+            # The stick: 72 units on the N64 for 30000 here (measured), y up on the N64. An override
+            # with nx/ny carries the exact core values for that N64 stick (analog_for).
+            ax, ay = o["analog"] if o and o.get("analog") else (sx * 416, -sy * 416)
+            self.core.analog[port] = [max(-32768, min(32767, ax)), max(-32768, min(32767, ay)),
                                       right[0], right[1]]
 
     # ---- quick match: walk the menus like the recomp's Quick Match mod ----
@@ -228,13 +377,26 @@ class Emu:
     # ---- running ----
 
     def _game_frame_started(self):
-        """True on the VI where the graphics thread flipped to a new frame (a game frame passed)."""
+        """True on the VI where the graphics thread flipped to a new frame (a game frame passed).
+        With the tick hook in place: true once a match tick has finished and the next has not begun."""
+        if self.tick_hooked():
+            return self._ticks_done()
         if FB_INDEX is None:  # a game without a known frame counter: every VI counts
             return True
-        word = self.read(FB_INDEX, 2)
+        word = self._fb_word()
         changed = self.last_fb is not None and word != self.last_fb
         self.last_fb = word
         return changed
+
+    def _fb_word(self):
+        """The value that changes once per game frame: a framebuffer index, or ("ptr", p, off),
+        the word at offset off in the struct that the pointer at p points to."""
+        if isinstance(FB_INDEX, tuple):
+            ptr = self.u(FB_INDEX[1], 4)
+            if not 0x80000000 <= ptr < 0x80000000 + RAM_SIZE:
+                return None
+            return self.read(ptr + FB_INDEX[2], 4)
+        return self.read(FB_INDEX, 2)
 
     def run_vi(self):
         """Runs one VI. Returns True if a game frame started during it."""
@@ -247,7 +409,60 @@ class Emu:
             self._patch_idle_rng()
         if self.qm:
             self._quickmatch()
+        if TICK_CALL is not None and self.args.tick_hook:
+            self._patch_tick()
         return self._frame_tick()
+
+    def tick_hooked(self):
+        return (TICK_CALL is not None and self.args.tick_hook and self._base() is not None
+                and self.u(TICK_CALL, 4) == _jal(TICK_CAVE))
+
+    def _patch_tick(self):
+        """Points match_frame's call of match_tick at the wrapper, once ovl_e is loaded."""
+        if self.u(TICK_CALL, 4) != _jal(TICK_FUNC):
+            return False
+        self.write(TICK_CAVE, self._wrapper_code())
+        self.write(TICK_DATA, bytes(TICK_PADS + 32 * TICK_RING - TICK_DATA))
+        self.write(TICK_CALL, struct.pack(">I", _jal(TICK_CAVE)))
+        self.core.unserialize(self.core.serialize())  # recompile (see _patch_idle_rng)
+        self.last_ticks = 0
+        self.log_lines.append("akiemu: match_tick call hooked")
+        return True
+
+    @staticmethod
+    def _wrapper_code():
+        code = b"".join(struct.pack(">I", w) for w in tick_wrapper(TICK_FUNC))
+        assert len(code) <= TICK_DATA - TICK_CAVE
+        return code
+
+    def _update_wrapper(self):
+        """A state saved hooked by an older akiemu has an older wrapper (without the pad ring):
+        replaces it, so every hooked state runs the same code."""
+        code = self._wrapper_code()
+        if self.read(TICK_CAVE, len(code)) != code:
+            self.write(TICK_CAVE, code)
+            self.core.unserialize(self.core.serialize())  # recompile (see _patch_idle_rng)
+            self.log_lines.append("akiemu: tick wrapper updated")
+
+    def _ticks_done(self):
+        """Logs the ticks finished since the last look; true when some finished and none is running."""
+        ticks, busy = struct.unpack(">II", self.read(TICK_DATA, 8))
+        last = self.last_ticks if self.last_ticks is not None else ticks
+        if ticks == last or busy:
+            return False  # nothing new, or a tick is running: wait for it
+        ring = self.read(TICK_DATA + 8, 8 * TICK_RING)
+        pad_ring = self.read(TICK_PADS, 32 * TICK_RING)
+        for k in range(max(last, ticks - TICK_RING), ticks):
+            entry, exit_ = struct.unpack_from(">II", ring, 8 * (k % TICK_RING))
+            # per port: (held, stick x, stick y) as the tick read them
+            pads = [struct.unpack_from(">H4xbb", pad_ring, 32 * (k % TICK_RING) + 8 * p) for p in range(4)]
+            self.tick_log.append({"tick": k, "vi": self.vi, "entry": entry, "exit": exit_, "pads": pads})
+            if self.rec is not None:
+                self.rec["pads"].append(pads)
+        del self.tick_log[:-20000]
+        self.ticks_in_frame = ticks - last
+        self.last_ticks = ticks
+        return True
 
     def _patch_idle_rng(self):
         self.write(IDLE_RNG_CALL, bytes(4))
@@ -324,6 +539,7 @@ class Emu:
                         if o and o["frames"] is not None:
                             o["frames"] -= 1
                     self.pads = [o if not o or o["frames"] is None or o["frames"] > 0 else None for o in self.pads]
+                    self._recorder_frame()
                     if self._check_stop():
                         self.paused = True
                         self.lock.notify_all()
@@ -342,6 +558,43 @@ class Emu:
 
     # ---- state ----
 
+    # ---- input recorder (F8 in the window) ----
+    # Starts at the end of a game frame (with the tick hook: just after a whole match tick), keeping
+    # a save state in memory; then logs, per tick, the pads the tick read (the wrapper's pad ring)
+    # and a CRC of the whole RDRAM at the end of each frame. stop_recording hands it all over for
+    # recording_script to turn into a trace script.
+
+    def ram_crc(self):
+        return zlib.crc32(C.string_at(self._base(), RAM_SIZE))
+
+    def _recorder_frame(self):
+        r = self.rec
+        if r is not None:
+            r["crc"].append(self.ram_crc())
+            if self.ticks_in_frame != 1:
+                r["warnings"].append("frame %d: %s ticks" % (self.frame, self.ticks_in_frame))
+        if self.rec_request == "start":
+            self.rec_request = None
+            idle_rng = IDLE_RNG_CALL is not None and self.u(IDLE_RNG_CALL, 4) == JAL_RNG_MAIN
+            if not self.tick_hooked() or idle_rng:
+                self.add_event("F8: recording needs --tick-hook and --no-idle-rng, in a match")
+                return
+            self.rec = {"state": self.save_state(), "frame": self.frame, "pads": [], "crc": [], "warnings": []}
+            self.add_event("F8 recording started")
+
+    def stop_recording(self, keep):
+        """Ends the recording (with the lock held); returns it if keep, and pauses the game."""
+        r, self.rec, self.rec_request = self.rec, None, None
+        if r is None:
+            return None
+        if not keep:
+            self.add_event("recording discarded (%d ticks)" % len(r["pads"]))
+            return None
+        self.paused, self.reason = True, "F8 recording stopped"
+        self.lock.notify_all()
+        self.add_event("F8 recording stopped (%d ticks)" % len(r["pads"]))
+        return r
+
     def save_state(self, slot=None, file=None):
         data = self.core.serialize()
         header = json.dumps({"frame": self.frame, "vi": self.vi}).encode()
@@ -351,8 +604,11 @@ class Emu:
         if file:
             with open(file, "wb") as f:
                 f.write(blob)
+        return blob
 
     def load_state(self, slot=None, file=None):
+        if self.rec is not None:  # a load breaks the recording's run of ticks
+            self.stop_recording(False)
         if slot:
             if slot not in self.snaps:
                 raise ValueError("no such snapshot")
@@ -369,7 +625,15 @@ class Emu:
         self.core.unserialize(data)
         self.frame = meta.get("frame", self.frame)
         self.vi = meta.get("vi", self.vi)
-        self.last_fb = self.read(FB_INDEX, 2) if FB_INDEX is not None else None
+        self.last_fb = self._fb_word() if FB_INDEX is not None else None
+        self.tick_log.clear()  # tick numbers start again from the state's counter
+        if TICK_CALL is not None and self.args.tick_hook and not self._patch_tick() and self.tick_hooked():
+            self.last_ticks = struct.unpack(">I", self.read(TICK_DATA, 4))[0]  # a state saved hooked
+            self._update_wrapper()
+        # A state saved without the patch brings the idle loop's call back: patch it before the
+        # first VI runs, so a replay from the state is the same every time.
+        if self.args.no_idle_rng and IDLE_RNG_CALL and self.u(IDLE_RNG_CALL, 4) == JAL_RNG_MAIN:
+            self._patch_idle_rng()
         for b in self.breaks:
             if b["kind"] == "change":
                 b["value"] = self.u(b["addr"], b["size"])
@@ -377,7 +641,9 @@ class Emu:
     def status(self):
         idle_rng = IDLE_RNG_CALL is not None and self._base() is not None and self.u(IDLE_RNG_CALL, 4) == JAL_RNG_MAIN
         return {"backend": "akiemu", "frame": self.frame, "vi": self.vi, "paused": self.paused,
-                "idle_rng": idle_rng,
+                "idle_rng": idle_rng, "tick_hook": self.tick_hooked(),
+                "ticks": self.last_ticks, "ticks_in_frame": self.ticks_in_frame,
+                "recording": None if self.rec is None else len(self.rec["pads"]),
                 "at_hook": self.paused, "attached": self._base() is not None, "reason": self.reason,
                 "steps_left": self.steps_left, "run_until": self.run_until,
                 "breaks": [{"addr": "0x%X" % b["addr"], "size": b["size"], "kind": b["kind"],
@@ -547,6 +813,9 @@ def make_handler(emu):
                     sx, sy = num(q, "sx", 0), num(q, "sy", 0)
                     e.pads[port] = {"held": num(q, "held", 0), "sx": sx - 256 if sx > 127 else sx,
                                     "sy": sy - 256 if sy > 127 else sy, "frames": num(q, "frames")}
+                    if "nx" in q or "ny" in q:  # the stick exactly as the game should read it
+                        nx, ny = (int(q.get(k, "0"), 0) for k in ("nx", "ny"))
+                        e.pads[port]["analog"] = analog_for(nx, ny)
                     return e.status()
             if p in ("/save", "/load"):
                 slot, file = q.get("slot") or None, q.get("file") or None
@@ -568,6 +837,34 @@ def make_handler(emu):
                 if png is None:
                     raise ValueError("no frame yet")
                 return ("image/png", png)
+            if p == "/ticks":
+                # --tick-hook: the logged ticks from since=<tick> on: the VI by which the emulator
+                # saw each one finish, and COP0 Count at its entry and exit
+                with e.lock:
+                    since = num(q, "since", 0)
+                    return {"ticks": [t for t in e.tick_log if t["tick"] >= since]}
+            if p == "/record":
+                # the window's input recorder: do=start (at the end of the next game frame),
+                # do=stop&name=NAME (pauses, writes the state and the script), do=cancel
+                what = q.get("do")
+                with e.lock:
+                    if what == "start":
+                        if e.rec is None:
+                            e.rec_request = "start"
+                        return {"requested": True}
+                    if what not in ("stop", "cancel"):
+                        raise ValueError("record needs do=start, stop or cancel")
+                    if what == "stop" and not q.get("name"):
+                        raise ValueError("record do=stop needs name=")
+                    r = e.stop_recording(what == "stop")
+                if r is None:
+                    return {"recording": None}
+                files = recording_script(r, q["name"], e.args.game)
+                return {"ticks": len(r["pads"]), "warnings": r["warnings"], "files": files}
+            if p == "/crc":
+                # CRC-32 of the whole RDRAM (in the core's own byte order), as the recorder logs it
+                with e.lock:
+                    return {"frame": e.frame, "crc": e.ram_crc()}
             if p == "/log":
                 return {"lines": e.log_lines[-num(q, "n", 50):]}
             if p == "/quit":
@@ -623,6 +920,8 @@ def run_window(emu, size):
     label.pack()
     status = tk.Label(root, anchor="w", font=("Consolas", 9))
     status.pack(fill="x")
+    rec_label = tk.Label(root, anchor="w", font=("Consolas", 9, "bold"))  # the input recorder, or the last event
+    rec_label.pack(fill="x")
     img = {"photo": None, "vf": -1}
     states_dir = os.path.join(TOOLS, "states")
     held_keys = set()  # P1 keyboard keys held
@@ -683,9 +982,76 @@ def run_window(emu, size):
         with emu.lock:
             emu.add_event(msg)
 
+    def name_recording(rec):
+        """Asks for the recording's name (game paused); Save writes the state and the script."""
+        from tkinter import messagebox
+        dlg = tk.Toplevel(root)
+        dlg.title("Save the recording")
+        dlg.transient(root)
+        secs = len(rec["pads"]) / 30
+        tk.Label(dlg, justify="left", text="%d ticks (%d:%04.1f). Name for the state and the trace script:"
+                 % (len(rec["pads"]), secs // 60, secs % 60)).pack(padx=8, pady=(8, 2), anchor="w")
+        v = tk.StringVar(value=time.strftime("nm_rec_%Y%m%d_%H%M%S"))
+        entry = tk.Entry(dlg, textvariable=v, width=48)
+        entry.pack(padx=8, fill="x")
+        entry.select_range(0, "end")
+        entry.focus_set()
+        tk.Label(dlg, fg="gray", justify="left",
+                 text="_tools/libretro/states/<name>.state\ntools/trace/scripts/<name>.json").pack(padx=8, anchor="w")
+
+        def save(*_):
+            name = v.get().strip()
+            if not name or any(c in name for c in '\\/:*?"<>|'):
+                messagebox.showerror("Save the recording", "Pick a file name (no path).", parent=dlg)
+                return
+            if (os.path.exists(os.path.join(states_dir, name + ".state"))
+                    or os.path.exists(os.path.join(SCRIPTS, name + ".json"))):
+                if not messagebox.askyesno("Save the recording", "%s exists. Replace it?" % name, parent=dlg):
+                    return
+            try:
+                files = recording_script(rec, name, emu.args.game)
+                msg = "recording saved: %s, %s" % files
+                if rec["warnings"]:
+                    msg += " (warning: %s)" % "; ".join(rec["warnings"][:3])
+            except (OSError, ValueError) as err:
+                msg = "saving the recording failed: %s" % err
+            with emu.lock:
+                emu.add_event(msg)
+            dlg.destroy()
+
+        def discard(*_):
+            if messagebox.askyesno("Save the recording", "Discard this recording?", parent=dlg):
+                with emu.lock:
+                    emu.add_event("recording discarded (%d ticks)" % len(rec["pads"]))
+                dlg.destroy()
+        bar = tk.Frame(dlg)
+        bar.pack(padx=8, pady=8, anchor="e")
+        tk.Button(bar, text="Save", width=10, command=save).pack(side="left", padx=2)
+        tk.Button(bar, text="Discard", width=10, command=discard).pack(side="left", padx=2)
+        dlg.bind("<Return>", save)
+        dlg.bind("<Escape>", discard)
+        dlg.protocol("WM_DELETE_WINDOW", discard)
+        dlg.grab_set()
+
     def hotkey(name):
         if name in ("F5", "F9"):
             quick(name == "F5")
+            return
+        if name in ("F6", "F8"):
+            with emu.lock:
+                if name == "F8" and emu.rec is None:
+                    if emu.rec_request != "start":
+                        emu.rec_request = "start"
+                        emu.add_event("F8: recording from the end of the next game frame")
+                    if emu.paused:
+                        emu.add_event("F8: the recording starts once the game runs (F2)")
+                    return
+                pending = emu.rec_request
+                rec = emu.stop_recording(name == "F8")
+                if name == "F6" and pending:
+                    emu.add_event("F6: recording not started")
+            if rec:
+                name_recording(rec)
             return
         with emu.lock:
             if name == "F2":
@@ -711,7 +1077,7 @@ def run_window(emu, size):
             with emu.lock:
                 emu.fast_forward = down
             return
-        if down and k in ("f2", "f3", "f4", "f5", "f9"):
+        if down and k in ("f2", "f3", "f4", "f5", "f6", "f8", "f9"):
             hotkey(k.upper())
             return
         if k in KEYMAP or k in STICK_KEYS:
@@ -793,6 +1159,15 @@ def run_window(emu, size):
             f = emu.core.frame_rgb() if vf != img["vf"] else None
             st = "frame %d  vi %d  %s%s %s" % (emu.frame, emu.vi, "PAUSED" if emu.paused else "running",
                                                " x4" if emu.fast_forward and not emu.paused else "", emu.reason)
+            if emu.rec is not None:
+                n = len(emu.rec["pads"])
+                rt = ("● REC %d:%04.1f  (%d ticks)   F8 stop and save   F6 cancel"
+                      % (n // 1800, n % 1800 / 30, n), "red")
+            elif emu.rec_request == "start":
+                rt = ("REC starts at the end of the next game frame   F6 cancel", "red")
+            else:
+                rt = (emu.events[-1]["what"] if emu.events else "", "gray")
+        rec_label.configure(text=rt[0], fg=rt[1])
         if f:
             img["vf"] = vf
             w, h, rgb = f
@@ -807,7 +1182,7 @@ def run_window(emu, size):
                 photo = photo.zoom(max(1, xs // w), max(1, ys // h))
             img["photo"] = photo
             label.configure(image=photo)
-        status.configure(text=st + "   F2 pause  F3 step  F4 mark  F5 save  F9 load  F7 (hold) x4")
+        status.configure(text=st + "   F2 pause  F3 step  F4 mark  F5 save  F9 load  F7 (hold) x4  F8 record")
         root.after(33, refresh)
     refresh()
     root.mainloop()
@@ -829,18 +1204,23 @@ def main():
     ap.add_argument("--paused", action="store_true", help="start paused (after loading --state)")
     ap.add_argument("--no-idle-rng", action="store_true",
                     help="patch out the idle loop's rng_main calls, so rng_main is deterministic like the recomp's")
+    ap.add_argument("--tick-hook", action="store_true",
+                    help="No Mercy: hook match_tick so a frame step ends between two whole ticks, and log each tick (/ticks)")
     ap.add_argument("--cpu", default="dynamic_recompiler", choices=("dynamic_recompiler", "cached_interpreter", "pure_interpreter"))
     ap.add_argument("--verbose", action="store_true", help="print the core's log")
     args = ap.parse_args()
     g = GAMES[args.game]
-    global FB_INDEX, IDLE_RNG_CALL, JAL_RNG_MAIN, GAME_TITLE
+    global FB_INDEX, IDLE_RNG_CALL, JAL_RNG_MAIN, GAME_TITLE, TICK_CALL, TICK_FUNC
     FB_INDEX, IDLE_RNG_CALL, JAL_RNG_MAIN, GAME_TITLE = g["FB_INDEX"], g["IDLE_RNG_CALL"], g["JAL_RNG_MAIN"], g["title"]
+    TICK_CALL, TICK_FUNC = g.get("TICK_CALL"), g.get("TICK_FUNC")
     if args.rom is None:
         args.rom = os.path.join(REPO, "_roms", g["rom"])
     if args.quickmatch and args.game != "wcw":
         ap.error("--quickmatch is World Tour only")
     if args.no_idle_rng and g["IDLE_RNG_CALL"] is None:
         ap.error("--no-idle-rng: the idle loop of %s isn't known yet" % g["title"])
+    if args.tick_hook and TICK_CALL is None:
+        ap.error("--tick-hook: match_tick's call is only known for No Mercy")
     os.makedirs(os.path.join(TOOLS, "states"), exist_ok=True)
 
     emu = Emu(args)

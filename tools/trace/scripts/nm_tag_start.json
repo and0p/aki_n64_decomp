@@ -1,0 +1,10 @@
+{
+ "game": "nomercy",
+ "state": "_tools/libretro/states/nm_tag_p1_near_partner_match_almost_done_loading.state",
+ "note": "Exploration: a tag match from the fade-in, no input, to see the start of play with P1 / P2 beside their CPU partners. Not a CTest trace.",
+ "steps": [
+  {
+   "frames": 600
+  }
+ ]
+}

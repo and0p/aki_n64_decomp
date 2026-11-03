@@ -49,8 +49,31 @@ equivalent is `../wcw_world_tour/ai.md`; No Mercy's AI is about three times the 
    into globals; they are trait **levels** that index small chance arrays in `g_ai_mode_tables`.
 5. Runs `g_ai_modes[mode]` (0x80145A10, 145 entries, 111 functions). Mode 0 calls `ai_choose_mode`.
    `ai_set_mode` (and `_b`, `_now`, `_if_new`, `_arg`) sets mode, clears step and timers and notes the
-   opponent's state. `ai_mode_history_push` keeps the last 10 modes (`ai_move_listed` checks them, to
+   opponent's state. `ai_mode_history_push` keeps the last 10 modes (`ai_mode_recent` checks them, to
    avoid repeats).
+
+Decompiled 2026-11-03 (`src/nomercy/nm_ai.cpp`: `ai_update`, perception, `ai_situation`, the mode
+bookkeeping; the modes and deciders are not). Details the C settles:
+
+- The perception caps: own health 0.1, the opponent's health 0.3, own spirit 0.1, the opponent's spirit
+  0.2, distance 0.2, height difference 0.1, own regions 0.1, the opponent's time down 0.3. So the CPU
+  reads its own state almost exactly at high skill and the opponent's health least reliably.
+- The where-class bits (+0x82): self in the ring with the opponent in the ring 0x01, on the apron 0x02,
+  elsewhere 0x04, on the cage wall 0x2000; self on the apron: 0x08 / 0x10 / 0x20 (opponent in the ring /
+  on the apron / elsewhere); self on the floor: 0x40 / 0x80 (opponent in the ring / on the apron); self on
+  the cage wall: 0x4000 / 0x8000 (opponent in the ring / on the wall); anything else 0x100.
+- Overrides before the mode runs: running without a target for 151 frames, or a legal man on the apron
+  for 151, sends the CPU back to mode 0; a mode that has run 300 frames is reset by a watchdog; an
+  opponent taunting (0x1B / 0x1C) under health conditions starts a weighted pick (`ai_pick_mode_weighted_idle`).
+- `ai_situation` gives lying (0x31) class 15 for steps 0-3 and 19 for 4-6; holds 0x46 / 0x48 are 57 and
+  the held 0x47 / 0x49 7. **Checked in RAM**: 4,905 CPU readings in the 4-CPU tag save match the C mapping
+  (the class is taken before the state handler runs, so it lags a state change by one frame).
+
+Also in C (2026-11-03): `ai_choose_mode` (mode 0), `ai_decide_in_ring`, `ai_decide_standing`, mode 32 and the
+helpers `ai_press_focus_switch` (renamed from ai_can_act: it presses C-right) and `ai_mode_recent` (renamed from
+ai_move_listed: it reads the mode history). Mode 32 matches the 4-CPU recording (871 waits of 8-35 frames, every exit
+explained). The recording uses 26 modes: 0, 32, 41, 53, 6, 15, 54, 45, 49, 59, 1, 9, 25, 30, 39, 10, 3, 29, 31, 47, 2,
+48, 40, 119, 26, 33.
 
 ## Perception and the finisher plan
 
@@ -86,7 +109,7 @@ only in the down / pinned / held states, 60 in some, 0 otherwise). The deciders 
    switches to the nearest opponent attacking it (+0x80 0x04 / 0x08); modes 121 / 122 press C-right.
 2. Unless its own situation is STANDING or 43 it only reacts: in states 3 / 4 for 151+ frames it stops;
    on a ladder it goes to mode 136 or 138.
-3. Standing: `ai_can_act` (state 0x01, 0x0A (perched on the turnbuckle) with +0xF4 bit 2, or 0x4F at step 2) must agree; then, in the
+3. Standing: `ai_press_focus_switch` (state 0x01, 0x0A (perched on the turnbuckle) with +0xF4 bit 2, or 0x4F at step 2) must agree; then, in the
    ring arenas (g_arena < 10), the **decider for the where-class** (+0x82):
 
 | +0x82 | Where | Decider |
@@ -125,7 +148,7 @@ Checked line by line 2026-11-02:
    When that wrestler is in the ring, in a strong grapple attempt (state 0x50, flags78 0x04), not both in
    finisher mode: if it is going for the CPU's own opponent and that is within **160** → engage (1);
    otherwise, within 160 of the pair and in the same place, a chance = skill (half the skill unless the
-   target is down, situations 15-19) → `ai_can_act` (which also writes C-right, 0x0001, to the AI pad's
+   target is down, situations 15-19) → `ai_press_focus_switch` (which also writes C-right, 0x0001, to the AI pad's
    pressed buttons: switching focus to the pair). **So the CPU breaks up or joins a grapple near it.**
 7. **Under g_match_type 0x10000**, with the opponent down (15, 16, 19) and its own perceived spirit 71 or
    more: when the opponent will stay down longer (AI +0x50) than 0x801452EC[its perceived health / 100]
@@ -237,7 +260,7 @@ First pass 2026-11-02 (mostly tag logic, which is where an apron wrestler usuall
    - an opponent working on this CPU (its +0x08 is the CPU's slot): chance = skill, then **45% back
      in (33)**, else mode 7 (hold R for 1-13 frames: a block);
    - an opponent down or hurt (with chances by +39, and finisher mode): mode 49 (wait on the apron)
-     through `ai_move_listed`, or `ai_go_to_partner` at 50% (tag the partner in) in tag matches;
+     through `ai_mode_recent`, or `ai_try_corner_climb` at 50% (a top-rope try) in tag matches;
      some situations go to mode 2 (grapple) or 67;
    - near (within **160**, by trait +37 chances): table 0x8014543C (**20% strike (6), 20% engage (1),
      60% grapple (2)**) or 0x80145450 (20% / 20% / 10% grapple, the rest a mode not yet read);
@@ -260,7 +283,7 @@ Read 2026-11-02, in order:
 6. **Same zone, opponent down** (situation 15-19): the attack chance, +200 with `ai_trait_flag2` (for a
    lying opponent, situation 19, first a +39 chance 0x80145434 = **400, 200, 0, 0, 200** for mode 49,
    waiting on the apron, unless in finisher mode, and +300 with the trait flag) → 50 / 50 `ai_decide_apron_jump` (a dive off the
-   apron) or `ai_go_to_partner`; then the 33 / 34 / 35 rotation; else 35 / 36 or 104.
+   apron) or `ai_try_corner_climb`; then the 33 / 34 / 35 rotation; else 35 / 36 or 104.
 
 ### Both on the apron (`ai_decide_apron_vs_apron`, 0x800F473C)
 
@@ -268,7 +291,7 @@ Read 2026-11-02. Under the over-the-top rule (g_match_rules 0x400) a wrestler in
 **33** at once. Then `ai_decide_tag`. The apron modes 33 / 34 / 35 / 36 (33 holds the d-pad toward the ring
 centre and presses C-up, so it gets back in; 34 holds C-down the same way, climbing the corner from the
 apron; 35 drops off the apron to the floor (not with few counts left or the opponent in the ring); 36 goes through the ropes toward an area; first read of 33 / 34) are
-picked through `ai_move_listed(mode, 10)`, which is true when the mode is among the slot's last 10 modes
+picked through `ai_mode_recent(mode, 10)`, which is true when the mode is among the slot's last 10 modes
 (0x8014521C + 20 × slot), so the CPU rotates between them. The trait chance is 0x80145548[+38] = **50, 100, 300,
 500, 100**.
 
@@ -290,7 +313,7 @@ Read 2026-11-02. Modes 121 / 122 press **C-right**, which in a cage match starts
 4. An opponent climbing (0xC4) → walk (123).
 5. The opponent still low on the wall (height difference below **180**): idle on the cage (0xCC) → the
    +35 chance and then its scaled version give hold R (7), else block (47). In finisher mode, unless mode
-   33 was among its last 5 modes (`ai_move_listed`, the mode history at 0x8014521C) → walk (128). A +34
+   33 was among its last 5 modes (`ai_mode_recent`, the mode history at 0x8014521C) → walk (128). A +34
    chance 0x8014596C (**400, 500, 600, 700, 800**) → engage (1); within **130**, 1000 minus that → strike
    (6). With its own perceived spirit (AI block +0x3E) 51 or more → walk (128); below 51 it goes on to 6.
 6. Higher up (or from 5): a chance 0x80145978[+37] (**500, 400, 300, 200, 100**, +500 in finisher mode);
@@ -394,7 +417,7 @@ Read 2026-11-02. In SPECIAL it taunts (50). In finisher mode, while the meter ti
 **150**, it first tries `ai_finisher_check`. Then, with a finisher (0x8016B580) set:
 
 1. A finisher class (AI +0x84) set → `ai_try_pick_up` first.
-2. **261** → `ai_go_to_partner`; **262** (only in finisher mode) → `ai_go_to_partner`; **274** →
+2. **261** → `ai_try_corner_climb`; **262** (only in finisher mode) → `ai_try_corner_climb`; **274** →
    `ai_try_ground_move(2)`.
 3. Farther than its reach (AI +0x68 beyond +0x7C) → walk up (48).
 4. **Ground finishers 209-216** → modes 209 → 73, 210 → 74, 211 → 78, 212 → 79, 213 → 75, 214 → 76,
@@ -423,9 +446,9 @@ Read 2026-11-02:
   mode:** level 0 → `ai_decide_vs_down_far`, 1 → `_near`, 2 → move list D.
 - **`_c`** (the finish plan on a lying opponent): flat on the back (19) → wait (55) or walk up (48) beyond
   130; in SPECIAL → taunt (50); a finisher-slot class (+0x84 0x08) only in finisher mode. Finisher 257 or
-  275 (finisher mode) → `ai_go_to_partner` / `ai_try_mode_67`; 273 → `ai_try_mode_67`; 256 →
-  `ai_go_to_partner`; 105 → mode 5. Beyond **130** → walk up (48). Class 0x1000 (on a staggered or
-  lying opponent): with AI flag 0x10 and the angle right (`ai_angle_off_facing`) engage (1) or grapple (2,
+  275 (finisher mode) → `ai_try_corner_climb` / `ai_try_mode_67`; 273 → `ai_try_mode_67`; 256 →
+  `ai_try_corner_climb`; 105 → mode 5. Beyond **130** → walk up (48). Class 0x1000 (on a staggered or
+  lying opponent): with AI flag 0x10 and the angle right (`ai_faced_by`) engage (1) or grapple (2,
   class 0x4000), else mode 100; by number 104 → mode 4, 192 → 11, 194 → 12, 196 → 13, 198 → 14, 278 →
   `ai_try_mode_89`. Class 0x2000 (running): the same angle check → 1, else 100. Class 0x0100 → 1 / 2 by
   angle and 0x4000. Class 0x0200 → follow-up strikes (9).
@@ -448,8 +471,8 @@ Read 2026-11-02. After a skill roll, for an opponent in situation 15, 16 or 19 (
 chance is **500 when the deciding trait is at level 2, else 50**. The trait depends on the opponent's
 perceived health and situation: healthy (100 or more) uses +30 (situation 15) or +25 (16 / 19); hurt
 uses +31 or +26. Then situation 15 → list C (`ai_list_pick_c`), 16 / 19 → list D; in finisher mode a
-wrestler with move 262 (has-move 0x400 in +0x3C) or 257 (0x200) first tries `ai_go_to_partner` (a tag
-double-team). So **+25 / +26 / +30 / +31 are on-off switches**: level 2 means "works on a downed
+wrestler with move 262 (has-move 0x400 in +0x3C) or 257 (0x200) first tries `ai_try_corner_climb` (a
+top-rope move: mode 65 when the opponent lies near a corner). So **+25 / +26 / +30 / +31 are on-off switches**: level 2 means "works on a downed
 opponent" (10 times as often), any other level hardly does.
 
 ### Far from the opponent (`ai_decide_far`, 0x800F7318)
@@ -529,13 +552,13 @@ Read 2026-11-02 (the start; the choice itself is long):
   spread + rand(2 × spread), so a heavy wrestler waits longer before choosing. Against an opponent in
   finisher mode it is 15 ± 7. The timer runs only while its own situation is LOCKUP (13).
 - Then a slot flag (0x8016B718) can hand over to `ai_lockup_special`; a strong front lock-up with trait
-  bits (attrs +0x3C) and a 20% roll tries the finisher path; a staggered opponent (flags78 0x100) and the
+  bits (attrs +0x3C) and a 20% roll tries the finisher path; an opponent slumped in the corner (flags78 0x100) and the
   apron (0x200) have their own branches.
-- **Move lists** (`ai_lockup_wait_time` returns one, despite its name): pairs of (move number, the
+- **Move lists** (`ai_lockup_move_list` returns one, despite its name): pairs of (move number, the
   buttons to press), e.g. front weak 0x80145D9C: 1 A, 2 A + left / right, 3 A + up, 4 A + down, 5 B, 10
   B + left / right, 15 B + up, 20 B + down; front strong 0x80145DCC (25-60, the same buttons; 0x80145DEC
   adds 65 for wrestlers with attrs +0x34 bit 0x02); rear 0x80145DBC (73 A, 74 A + any direction, 75 B, 76
-  B + direction) and strong 0x80145E10 (77-80); staggered front 0x80145E20 / 0x80145E28 (108 / 113, 118 /
+  B + direction) and strong 0x80145E10 (77-80); the corner moves (an opponent slumped in the corner) front 0x80145E20 / 0x80145E28 (108 / 113, 118 /
   123) and rear 0x80145E30 / 0x80145E38 (130 / 132, 134 / 136). So the CPU picks a move number and
   presses the same buttons a player would (`lockup_input`).
 
@@ -602,7 +625,7 @@ preferred moves (move flags 0x8000) and the rest; with both kinds present it tak
 at **40%** (`ai_list_pick_a`, `_b`, `_floor_a`) or **50%** (`_c`, `_d`, `_floor_b`), otherwise a random
 other one (always preferred when nothing else is in the list). The move then becomes a mode by its number
 (for example list A's 209-216 → mode 22 when close, 48 to walk up first, or 77), or goes through
-`ai_go_to_partner`, `ai_try_ground_move` or `ai_decide_ring_edge`.
+`ai_try_corner_climb`, `ai_try_ground_move` or `ai_decide_ring_edge`.
 
 So **attrs +0x38 bits mean "the wrestler has this move"**: `moveset_unpack` sets each bit from the move
 set (`damage_and_spirit.md`), and the same bits gate both the player's inputs (`movement.md`: 0x4000,
@@ -706,7 +729,7 @@ Each mode writes buttons; read from their code (most `guess`):
 
 - **Engage and grapple:** 1 engage (with chance = skill react to a strike with mode 46 block, to a grapple
   attempt with mode 21 L counter 75% or 43; otherwise A), 2 grapple, 23 / 24, 51 grapple move.
-- **Lock-up:** 25 choose a move after a wait from the style tables (`ai_lockup_wait_time`: front / rear,
+- **Lock-up:** 25 choose a move after a wait from the style tables (`ai_lockup_move_list`: front / rear,
   strong), 26, 102 place by direction, 111 / 112 whip or rear, 117, 120 move by direction; helpers
   `ai_pick_grapple_move` (lists at 0x80145C54 by kind, preferring moves with flags 0x8000 at 300‰),
   `ai_lockup_finisher`, `ai_lockup_ropes`.
@@ -734,7 +757,7 @@ Each mode writes buttons; read from their code (most `guess`):
   `ai_finisher_kind` (which finisher fits the opponent's pose and angle).
 - **Kick catch:** 69 holding a caught kick (A or B 50 / 50 after a style-table wait), 70 leg caught.
 - **Tag:** 15 partner decisions, 143 tag assist; `ai_tag_reach`, `ai_partner_busy` (don't tag while the
-  partner is mid-move), `ai_go_to_partner`.
+  partner is mid-move), `ai_try_corner_climb`.
 - **Ladder match:** 133 / 135 / 139 head for and climb to object 6 (the prize), 138 on the ladder (R, up or
   B by chance).
 - **No-ops:** 27, 28, 93, 137, 140, 142 go straight back to mode 0.

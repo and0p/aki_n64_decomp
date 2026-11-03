@@ -4,26 +4,35 @@
 [[func]]
 addr = 0x80002268
 name = "node_tree_update"
-desc = "As World Tour node_tree_update (0x80002274), matched by call graph (score 1.30). World Tour: Walks a scene-node tree (child at +4, sibling at +8) computing world matrices: parent world * local, or the local copied at the root."
-status = "likely"
+proto = "void node_tree_update(struct ModelNode *n)"
+desc = "Down a render node tree (220-byte nodes: +0 parent, +4 first child, +8 next sibling, +0x1C local, +0x5C world): a node without a parent copies its local matrix to its world one (bcopy), the others get local x the parent's world; recurses into children, loops over siblings (code 2026-11-02, decompiled in src/nomercy/nm_model.cpp). As World Tour node_tree_update (0x80001E2C), matched by call graph."
+status = "confirmed"
+port = "src/nomercy/nm_model.cpp"
 
 [[func]]
 addr = 0x80003BD0
 name = "file_lookup"
+proto = "void file_lookup(u32 *out, u16 id)"
 desc = "Checked against No Mercy's code 2026-11-02: fills (start, end, size, compressed size) for archive file a2 from the tables at 0x80062C10 / 0x80062C14 (ROM base 0x1BD150 = 1823056; bit 0 marks a compressed file). As World Tour file_lookup (0x80004D24), matched by call graph (score 0.92). World Tour: Fills info with ROM start/end, unpacked size and packed length of archive file 1..5498."
 status = "likely"
+port = "src/nomercy/nm_model.cpp"
+notes = "Port: partial (paths the traces have not reached yet stop a replay with NM_UNPORTED)."
 
 [[func]]
 addr = 0x800054E0
 name = "atanf"
+proto = "f32 atanf_n64(f32 x)"
 desc = "As World Tour atanf (0x80005080), matched by call graph (score 1.03). World Tour: atan of a ratio (called by atan2f)."
-status = "likely"
+status = "confirmed"
+port = "src/nomercy/nm_math.cpp"
 
 [[func]]
 addr = 0x800055D8
 name = "atan2f"
+proto = "f32 atan2f_n64(f32 a, f32 b)"
 desc = "As World Tour atan2f (0x80005208), matched by call graph (score 1.05). World Tour: atan2 by quadrant on top of atanf; used for facing angles."
-status = "likely"
+status = "confirmed"
+port = "src/nomercy/nm_math.cpp"
 
 [[func]]
 addr = 0x8000A1BC
@@ -58,32 +67,42 @@ status = "likely"
 [[func]]
 addr = 0x80011A54
 name = "anim_frame_count"
+proto = "s32 anim_frame_count(s32 anim)"
 desc = "As World Tour anim_frame_count (0x80009678), matched by call graph (score 1.10). World Tour: Frame count of an animation: low 16 bits of its header word."
-status = "likely"
+status = "confirmed"
+port = "src/nomercy/nm_anim.cpp"
 
 [[func]]
 addr = 0x80011AC0
 name = "anim_pose_class"
+proto = "s32 anim_pose_class(s32 anim)"
 desc = "As World Tour anim_pose_class (0x800096F4), matched by call graph (score 1.05). World Tour: Pose class of an animation: header bits 26-30 (copied to Wrestler.pose every frame)."
-status = "likely"
+status = "confirmed"
+port = "src/nomercy/nm_anim.cpp"
 
 [[func]]
 addr = 0x80012A8C
 name = "anim_stream_open"
-desc = "As World Tour anim_stream_open (0x8000A42C), matched by call graph (score 1.54). World Tour: Starts streaming an animation file (always stored raw) into the slot's ring buffer: DMAs the first 128 bytes after the 4-byte header."
-status = "likely"
+proto = "void anim_stream_open(s32 slot, s16 anim)"
+desc = "Starts streaming animation file `anim` (stored raw) into the slot's stream (0x80069F20 + 192 * slot; code 2026-11-02, decompiled in src/nomercy/nm_model.cpp): rom_next = the file's ROM start + 4 (file_lookup), bytes_left = its size - 4, then anim_stream_fetch(slot, 1) for the first keyframe and anim_stream_advance for the second, so buf[cur_buf] holds keyframe 0 with keyframe 1 on its way. As World Tour anim_stream_open (0x8000A42C), matched by call graph (score 1.54)."
+status = "confirmed"
+port = "src/nomercy/nm_model.cpp"
 
 [[func]]
 addr = 0x80012F48
 name = "model_blend_prev"
-desc = "Checked against No Mercy's code 2026-11-02: blends the previous pose into the new one for slot a1 by the weight table 0x80047FF8[a2] over the 19 joints (flags a3 0x04 / 0x08 keep the root offset). As World Tour model_blend_prev (0x8000A7F0), matched by call graph (score 0.98). World Tour: Blends the new animation's first frames toward the previous pose (weights at 0x8002D410)."
-status = "likely"
+proto = "void model_blend_prev(s32 slot, s32 frame, s8 mode)"
+desc = "Frames 0-4 of a new animation lean toward the previous pose by the weight 0x80047FF8[frame] (0.75, 0.6, 0.45, 0.3, 0.15; code 2026-11-02, decompiled in src/nomercy/nm_model.cpp): on frame 0 the previous pose is first re-centred on its joint 1 (x and z; y too with mode bit 8) unless mode bit 4; then for joints 1-19 the parentless ones move pos toward prev_pos by the weight, and every rotation by the weight of the short-way difference (prev_rot - rot, wrapped; x and z get 180 added when both exceed 110 degrees). As World Tour model_blend_prev (0x8000A7F0), matched by call graph."
+status = "confirmed"
+port = "src/nomercy/nm_model.cpp"
 
 [[func]]
 addr = 0x800132D8
 name = "model_decode_frame_interp"
-desc = "As World Tour model_decode_frame_interp (0x8000AC80), matched by call graph (score 1.48). World Tour: Odd frame: decodes the next keyframe into a temp buffer and moves each joint halfway to it (angles by the shortest arc)."
-status = "likely"
+proto = "void model_decode_frame_interp(s32 slot, s32 phase)"
+desc = "An odd frame (code 2026-11-02, decompiled in src/nomercy/nm_model.cpp): anim_stream_advance (so buf[cur_buf] is the next keyframe), decodes it into a scratch pose, and moves joints 1-19 (in g_joint_order) toward it by 0x8004800C[phase % 3] (0.5, 1/3, 0.5; model_animate passes 0): parentless joints by position, every joint by the short-way angle difference (x and z get 180 when either exceeds 120 degrees). As World Tour model_decode_frame_interp (0x8000AC80), matched by call graph."
+status = "confirmed"
+port = "src/nomercy/nm_model.cpp"
 
 [[func]]
 addr = 0x80021980
@@ -190,8 +209,10 @@ status = "likely"
 [[func]]
 addr = 0x800EB970
 name = "running_ground_attack_check"
+proto = "s32 running_ground_attack_check(struct Wrestler *w, struct Wrestler *opp, f32 reach, s32 *angle, s32 mode)"
 desc = "Checked against No Mercy's code 2026-11-02: whether a1 is within a3 of a2's lying body (lying_body_axis when down / flags8a 0x2000 / a11, else the point) and returns the angle into a4. As World Tour running_ground_attack_check (0x800B9E44), matched by call graph (score 0.94). World Tour: Run + B next to a lying opponent in the ring: starts the running ground attack (0x4F) when within reach."
-status = "likely"
+status = "confirmed"
+port = "src/nomercy/nm_strike.cpp"
 
 [[func]]
 addr = 0x800FD7C0
@@ -202,68 +223,90 @@ status = "likely"
 [[func]]
 addr = 0x8011723C
 name = "tag_partner_takes_over"
-desc = "As World Tour tag_partner_takes_over (0x800B1FFC), matched by call graph (score 1.04). World Tour: Makes idx^1 LEGAL and swaps the CPU flags of the pair, so a human whose wrestler is eliminated controls the partner."
-status = "likely"
+proto = "s32 tag_partner_takes_over(s32 slot)"
+desc = "Read for the decompilation and trace-checked (singles) 2026-11-02 (src/nomercy/nm_frame.cpp): marks the slot out (end_flags 0x01) and says whether its fall ends the match: 1 in the 0x3B000 match types; 0 outside tag / handicap (0x4000) (so a singles pin only records the fall, match_end_start is not called); in a tag match 1 when slot 0 loses under rules 0x100000 or type 0x400000; with type 0x4000000 0 unless three slots have flags_f1 0x04 and this one too, then 1 when fewer than two slots are still in (out but fresh, or run-ins, count as in); otherwise 0 while entrants are left (0x80159214 < 0x80159210), else 1 when fewer than two are in. As World Tour tag_partner_takes_over (0x800B1FFC), matched by call graph (score 1.04). World Tour: Makes idx^1 LEGAL and swaps the CPU flags of the pair, so a human whose wrestler is eliminated controls the partner."
+status = "confirmed"
+port = "src/nomercy/nm_frame.cpp"
 
 [[func]]
 addr = 0x8011CD3C
 name = "wrestler_health_eff"
+proto = "s32 wrestler_health_eff(const struct Wrestler *w)"
 desc = "As World Tour wrestler_health_eff (0x800A0594), matched by call graph (score 1.02). World Tour: Health used by recovery and reaction code: health_max while SPECIAL (flags_lo & 0x1000), else health."
-status = "likely"
+status = "confirmed"
+port = "src/nomercy/nm_strike.cpp"
 
 [[func]]
 addr = 0x80121330
 name = "strike_land"
+proto = "void strike_land(struct Wrestler *w, s32 target, u32 flags)"
 desc = "Applies a strike to the slot it hit (from code 2026-11-02): resets the defender's hit_flags, copies the move (hit_move_copy). A blocking defender (state 0x4C) that started blocking less than 3 frames ago (count_timer < 3) and passes strike_counter_check counters with R (the timed R counter); otherwise the block holds (state 0x4D) unless the strike is unblockable (strike_flags 0x100600, from behind flags8a 0x02, or 0x40 at location 0x10). Defenders in 0x34 / 0x35 can escape by mashing; 0x34 / 0xC1 add hit flags. Then stats, DQ checks (strike_dq_check for weapons), a hit on a ladder climber (location 0x08) knocks it off (0xB2), and the hit_flags (reaction kind, mirror, falls) are chosen with chances (700, 800, 500, 300) and chance_roll kind 18; the reaction state follows (0x17, 0x70 stagger, 0x2D knockdown ...). As World Tour strike_land (0x800CA9B0)."
-status = "likely"
+status = "confirmed"
+port = "src/nomercy/nm_strike.cpp"
 
 [[func]]
 addr = 0x801227A4
 name = "move_aftermath_check"
+proto = "s32 move_aftermath_check(const struct Wrestler *w, struct Wrestler *att, struct Wrestler *d, s32 how)"
 desc = "As World Tour move_aftermath_check (0x800CBC94), matched by call graph (score 1.03). World Tour: End of a move on def: may start bleeding (move f07, chance_roll 4 -> state 0x26) or a TKO stagger (rule 0x01, health_eff < 26, move f08, chance_roll 5 -> state 0x25)."
-status = "likely"
+status = "confirmed"
+port = "src/nomercy/nm_strike.cpp"
 
 [[func]]
 addr = 0x80127DCC
 name = "grapple_anim_defender"
+proto = "void grapple_anim_defender(struct Wrestler *w, struct Wrestler *other)"
 desc = "Checked against No Mercy's code 2026-11-02: the defender's lock-up animation by the attempt flags78: 11905 / 11909 (rear) normal, 11913 / 11917 at a staggered target, 11921 across the ropes, 11925 from the apron, 11937 the clash; places it with slide_vector over 6 frames. As World Tour grapple_anim_defender (0x800C421C), matched by call graph (score 0.99). World Tour: Defender's grapple-lock animation, the attacker's id + 1 (2937, 2941, 2945, 2949, 2953, 2958, 2935)."
-status = "likely"
+status = "confirmed"
+port = "src/nomercy/nm_grapple.cpp"
 
 [[func]]
 addr = 0x8012E040
 name = "chance_check"
+proto = "s32 chance_check(s32 n)"
 desc = "As World Tour chance_check (0x800A0410), matched by call graph (score 1.13). World Tour: 1 when rand_pool_next() <= chance, so a chance c succeeds (c + 1) / 1000 of the time."
-status = "likely"
+status = "confirmed"
+port = "src/nomercy/nm_rng.cpp"
 
 [[func]]
 addr = 0x8012E434
 name = "lying_body_dist"
+proto = "f32 lying_body_dist(struct Body *b, const struct Vec3 *point)"
 desc = "Checked against No Mercy's code 2026-11-02: distance from a point to the lying body's ellipse (half axes +0 / +8, angle +0x18) along the line to its centre. As World Tour lying_body_dist (0x800A0100), matched by call graph (score 0.98). World Tour: Distance from a point to a lying wrestler's body (an ellipse along its facing), used to decide whether a downed opponent is within reach."
-status = "likely"
+status = "confirmed"
+port = "src/nomercy/nm_bounds.cpp"
 
 [[func]]
 addr = 0x8012F83C
 name = "wrestler_anim_invalidate"
+proto = "void wrestler_anim_invalidate(struct Wrestler *w)"
 desc = "As World Tour wrestler_anim_invalidate (0x800A0E30), matched by call graph (score 1.05). World Tour: Sets anim_id (+0x08) to -1 so the next wrestler_set_anim restarts the animation."
-status = "likely"
+status = "confirmed"
+port = "src/nomercy/nm_anim.cpp"
 
 [[func]]
 addr = 0x8012F980
 name = "wrestler_restart_anim"
+proto = "void wrestler_restart_anim(struct Wrestler *w, s32 anim, s32 mode)"
 desc = "As World Tour wrestler_restart_anim (0x800A1024), matched by call graph (score 1.58). World Tour: wrestler_anim_invalidate then wrestler_set_anim: plays an animation from the start even if it is the current one."
-status = "likely"
+status = "confirmed"
+port = "src/nomercy/nm_anim.cpp"
 
 [[func]]
 addr = 0x80132374
 name = "ground_approach_plan"
-desc = "As World Tour ground_approach_plan (0x800A3390), matched by call graph (score 1.55). World Tour: Plans the attacker's walk to the spot next to a downed opponent chosen by state_33 (fills a 48-byte record at 0x800F0730 + slot*48)."
-status = "likely"
+proto = "s32 ground_approach_plan(struct WrestlerCtx *ctx, const struct Vec3 *target, s32 advance)"
+desc = "Read for the decompilation 2026-11-02 (src/nomercy/nm_down.cpp): the walk to a spot beside a lying opponent as a quadratic curve through three control points in the wrestler record (+0x264, approach_pts). Planning (a2 0): with the opponent O, the walker W and the spot T, the middle point B lies at the mean of |OW| and |OT| from O along the angle half-way between them, A at |BW| beyond W along B -> W, C at |BT| beyond T along B -> T; the step per frame (+0x2C0) is 1 / ((|BW| + |BT|) * the factor at 0x8014DBE0 per 113 units of turn / 6), returns the frame count. Advancing (a2 1): pos = (1-t)^2/2 A + ((1-t) t + 1/2) B + t^2/2 C with t at +0x2BC, returns 1 once t reaches 1. As World Tour ground_approach_plan (0x800A3390), matched by call graph (score 1.55). World Tour: Plans the attacker's walk to the spot next to a downed opponent chosen by state_33 (fills a 48-byte record at 0x800F0730 + slot*48)."
+status = "confirmed"
+port = "src/nomercy/nm_down.cpp"
 
 [[func]]
 addr = 0x80132E7C
 name = "recover_tick_ground"
-desc = "As World Tour recover_tick_ground (0x800A3EFC), matched by call graph (score 1.71). World Tour: Ground grapple defender: recover_tick, plus 1 back with 75 % chance; zeroes it when the flag argument is set."
-status = "likely"
+proto = "s32 recover_tick_ground(struct Wrestler *w, u16 pressed, s32 stay)"
+desc = "Recover_tick for one held down: 3 times in 4 the time down gets its frame back. Returns 1 once it is out, unless the stay-down input holds it at 0. Decompiled 2026-11-03 (src/nomercy/nm_down.cpp, from the code and asm)."
+status = "confirmed"
+port = "src/nomercy/nm_down.cpp"
 
 [[func]]
 addr = 0x8014012C
@@ -273,6 +316,8 @@ status = "likely"
 
 [[func]]
 addr = 0x80143B94
-name = "grapple_contact"
-desc = "As World Tour grapple_contact (0x800C5210), matched by call graph (score 1.02). World Tour: During the reach animation's active window: index of a wrestler whose pelvis is within 30 of a hand (45 from the floor into the ring) or within 56 of a point ahead; 85 from the pelvis for a runner catch. -1 if none."
-status = "likely"
+name = "object_contact_faces"
+proto = "void object_contact_faces(s32 obj, u32 out)"
+desc = "An object's contact faces from its probe points (the model record's +0x2C), written as wall records at `out` (48 bytes each: 4 s16 points, the normal at +0x18). By probe count: 2, a long thin object: a rectangle 30 wide around the line between the two points, turned along it (its y from the points' heights); 4, one face (points 2 and 3 swapped); 8, two faces, the second's normal the other way. Other counts: nothing. Clears 48 + 1 bytes, not the second record: the N64's second mem_zero is at out + 1. Named grapple_contact from World Tour by call graph; it is not that. Decompiled 2026-11-03 (src/nomercy/nm_ladder.cpp, from the code and asm)."
+status = "confirmed"
+port = "src/nomercy/nm_ladder.cpp"

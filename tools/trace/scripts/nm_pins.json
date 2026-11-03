@@ -1,0 +1,55 @@
+{
+ "game": "nomercy",
+ "state": "_tools/libretro/states/nm_p1_p2_fresh_almost_touching_middle_of_ring.state",
+ "note": "From the close-up save: the strong lock-up and A+down (the roll-up pin, kicked out), then once P2 is up a second lock-up and A+up; while P2 is down P1 covers with L (the cover from standing, 0x42 / 0x43) and the referee counts. Milestone 4: the cover and the count.",
+ "steps": [
+  {
+   "frames": 10
+  },
+  {
+   "frames": 20,
+   "pads": {
+    "0": "a"
+   }
+  },
+  {
+   "frames": 22
+  },
+  {
+   "frames": 3,
+   "pads": {
+    "0": "a+down"
+   }
+  },
+  {
+   "frames": 175
+  },
+  {
+   "frames": 2,
+   "pads": {
+    "0": "a"
+   }
+  },
+  {
+   "frames": 30
+  },
+  {
+   "frames": 3,
+   "pads": {
+    "0": "a+up"
+   }
+  },
+  {
+   "frames": 42
+  },
+  {
+   "frames": 2,
+   "pads": {
+    "0": "l"
+   }
+  },
+  {
+   "frames": 291
+  }
+ ]
+}

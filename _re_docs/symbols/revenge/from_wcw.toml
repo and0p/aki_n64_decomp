@@ -820,8 +820,8 @@ status = "likely"
 
 [[func]]
 addr = 0x800A7828
-name = "taunt_stir_opponent"
-desc = "Matches World Tour taunt_stir_opponent (0x800A5DEC), call-graph score 0.97."
+name = "input_a"
+desc = "Matches World Tour input_a (0x800A5DEC), call-graph score 0.97."
 status = "guess"
 
 [[func]]

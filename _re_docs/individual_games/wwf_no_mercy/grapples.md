@@ -6,7 +6,7 @@ World Tour's equivalent is `../wcw_world_tour/grapples.md`. Frames are game fram
 
 ## The attempt: state 0x50 (`state_50_grapple_attempt`)
 
-A from standing (`input_grapple_attempt`), from a get-up (A held, `get_up_finish`), from the run or
+A from standing (`input_stick`), from a get-up (A held, `get_up_finish`), from the run or
 from 0x22 (A alone) starts 0x50.
 
 - **Step 0-2:** on the apron it slides along the apron line (11794); otherwise it may walk
@@ -52,13 +52,19 @@ From where both stand, through `wrestler_pair_set_state_move`:
 | floor to ring (or a raised place) | 0x86 / 0x87 | 0x40000 |
 | at location 0x400 (the cage) | 0xCD / 0xCE | |
 | running | 0xA0 / 0xA1 | 0x40 |
-| standing (normal) | **0x51 / 0x52** | 0x800, plus 0x400 / 0x200 for apron sides, 0x100 a staggered defender |
+| standing (normal) | **0x51 / 0x52** | 0x800, plus 0x400 / 0x200 for apron sides, 0x100 a defender slumped in the corner (its frame_flags 0x02 / 0x04, state 0x18) |
 
 flags78 is copied to the defender when the grapple starts.
 
 ## The lock-up: 0x51 (attacker) / 0x52 (defender)
 
-Front lock-up animations 11905 / 11906, rear 11909 / 11910 (11918 a staggered defender); the
+flags78 0x100, read earlier as a staggered opponent, is an opponent **slumped in the corner**: `grapple_start_pair` sets it from the defender's frame_flags 0x02 / 0x04, which only the corner slump 0x18 sets (steps 4 / 5; code 2026-11-03). Its move table (0x80146A00, moves 108-136) is the corner grapple moves. Seen in RAM 2026-11-03 (`tools/trace/scripts/nm_corner_lockup.json`): a whip into the
+corner (C-down) leaves the opponent in 0x18 (frame_flags 0x05, held there by its stick); a lock-up there gets
+flags78 0x100 and 11913 / 11914; L plays the flip 0x3E / 0x3F (12074 / 12075) into 0x34; A and B start 108
+and 113, which chain into the holds 305 / 307 (0x48 / 0x49). L in a normal lock-up instead goes to step 10 and
+switches to the rear lock-up (flags78 0x880).
+
+Front lock-up animations 11905 / 11906, rear 11909 / 11910 (11918 a defender slumped in the corner); the
 defender's animation comes from `grapple_defender_anim`.
 
 The attacker's steps (`state_51_grapple_attacker`, read 2026-11-02; flags8a 0x2000 throughout):
@@ -69,7 +75,7 @@ The attacker's steps (`state_51_grapple_attacker`, read 2026-11-02; flags8a 0x20
 | 1 | `lockup_slide_in` until both are in place; then two simultaneous attempts (flags78 0x200000) → step 8, a running grapple (flags78 0x240 or 0x140) → step 4, otherwise step 2 |
 | 2 | first frame: the pair record (`g_grapple_pairs`): distance 53.5 rear (flags78 0x80) / 73.5 front, angle = facing + 180°, the d-pad counter cleared. Every frame `grapple_walk` and `grapple_timer`: 1 → step 3, 2 (time out or R) → step 7 with state_flags 0x01 |
 | 3 / 4 | state_flags 0x02 and `lockup_input`: 2 = nothing usable yet, back to step 2 (state_flags 0x02 off); 3 = the defender reversed: state_flags 0x04 and the attacker plays the defender's part 1; 4 = a placed move (whip, shove, table): step 10, state_flags 0x08 |
-| 5 | a staggered defender (flags78 0x100) with move flags 0x100000: 12099 front / 12101 rear first |
+| 5 | a defender slumped in the corner (flags78 0x100) with move flags 0x100000: 12099 front / 12101 rear first |
 | 6 | waits for the animation |
 | 7 | starts the move: the move's part 0 (`anim_style`), state **0x55** |
 | 7-8 (release) | `pair_follow` keeps the defender in place (unless flags78 0x700); at the end both unpair; on the apron (flags78 0x200) 12531 and step 9, otherwise `wrestler_settle_pose` |
@@ -82,7 +88,7 @@ The defender (0x52) follows the attacker's state_flags (0x01 released, 0x02 move
   53.5 rear**.
 - **Time limit** (`lockup_time_limit`, `grapple_timer`): count_timer starts at **150 frames, 210 for a
   strong grapple, 90 when the defender is in finisher mode**, and counts down; **R alone** sets it to 0
-  (letting go). At 0 the release plays: 11907 front / 11911 rear, 11915 / 11919 on a staggered opponent,
+  (letting go). At 0 the release plays: 11907 front / 11911 rear, 11915 / 11919 on an opponent slumped in the corner,
   11923 / 11927 on the apron.
 - **Walking while grappled** (new since World Tour; `grapple_walk`): holding the d-pad 7 frames
   (`aux_timer`, +0xD0) switches walking on for normal standing grapples (flags78 0x800). A direction within about
@@ -96,12 +102,16 @@ The defender (0x52) follows the attacker's state_flags (0x01 released, 0x02 move
 | A / B, rear | 0x801469F0 [strong][B][any dir]: moves 73-80 |
 | strong grapple with finisher mode ready (flags78 0x400000) | move **70** (front) / **81** (rear), the finisher |
 | A+B in a strong grapple, tag | 70 / 81 on the partner's slot: the double-team finisher |
-| L, front | 0x3E / 0x3F: turn to a rear grapple / the corner swap |
-| C-down | the whip (0x0B / 0x0C), or the drag 0xD0 / 0xD1 (`lockup_place_move`) |
-| C-up | `lockup_place_move` kind 1: shove into a feature, onto the table or steps |
-| C-right in a cage match | whip into the cage (flags78 0x10000000) |
-| from behind, the other button | 0x7F / 0x80 the **rear lift** (onto the shoulders, new), or 0x81 / 0x82 the carry |
-| running grapples | moves 145 (flags 0x240), 108 / 130 (0x140) |
+| L (normal lock-up, not after a side switch: state_counter 0x08) | return 4: step 10, switching to the other side (front <-> rear) |
+| L at an opponent slumped in the corner, front (flags78 0x100) | 0x3E / 0x3F: the flip into the corner, hung upside down |
+| C-down (in_0c 0x04; not across the ropes or from behind, flags78 0x680) | the whip (0x0B / 0x0C), or the drag 0xD0 / 0xD1 when `lockup_place_move` returns 2 |
+| C-up (in_0c 0x08; not 0x700 or from behind) | a place move when `lockup_place_move` returns 1: shove into a feature, onto the table or steps |
+| C-right in a cage match (not from behind or at the corner, 0x180) | whip into the cage (flags78 0x10000000, 0x0B / 0x0C) |
+| from behind, C-down / C-up (when nothing above matched) | 0x7F / 0x80 the **rear lift** (onto the shoulders, new), or 0x81 / 0x82 the carry |
+| running at an opponent on the apron (flags78 0x240) | move 145; a move with record flags 0x1800 from the apron goes to 0x59 / 0x5A |
+| running at an opponent slumped in the corner (0x140) | 108, from behind 130 |
+| across the ropes (0x600) | finisher mode ready: the apron special 147 (defender on the apron, 0x200) / 151 (attacker on the apron) when `move_allowed`; A / B: 145 / 146 or 149 / 150 by strong; C-down: the pair 0x11 / 0x12 (defender on the apron) or 0x13 / 0x14 |
+| an opponent slumped in the corner (0x100), A / B: the corner moves | 0x80146A00 [rear][strong][B]: 108 / 113 / 118 / 123 front, 130 / 132 / 134 / 136 rear; finisher mode ready and strong: 128 / 138 (also A+B+L+R in a tag match on the partner, and A+B at an opponent without flags_e9 0x01 on its own slot) |
 | a defender who can reverse (attrs +0x34 0x1000), against a move without flags 0x2000 | moves 159 / 161 |
 
 - **The defender's reversal try** (`grapple_defender_input`): one try per lock-up (flags_f0 0x08 marks it
@@ -237,8 +247,8 @@ attacker's animation + 1 and settles by the end pose (`move_event` 0x200).
 | Pair | Control | What it is |
 |---|---|---|
 | 0x3A / 0x3B | **R** at an opponent slumped in the corner (frame_flags 0x01, not 0x02), both in the ring, within 120 (`input_r`) | pulling it out of the corner (12066, or 12068 on an opponent with flags8a 0x01) |
-| 0x3C / 0x3D | **L** at the same slumped opponent (`input_l`, and the C-button code beside `guest_referee_call`); within 85 of an opponent on the ropes it is 0x97 / 0x98 instead | setting it up on the top turnbuckle (12070 / 12072) |
-| 0x3E / 0x3F | **L in a front lock-up** (`lockup_input`; not a rear grapple, no stagger check) | the flip into the corner, hung upside down by the legs: 0x3E 12074, 0x3F the attacker's animation + 1 (12075), then 0x34 hanging (12076, dropped 12081) |
+| 0x3C / 0x3D | **L** at the same slumped opponent (`input_l`, and the C-button code beside `input_c_left_held`); within 85 of an opponent on the ropes it is 0x97 / 0x98 instead | setting it up on the top turnbuckle (12070 / 12072) |
+| 0x3E / 0x3F | **L in a front lock-up on an opponent slumped in the corner** (`lockup_input`, flags78 0x100 without 0x80; corrected 2026-11-03 from the asm: the test sits in the corner branch, so it needs the corner) | the flip into the corner, hung upside down by the legs: 0x3E 12074, 0x3F the attacker's animation + 1 (12075), then 0x34 hanging (12076, dropped 12081) |
 | 0x3F reversed | the held wrestler has flags_f0 0x02 / 0x04 | 0x3F plays 12082 and re-pairs 0x3E / 0x3F the other way round; 0x3E then plays 12083 |
 | 0x40 / 0x41 | **L or R** at an opponent with frame_flags 0x08 (hanging in 0x34, or 0x2D), and `grapple_attempt_resolve` on a defender in 0x34 | pulling the hanging opponent down out of the corner (12077) |
 
@@ -246,13 +256,13 @@ attacker's animation + 1 and settles by the end pose (`move_event` 0x200).
 
 - ~~0x51's step list in full~~ (code 2026-11-02, `state_51_grapple_attacker`): step 0 clears flags_f0's low
   bits and starts the defender's lock-up animation; step 1 slides in (`lockup_slide_in`) and then goes to
-  step 8 (the clash, flags78 0x200000), step 4 (a running grapple at a staggered / rear target, 0x240 or
+  step 8 (the clash, flags78 0x200000), step 4 (a running grapple at the apron / a corner-slumped target, 0x240 or
   0x140) or step 2; step 2 on entry (state_counter bit 0) fills the pair record (`g_grapple_pairs[slot]`:
   offsets 0, distance 73.5 front / 53.5 rear, the facing turned round) and every frame runs `grapple_walk`
   (so the walk can start at once) and `grapple_timer`: 0 stays, 1 -> step 3, 2 (the time limit) -> step 7
   with state_flags 0x01; step 3 -> 4; step 4 sets state_flags 0x02 and reads `lockup_input`: 2 lets go (back
   to step 2), 3 sets state_flags 0x04 and plays the defender's reversal animation, 4 -> step 10 with 0x08
-  (switching sides); with no input a staggered target (flags78 0x100) whose move allows it (+0x20 0x100000)
+  (switching sides); with no input a target slumped in the corner (flags78 0x100) whose move allows it (+0x20 0x100000)
   plays 12099 / 12101 (rear) and goes to step 5 (waits for its last frame), else step 6, which starts the
   move's animation (speed 1 under flags78 0x180, else 3) and state 0x55; step 7 (time out) follows the
   pair to the animation's end, unpairs, and with flags78 0x200 plays 12531 and step 9 (`move_event` 0x200),
@@ -261,3 +271,14 @@ attacker's animation + 1 and settles by the end pose (`move_event` 0x200).
   follows the pair to the end, flips flags78 0x80 (front <-> rear, 11905 / 11909), resets the time limit
   (`lockup_time_limit`) and returns to step 2. 0x55 / 0x56's damage lands at the end of the animation
   (`move_event` 0x2000) for every move.
+- Decompiled and trace-checked 2026-11-02 (`src/nomercy/nm_grapple.cpp`): 0x50-0x52, the pair records,
+  0x55 / 0x56, the move chains (the pose-6 lock-up chain, the 0x1E00 pin / hold chain into 0x4A / 0x4B
+  or 0x48 / 0x49) and move_across_ropes_follow. `lockup_input` is now written out for every lock-up kind
+  (2026-11-03, from the asm; the running, rope, corner and cage paths read but not trace-checked; two
+  bugs fixed in the normal path that no trace reached: the finisher test is flags78 0x400000, not 0x40,
+  and the tag double-team finisher starts on the partner's slot). `lockup_place_move` (the arena-zone
+  place moves), the double-team
+  checks (`grapple_double_team_check`, `grapple_attempt_double`, `grapple_attempt_slide`),
+  `object_spawn_for_move` and `move_follow_up` stop a replay at NM_UNPORTED until a trace reaches them.
+- `move_texture_stamp` (0x80142AE4) is the texture stamp for a move (blood / sweat on the model),
+  not a move setter: the oracle keeps it a no-op. Renamed from wrestler_set_move_from 2026-11-03.

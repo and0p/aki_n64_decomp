@@ -1,0 +1,36 @@
+{
+ "game": "nomercy",
+ "state": "_tools/libretro/states/nm_p2_about_to_be_slammed_down.state",
+ "note": "As nm_cover.json, but P2 keeps the stick held through the count: a count of three, the fall (match_end, the results bookkeeping) and the first 85 frames of the end phase. Stops before the winner's post-match state 0x1B. Milestone 6: a finished fall.",
+ "steps": [
+  {
+   "frames": 62
+  },
+  {
+   "frames": 42,
+   "pads": {
+    "1": "sx=-80"
+   }
+  },
+  {
+   "frames": 16,
+   "pads": {
+    "0": "up+left",
+    "1": "sx=-80"
+   }
+  },
+  {
+   "frames": 5,
+   "pads": {
+    "0": "l",
+    "1": "sx=-80"
+   }
+  },
+  {
+   "frames": 205,
+   "pads": {
+    "1": "sx=-80"
+   }
+  }
+ ]
+}

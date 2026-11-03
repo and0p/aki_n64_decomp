@@ -129,7 +129,7 @@ grappled).
 - Pose 2 → state 0x2A, and the byte at `AnimPlayer` +6.
 - The AI's use of the stick to stay down (the `chance_roll` kinds 3 and 8 are in `frame_loop.md`).
 
-## Taunting at a downed opponent (`taunt_stir_opponent`, 2026-10-31)
+## Taunting at a downed opponent (`input_a`, 2026-10-31)
 
 Taunting (0x16) next to a lying opponent in the same area has a 30 % chance to make it stir:
 it plays 3052 (3053 face down), the same animations as the `chance_roll` 8 branch, and drops

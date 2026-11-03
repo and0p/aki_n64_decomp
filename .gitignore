@@ -3,3 +3,4 @@ _tools/
 __pycache__/
 _re_docs/gamefaq/*
 *.state
+_build/

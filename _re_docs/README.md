@@ -11,7 +11,8 @@ other findings go in MD files right in this folder?
 
 ## Index
 
-- `state_comparison.md`: ideas for checking the library against the original frame by frame
+- `state_comparison.md`: checking the library against the original frame by frame (built for No Mercy:
+  `tools/trace/`, the decompilation in `src/nomercy/`)
   (golden traces from the emulator, a shared field list, diffing, the recompiled code as oracle).
 - `QUESTIONS.md`: the tracker for open questions, grouped by how to settle them (viewer, RAM,
   code). Add new ones there; when one is answered, record it in its doc and remove it.

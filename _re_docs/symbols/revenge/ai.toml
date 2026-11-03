@@ -69,7 +69,7 @@ status = "likely"
 
 [[func]]
 addr = 0x800AF23C
-name = "ai_mode_11_evade"
+name = "ai_stick_taunt"
 desc = "AI mode 11; same mode as World Tour mode 11 (ai.md)."
 status = "likely"
 

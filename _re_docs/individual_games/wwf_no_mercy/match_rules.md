@@ -35,14 +35,14 @@ overlay; `match_load` tests nearly all of them while setting up)
 | Bit | Meaning |
 |-----|---------|
 | 0x01 | TKOs allowed (`move_aftermath_check`'s TKO stagger, `match_end`) |
-| 0x02 | rope breaks (pins and holds near the ropes are broken: `state_45_pin_defender`, `state_49_ground_held`) |
+| 0x02 | rope breaks (pins and holds near the ropes are broken: `state_45_pin_defender`, `state_49_held`) |
 | 0x10 | submissions count (a hold's give-up is a fall; also `input_c_left`) |
 | 0x20 | pins count (the referee counts: `state_45_pin_defender`, `ai_finisher_check`, `input_c_left`) |
 | 0x40 | **no tag rules** (tornado): `wrestler_may_act` lets everyone act, and the CPU's tag checks are skipped |
 | 0x200 | run-ins |
 | 0x400 | over-the-top elimination: standing up on the floor eliminates (end_flags 0x10); no whips over the ropes in the ring |
 | 0x800 | **bleeding on** (`move_aftermath_check` rolls `chance_roll` kind 4 only with it) |
-| 0x1000 | a bleeding rule (`move_aftermath_check` after a cut, `anim_frame_event_c`): probably first blood |
+| 0x1000 | **first blood**: a cut ends the fall (see "Bleeding and first blood"; read from code, not yet seen in a recording) |
 | 0x2000 | the CPU does not use C-left on a downed opponent; weapon DQs (`strike_dq_check`) |
 | 0x4000 | falls count anywhere (pins and submissions outside the ring), with longer count-out waits for the CPU |
 | 0x40000 | `match_init_wrestlers` only |
@@ -100,6 +100,25 @@ menus, reading 0x800A957C after choosing each): Multi Play → Royal Rumble 0x20
 (a single match), Guest Referee 0x81, Ladder Match 0x41, Ironman Match 0x101; Single Play → Survival
 0x20. Exhibition gives the styles 0x01-0x10. (Pay Per View starts with text entry and was not walked.)
 
+## Bleeding and first blood (code 2026-11-03, `move_aftermath_check`, `state_2F_bleeding`)
+
+Seen in `nm_p2_struck_with_ladder_starts_bleeding` (rules 0x833: bleeding on, no first blood), which replays
+identically. The first-blood branch below is from the code only.
+
+- **When a blow cuts:** at the end of a landed strike or move, with rule 0x800 on, a move whose byte +9 (its bleed
+  class) is not 0, a defender whose attribute 2 (bleed trait) is not 0, not the attacker's partner or itself.
+  `chance_roll` kind 4 is 1000 / (15 - attribute 2 - move +9 - attacker's spirit / 15) in 1000.
+- **Once only, normally:** a wrestler with `bonus_flags` 0x02 (set by the first cut) does not cut again unless first
+  blood applies. That flag also changes its health regen and spirit exchanges.
+- **The cut:** `tko_flags` 0x02 and state 0x2F. The stagger is 12621 / 12622 (12622 slumped or with flags8a 0x02), or
+  from a move's end pose the pose's animation (0x8014DA98) and then the get-up. The blood on the textures
+  (`blood_stamp_apply`) is cosmetic: two texture stamps, the host's job, and the model's flag 0x20.
+- **First blood (rule 0x1000):** when both fighters are in the match (`flags_e9` 0x10), or the attacker is the guest
+  referee (0x04), `tko_flags` also gets 0x80, unless it is a guest-referee match (type 0x80000). Then 0x2F rings the
+  bell 2 frames before its end and sets `end_flags` 0xC0 on its last frame, which ends the fall.
+- **Guest referee:** the cut only sets flags8c 0x800 at the end of 0x2F; the referee ends it by holding C-left
+  (`input_c_left_held`): `end_flags` 0x200 on the bleeders, then 0xA9.
+
 ## How a fall ends (`match_end`, 0x80116CDC)
 
 Each wrestler's `end_flags` (+0x94) says how it lost (or, for 0x100, won). `match_tick` hands
@@ -112,8 +131,8 @@ Each wrestler's `end_flags` (+0x94) says how it lost (or, for 0x100, won). `matc
 | 0x20 submitted | the ground hold 0x49 | 0x2000 |
 | 0x10 out over the top | standing on the floor under rules 0x400 | 0x80000 |
 | 0x100 last one standing (a win) | standing, entered under elimination rules, everyone else out | 0x800 |
-| 0x200 guest referee's call | `guest_referee_call` | 0x800000 |
-| 0x400 disqualified | `strike_dq_check`, `guest_referee_call` | 0x20000 |
+| 0x200 guest referee's call | `input_c_left_held` | 0x800000 |
+| 0x400 disqualified | `strike_dq_check`, `input_c_left_held` | 0x20000 |
 | 0x800 lost the ladder match | the opponent grabbed the prize (0xBD) | 0x40000 |
 | 0x1000 the opponent escaped the cage | `state_C5_cage_escape` | 0x2000000 |
 
@@ -138,8 +157,11 @@ What happens then:
   (location & 3 == 0) and `match_can_interrupt` allows, the referee counts: **a count every 2 seconds,
   3 seconds once 5 or fewer are left, 4 once fewer than 3 are left**; paused while a pin count runs; the
   count restarts when everyone is back in.
-- At 0 with a wrestler still outside: a count-out (the bell; under rules 0x80000 a fall for each wrestler
-  outside, otherwise `match_result(0x80000)`, the same result code as over the top).
+- At 0 with a wrestler still outside: a count-out (the bell; under rules 0x80000 a fall **for each legal man
+  still inside** whose opposing side has a legal man outside (so nobody scores when both are out), then the
+  count restarts and play goes on; otherwise `match_result(0x80000)`, the same result code as over the top).
+- Only legal men (flags_e9 0x10) are counted, and only in a ring arena; a pause (`match_can_interrupt`) holds
+  the count. Decompiled 2026-11-03 from the asm (`src/nomercy/nm_frame.cpp`), not trace-checked.
 - In guest-referee matches the count only moves when the guest referee counts (C-left,
   `state_A8_referee_countout`, one count per gesture).
 
@@ -197,7 +219,44 @@ a time-limit draw).
 - **Guest referee:** the referee slot (flags_e9 0x04) calls falls and DQs with C-left (0xA9) and counts
   count-outs (0xA8).
 - **Tag:** `illegal_man_check` / `illegal_man_leave`, tagging with C-up (`input_tag`; `tag_exchange` puts the partner on the apron in 0x93 and the legal man in 0x94), the
-  partner waiting on the apron (0x1B), the double-team finisher (A+B in a strong grapple).
+  partner waiting on the apron (0x1B), the double-team finisher (A+B in a strong grapple). In full below.
+
+## Tag matches (code 2026-11-03, `src/nomercy/nm_tag.cpp`)
+
+Tag rules are g_match_type 0x2000 without g_match_rules 0x40 ("No Tag"). The legal man has flags_e9 0x10;
+flags_e9 0x20 picks the team, whose corner is the (+x, +z) one (corner 0 of 0x8014D1A8) for 0x20 and the
+(-x, -z) one (corner 2) for the other. Not seen in RAM yet: in 1,500 frames of the 4-CPU tag save nobody
+tagged (`tag_state` counted up for the two legal men, as `tag_rules_check` says).
+
+- **Where a tag can be made from** (`apron_side_ok`): perched on the own corner in the ring (0x0A with dir 0 /
+  2 by team), or on the apron in the own team's quarter (|x| and |z| past 20 on the team's side). **Reach**
+  (`dist_between`): the two point_120 within **130**.
+- **C-up** (`input_tag` → `tag_try_partner`): the legal man in the ring tags a partner who is on its apron
+  quarter within reach and either holds its hand out (idle_flags 0x08) with the d-pad held toward the
+  partner's apron side (0x8014D218 by the partner's ring_zone), or (idle_flags 0x10) with both d-pad bits
+  toward the own corner held (0x900 for team 0x20, 0x600 for the other). The partner can also tag in: on its
+  apron quarter within reach of the legal man standing (0x01) in the ring, from the apron or from the corner
+  perch.
+- **The tag** (`tag_exchange`): the legal man goes to **0x94** (12924, placed against the partner) and the
+  partner to **0x93** (12923 on the apron line facing in; from the corner perch 12926 / 12927 from step 2);
+  `tag_in` then moves flags_e9 0x10 to the new man (the old one gets idle_flags 0x04), restarts its tag timer
+  (`tag_state` +0xDC) and stores its health in `tag_health` (+0xDE, compared with health by the CPU's
+  tag-out wish), re-picks its opponent (slot ^ 2, or ^ 3 when that one is out or illegal) and points both
+  opponents at it; it ends perched on the corner (0x0A, 12092).
+- **The illegal man** (`idle_check`, `may_stay_inside`, `wrestler_may_act`): an illegal man may stand his
+  ground while his partner is in a hold (partner_flags80 0xC0, unless the hold has flags80 0x400), while he
+  may act (`wrestler_may_act`: a legal man is outside), or while another illegal man is in the ring with
+  idle_flags 0x04 and not 0x02; otherwise `stand_flags_update` sends him into **0x92**: in the ring he walks
+  to his own corner (170 angle units off its line) and steps out to the apron (0x6E) at the corner's ring
+  wall; on the floor he walks to a point by side and team and climbs up (0x6F, within 10) along that side's
+  path. On the apron the partner is in **0x95** (12919, 12920 with the partner down; C-up while the partner is
+  in a hold jumps into the ring to help).
+- The partner's readiness (`illegal_man_check`, every frame for a wrestler with a partner): idle_flags
+  **0x08** while it stands (0x01), waits (0x1B step 1), dodges (0x09) or runs (0x03 before step 4) on the
+  apron, or is in 0x95's first two steps: then the legal man tags it with the d-pad toward its side; **0x10**
+  when perched in the air on the corner (0x0A with act_flags 0x0A) or in 0x95's later steps: then the d-pad
+  must point at the corner.
+- Still open: `pair_scripted_place` (the placement for 0x94 and many paired states) is not decompiled.
 - **Tables:** three breakable tables (location 0x40 / 0x100 / 0x200, `g_tables_intact`); a finisher landing
   on one breaks it (`finisher_effects`).
 
@@ -227,11 +286,26 @@ table 0x8014636C).
   - type 0x200000 without rules 0x80000: **the healthier wrestler wins** (0x8C00); equal health → the
     higher statistic at 0x8009FDF8; equal again → `chance_check(500)`, **a coin flip**.
 
+Decompiled 2026-11-03 from the asm (`src/nomercy/nm_frame.cpp`), which corrects three details: in one-on-one
+and elimination matches (types 0xC000) side A is the wrestlers **inside** and B those outside, so a
+count-out with one wrestler inside gives it the win (0x80400) and with several inside only records the
+ones outside as losers (play goes on); the "everyone" list of a draw is empty (nobody is recorded as
+winner or loser); and with every legal man flagged by the guest referee the referee is recorded over
+them (0x810400).
+
 So a normal one-fall match that runs out of time is a draw, an ironman / falls-counted match is decided
 by the score, and the 0x200000 type (probably a "decision" setting) goes to health, then a coin flip.
 
 ## Open
 
+- Decompiled and trace-checked through a singles pin 2026-11-02 (`src/nomercy/nm_frame.cpp`): match_end
+  (the cause -> code map, saved_end_flags, the loser falls to its pair_other), tag_partner_takes_over
+  (0 in singles: the fall is recorded, match_end_start is not called), match_record_fall (the fall
+  times 0x8009FE58, the cause word 0x800A10EC with the winner / loser bits 0x8014637C / 0x80146384,
+  the health gap 0x80159208 x 100 / 255, the fall count 0x800A8784), match_events, match_tick's
+  phases 3 (the event slot 0x801591E8, the end timer) and 4 (a button from frame 91 or frame 271 ends
+  it, then match flag 0x80 and the results copy to 0x80097FB8). The tag / elimination / multi-fall
+  branches and match_result are not ported.
 - `match_result`'s words (code 2026-11-02): 0x80159218 is the per-slot **falls won** count (`fall_count_add`:
   a TKO, a count-out under rule 0x80000, a submission, `match_end`); 0x8009FDF8 is the first of three 4 x 4
   u16 tables kept by `stats_count(w, other, table)`: table 0 counts **attacks landed** by w on other and in

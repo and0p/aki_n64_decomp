@@ -1,0 +1,10 @@
+{
+ "game": "nomercy",
+ "state": "_tools/libretro/states/nm_4_fighters_all_cpu.state",
+ "note": "A 4-CPU tag match, no input, 1500 frames: the CPU AI oracle (record with akiemu --tick-hook). Not a CTest trace.",
+ "steps": [
+  {
+   "frames": 1500
+  }
+ ]
+}

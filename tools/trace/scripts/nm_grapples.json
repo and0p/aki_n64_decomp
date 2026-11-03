@@ -1,0 +1,26 @@
+{
+ "game": "nomercy",
+ "state": "_tools/libretro/states/nm_1p_2p_normal_match_start.state",
+ "note": "P1 and P2 walk to each other, then grapple: P1 taps A (the attempt and lock-up), picks a weak move with A+up, waits through the move and the get-up; then a held A (strong lock-up) with A+down; then P2 grapples with A and A+left. Milestone 3 of the No Mercy decompilation: the lock-up, grapple moves, down and getting up.",
+ "steps": [
+  {"frames": 20},
+  {"frames": 34, "pads": {"0": "up+right", "1": "down+left"}},
+  {"frames": 10},
+  {"frames": 2, "pads": {"0": "a"}},
+  {"frames": 20},
+  {"frames": 2, "pads": {"0": "a+up"}},
+  {"frames": 160},
+  {"frames": 2, "pads": {"0": "up+right", "1": "down+left"}},
+  {"frames": 10, "pads": {"0": "up+right", "1": "down+left"}},
+  {"frames": 10},
+  {"frames": 20, "pads": {"0": "a"}},
+  {"frames": 2, "pads": {"0": "a+down"}},
+  {"frames": 160},
+  {"frames": 10, "pads": {"0": "up+right", "1": "down+left"}},
+  {"frames": 10},
+  {"frames": 2, "pads": {"1": "a"}},
+  {"frames": 20},
+  {"frames": 2, "pads": {"1": "a+left"}},
+  {"frames": 104}
+ ]
+}

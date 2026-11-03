@@ -113,14 +113,18 @@ status = "likely"
 [[func]]
 addr = 0x80010FD4
 name = "mtx_rotate_y"
-desc = "As Revenge mtx_rotate_y (0x80007E14), matched by identical machine code. Revenge: Matches World Tour mtx_rotate_y (0x80008D54), call-graph score 2.07."
-status = "likely"
+proto = "void mtx_rotate_y(f32 *m, f32 deg)"
+desc = "A rotation about y (m[0] = m[10] = cos, m[8] = sin, m[2] = -sin, row vectors; code 2026-11-02, decompiled in src/nomercy/nm_model.cpp)."
+status = "confirmed"
+port = "src/nomercy/nm_model.cpp"
 
 [[func]]
 addr = 0x80011BD8
 name = "anim_player_set"
+proto = "void anim_player_set(u8 *p, s16 anim)"
 desc = "Code 2026-11-02: copies animation id's 36-byte record from file 703 (0x8006A224, id - 11737) into the animation player (Wrestler +0x2E8): +0 turn, +4 frames, +6 end place, +7 end pose, +8 / +9 the active window, +0x15 the paired hold frame ... (map in animation_data.md). As Revenge anim_player_set (0x800086A4), matched by constants (score 0.72). Revenge: Matches World Tour anim_player_set (0x800097EC), call-graph score 1.14."
-status = "likely"
+status = "confirmed"
+port = "src/nomercy/nm_anim.cpp"
 
 [[func]]
 addr = 0x80011EE0
@@ -131,38 +135,51 @@ status = "likely"
 [[func]]
 addr = 0x80012130
 name = "model_animate"
-desc = "As Revenge model_animate (0x80008CE8), matched by call graph (score 1.44). Revenge: Matches World Tour model_animate (0x80009D00), call-graph score 1.15."
-status = "likely"
+proto = "void model_animate(s32 slot, s32 anim, s32 frame, struct Vec3 *pos, s32 facing, const struct Vec3 *lean, s8 mode, s32 tilt_a, s32 tilt_b)"
+desc = "Poses a wrestler's model for frame `frame` of animation `anim` (full read, code 2026-11-02, decompiled in src/nomercy/nm_model.cpp). A change of animation (or a restart at frame 0) reopens the stream (anim_stream_open: keyframes DMA'd from the ROM 98 bytes at a time into two heap buffers), lets go of the ropes and clears the hand shape; then, when the frame is new, decodes it (model_decode_frame on even frames and the last; model_decode_frame_interp halfway to the next keyframe on odd ones; anim_stream_advance at frame count - 2), blends frames 0-4 of a new animation from the previous pose with mode bit 2 (model_blend_prev; not on a restart, nor the slot's first animation), writes the head-look lean into joint 5 (x + 180, y, z = 180), builds the skin matrices (model_build_skin). With mode bit 1 on a switch the body is moved so that joint 1's world point stays where the old animation left it (x and z; y too with bit 8): the root's place is recomputed under the old translation and the new pose through nodes 0 and 1. Then the model block's translation (-pos.x, pos.y + the carry offset 0x800A9352 for slot 0x8009FDE0 - 1, pos.z) and yaw (-(facing + 2048) * 360 / 4096 degrees), the body matrix (scale x (tilt(x, 0, z) x yaw) + translation) into render node 0's local matrix, node_tree_update over the tree, each joint's world points (pt_a / pt_b through the node's world matrix, x mirrored) and its yaw (rot.y + the body's), and the frame's events (anim_frame_events, frame + 1). The stream's `first` byte (anim_system_init) is cleared at the end. As Revenge model_animate (0x80008CE8), matched by call graph (score 1.44). Revenge: Matches World Tour model_animate (0x80009D00), call-graph score 1.15."
+status = "confirmed"
+port = "src/nomercy/nm_model.cpp"
+notes = "Port: partial (paths the traces have not reached yet stop a replay with NM_UNPORTED)."
 
 [[func]]
 addr = 0x80012BE0
 name = "model_build_skin"
-desc = "As Revenge model_build_skin (0x80009B84), matched by call graph (score 1.62). Revenge: Matches World Tour model_build_skin (0x8000A5C4), call-graph score 1.90."
-status = "likely"
+proto = "void model_build_skin(s32 slot)"
+desc = "Walks joints 1-19 in g_joint_order (0x80047EF8, parents first; code 2026-11-02, decompiled in src/nomercy/nm_model.cpp): a joint with a parent (0x80047F0C) gets its position from the parent's matrix at the bind-pose offset (0x80047ED0, s8 x / y pairs); its matrix is mtx_rotate_xyz(rot) with pos as translation; the render node's local matrix is the part's fit times that: a translation by -bind for joints with -1 in 0x80047F40, else the build's scale (0x80047F54 / 68 / 7C by 0x8006A268[slot]) and offsets (x from the row 0x80047FE0[fit] by build, y 0x80047FB8, z 0x80047FCC, minus the bind x / y). rot and pos are then kept as prev_rot / prev_pos for model_blend_prev. As Revenge model_build_skin (0x8000A020), matched by call graph."
+status = "confirmed"
+port = "src/nomercy/nm_model.cpp"
 
 [[func]]
 addr = 0x80013234
 name = "model_decode_frame"
-desc = "As Revenge model_decode_frame (0x8000A310), matched by call graph (score 1.21). Revenge: Matches World Tour model_decode_frame (0x8000ABA0), call-graph score 1.08."
-status = "likely"
+proto = "void model_decode_frame(s32 slot)"
+desc = "Decodes the current keyframe (stream buf[cur_buf]) into the rot / pos of joints 1-19 of the slot's model block (anim_decode_joint; code 2026-11-02, decompiled in src/nomercy/nm_model.cpp). As Revenge model_decode_frame (0x8000A310), matched by call graph (score 1.21)."
+status = "confirmed"
+port = "src/nomercy/nm_model.cpp"
 
 [[func]]
 addr = 0x800135D0
 name = "anim_decode_joint"
-desc = "As Revenge anim_decode_joint (0x8000AA70), matched by identical machine code. Revenge: Matches World Tour anim_decode_joint (0x8000AF78), call-graph score 2.07."
-status = "likely"
+proto = "const u8 *anim_decode_joint(const u8 *src, struct Vec3 *rot, struct Vec3 *pos)"
+desc = "Decodes one joint of a keyframe (code 2026-11-02, decompiled in src/nomercy/nm_model.cpp): a big-endian word with three 10-bit angles (bits 0-9 x, 10-19 y, 20-29 z, each x 0.3515625 degrees); bit 31 adds a position: bit 30 clear a word of sign-magnitude units (x bits 0-10, y 11-21, z 22-31) that also becomes the last absolute position (0x80069F10), bit 30 set three sign-magnitude bytes x 0.5 added to that last absolute position. Returns the next source byte. As Revenge anim_decode_joint (0x8000A6C0), matched by call graph."
+status = "confirmed"
+port = "src/nomercy/nm_model.cpp"
 
 [[func]]
 addr = 0x80013860
 name = "anim_frame_events"
-desc = "As Revenge anim_frame_events (0x8000AD00), matched by call graph (score 1.20). Revenge: Matches World Tour anim_frame_events (0x8000B1B0), call-graph score 1.37."
-status = "likely"
+proto = "void anim_frame_events(s32 slot, s32 frame)"
+desc = "Fires the animation's (frame, event) byte pairs (file 703 record bytes 20-35, eight pairs) whose frame equals `frame` (code 2026-11-02, decompiled in src/nomercy/nm_model.cpp): 1-169 sfx_play_slot(slot, 0x100 + code) when 0x8009EDD4 is set; 170-175 anim_event_special; 176-195 anim_hand_pose_set(code - 176); 200-219 a rope push: kind from 0x80047F20[code - 200] (6 is dropped when joint 1's world z >= 280, 10 when the drawn y is 0; 6 becomes 12 when z >= 230), the side from joint 1's world x / z by diagonal halves, corrected to the side the body faces (quarter turns from the block's yaw; kind 9 takes that quarter + 3), ring_rope_push(kind, side, the x or z along it); 220-243 the ropes: 220 / 230 release limbs 1-3 / 5-7, 240-243 release the limb in 0x80047F20[20 + k], 221-229 / 231-239 limb (k - 1) / 3 + 1 (hands) or (k - 11) / 3 + 5 (feet) takes rope 2 - (k - 1) % 3 on the side of its joint's world point (0x80047F38[limb]), recorded in 0x8006A228 (rope) and 0x8006A248 (side). As Revenge anim_frame_events (0x8000ACE4), matched by call graph."
+status = "confirmed"
+port = "src/nomercy/nm_model.cpp"
 
 [[func]]
 addr = 0x80013E40
 name = "rope_release"
-desc = "As Revenge rope_release (0x8000B248), matched by identical machine code. Revenge: Matches World Tour rope_release (0x8000B7CC), call-graph score 1.07."
-status = "likely"
+proto = "void rope_release(s32 slot, s32 limb)"
+desc = "Lets go of the rope limb 1-7 of the slot holds, if any (0x8006A228[slot][limb] >= 0): rope_attach(slot, 0, side, rope) clears the holder entry and the limb's byte becomes -1 (code 2026-11-02, decompiled in src/nomercy/nm_model.cpp)."
+status = "confirmed"
+port = "src/nomercy/nm_model.cpp"
 
 [[func]]
 addr = 0x800140B4
@@ -179,7 +196,7 @@ status = "likely"
 [[func]]
 addr = 0x8001A7B0
 name = "texture_stamp_by_class"
-desc = "Not a move-record unpack (code 2026-11-02; the Revenge match was wrong): stamps a texture pair (12 + 2 x class, 13 + 2 x class, classes from byte_8009FF78[a2]) onto layers 26 / 27 of slot a1's model (texture_stamp_layer) unless 0x801594D8; the attire mark / paint. Called by wrestler_set_move_from (also a carried-over name)."
+desc = "Not a move-record unpack (code 2026-11-02; the Revenge match was wrong): stamps a texture pair (12 + 2 x class, 13 + 2 x class, classes from byte_8009FF78[a2]) onto layers 26 / 27 of slot a1's model (texture_stamp_layer) unless 0x801594D8; the attire mark / paint. Called by move_texture_stamp (also a carried-over name)."
 status = "likely"
 
 [[func]]
@@ -191,8 +208,10 @@ status = "likely"
 [[func]]
 addr = 0x8002240C
 name = "rope_attach"
-desc = "As Revenge rope_attach (0x80010060), matched by identical machine code. Revenge: Matches World Tour rope_attach (0x800101F0), call-graph score 1.04."
-status = "likely"
+proto = "void rope_attach(s32 slot, s32 limb, s32 side, s32 rope)"
+desc = "Records who holds rope `rope` (0-2) on ring side `side` (0-3): the slot and its limb as two s16 at 0x800845F0 + 12 * side + 4 * rope; limb 0 = nobody (code 2026-11-02, decompiled in src/nomercy/nm_model.cpp). Rendering: the rope's shape follows the limb."
+status = "confirmed"
+port = "src/nomercy/nm_model.cpp"
 
 [[func]]
 addr = 0x800225BC
@@ -227,8 +246,10 @@ status = "likely"
 [[func]]
 addr = 0x80034EF0
 name = "cosf"
+proto = "f32 cosf_n64(f32 x)"
 desc = "As Revenge cosf (0x8001A830), matched by identical machine code. Revenge: Matches World Tour cosf (0x8001CB30), call-graph score 2.09."
-status = "likely"
+status = "confirmed"
+port = "src/nomercy/nm_math.cpp"
 
 [[func]]
 addr = 0x80035750
@@ -245,14 +266,18 @@ status = "likely"
 [[func]]
 addr = 0x80036110
 name = "rng_main"
+proto = "u32 rng_main(void)"
 desc = "As Revenge rng_main (0x8001C580), matched by identical machine code. Revenge: Matches World Tour rng_main (0x80011BF0), call-graph score 1.20."
-status = "likely"
+status = "confirmed"
+port = "src/nomercy/nm_rng.cpp"
 
 [[func]]
 addr = 0x80036460
 name = "sinf"
+proto = "f32 sinf_n64(f32 x)"
 desc = "As Revenge sinf (0x8001BF50), matched by identical machine code. Revenge: Matches World Tour sinf (0x8001C970), call-graph score 2.09."
-status = "likely"
+status = "confirmed"
+port = "src/nomercy/nm_math.cpp"
 
 [[func]]
 addr = 0x800D9960
@@ -371,8 +396,10 @@ status = "likely"
 [[func]]
 addr = 0x800E1454
 name = "ref_count_reset"
-desc = "As Revenge ref_count_reset (0x800B8D04), matched by call graph (score 1.67). Revenge: Matches World Tour ref_count_reset (0x800B21D0), call-graph score 0.92."
-status = "likely"
+proto = "void ref_count_reset(s32 kind, s32 count)"
+desc = "Code 2026-11-03: a referee count display call that only acts for kind 9 (the shown count at 0x80154632 = a1; a count of 0 or less sets 0x80154634 = -1, else hud_message_refresh). state_49_held's call with kind 4 at the start of a submission is a no-op in No Mercy. Decompiled 2026-11-03 (src/nomercy/nm_hold.cpp). As Revenge ref_count_reset (0x800B8D04), matched by call graph (score 1.67). Revenge: Matches World Tour ref_count_reset (0x800B21D0), call-graph score 0.92."
+status = "confirmed"
+port = "src/nomercy/nm_hold.cpp"
 
 [[func]]
 addr = 0x800E1980
@@ -419,26 +446,35 @@ status = "likely"
 [[func]]
 addr = 0x800EBA84
 name = "wrestler_turn_toward"
+proto = "s32 wrestler_turn_toward(struct Wrestler *w, s32 angle, s32 step, u16 flag)"
 desc = "As Revenge wrestler_turn_toward (0x800A7240), matched by call graph (score 1.51). Revenge: Matches World Tour wrestler_turn_toward (0x800A56E0), call-graph score 1.19."
-status = "likely"
+status = "confirmed"
+port = "src/nomercy/nm_wrestler.cpp"
 
 [[func]]
 addr = 0x800EBBF4
 name = "apron_line_pos"
+proto = "void apron_line_pos(const struct Wrestler *w, struct Vec3 *out)"
 desc = "As Revenge apron_line_pos (0x800A7364), matched by call graph (score 1.21). Revenge: Places the wrestler reference point on the apron line (x = 265) for its side (+0x3C)."
-status = "likely"
+status = "confirmed"
+port = "src/nomercy/nm_strike.cpp"
 
 [[func]]
 addr = 0x800EBCA8
 name = "cover_side_pick"
-desc = "As Revenge cover_side_pick (0x800C9AC0), matched by call graph (score 1.34). Revenge: Matches World Tour cover_side_pick (0x800CEDD0), call-graph score 1.24."
-status = "likely"
+proto = "s32 cover_side_pick(const struct Wrestler *rec, s32 angle)"
+desc = "Read for the decompilation 2026-11-02 (src/nomercy/nm_down.cpp): which side of a lying wrestler the second argument (the approacher's facing to it) comes from: 0 head-on (within 512 of its facing), 2 from behind (1537 or more off), else 3 / 1 by the sign of the difference; the sides swap by two for a wrestler lying face up (flags8a 0x01). Indexes the cover tables (0x80146330 offsets, 0x8014D1D8 facings) and the cover animations (12358 + 2 * side, 12256 + 10 * side). As Revenge cover_side_pick (0x800C9AC0), matched by call graph (score 1.34). Revenge: Matches World Tour cover_side_pick (0x800CEDD0), call-graph score 1.24."
+status = "confirmed"
+port = "src/nomercy/nm_down.cpp"
 
 [[func]]
 addr = 0x800EC2B0
 name = "rope_rebound_slide"
+proto = "void rope_rebound_slide(struct Wrestler *w)"
 desc = "As Revenge rope_rebound_slide (0x800A7968), matched by call graph (score 1.18). Revenge: Matches World Tour rope_rebound_slide (0x800A5F00), call-graph score 1.38."
 status = "likely"
+port = "src/nomercy/nm_run.cpp"
+notes = "Port: partial (paths the traces have not reached yet stop a replay with NM_UNPORTED)."
 
 [[func]]
 addr = 0x800ED844
@@ -455,8 +491,10 @@ status = "likely"
 [[func]]
 addr = 0x800ED954
 name = "down_count_allowed"
+proto = "s32 down_count_allowed(const struct Wrestler *w)"
 desc = "As Revenge down_count_allowed (0x800A9348), matched by call graph (score 1.19). Revenge: Whether a downed wrestler may be counted / stay down: rules 0x8007E280 / 0x8007F0A0 bit 0x400 and lo 0x200 / 0x100."
-status = "likely"
+status = "confirmed"
+port = "src/nomercy/nm_down.cpp"
 
 [[func]]
 addr = 0x800F01E0
@@ -467,50 +505,68 @@ status = "likely"
 [[func]]
 addr = 0x800FB4C0
 name = "ai_wants_tag_out"
-desc = "As Revenge ai_wants_tag_out (0x800D9270), matched by call graph (score 1.06). Revenge: Matches World Tour ai_wants_tag_out (0x800DD7B8), call-graph score 1.24."
-status = "likely"
+proto = "s32 ai_wants_tag_out(const struct Wrestler *w)"
+desc = "As Revenge ai_wants_tag_out (0x800D9270), matched by call graph (score 1.06). Revenge: Matches World Tour ai_wants_tag_out (0x800DD7B8), call-graph score 1.24. Decompiled 2026-11-03 (src/nomercy/nm_ai.cpp, from the code and asm; its comment there has the full reading)."
+status = "confirmed"
+port = "src/nomercy/nm_ai.cpp"
 
 [[func]]
 addr = 0x800FC810
 name = "ai_think"
-desc = "As Revenge ai_think (0x800A9924), matched by call graph (score 1.03). Revenge: CPU decision as in World Tour (0x800B5780): calls g_ai_modes[mode] (AI block +2) through the table at 0x800E2FF0 + 412 * 4."
-status = "likely"
+proto = "void ai_think(void)"
+desc = "The ladder match's extra decision (g_match_type 0x100000, after the where-class deciders). The prize is g_objects[6] (0x8016B248: holder +0x08, flags +0x20, pos +0x44). Against an opponent down, dazed or lying (15, 16, 19) or in situation 24: a chance of 10 x 0x80145A00 by the opponent's perceived health / 50 (at most 5), not after 19 in the last 5 modes: holding the prize in the ring 134; with the prize loose: hanging over the ring (within 30 of the centre line, flags 0x100) 135 once the opponent has been down 60+ frames; elsewhere, in another ring zone with the CPU out of the ring, 50% 33 / 34; else 133. Otherwise against an opponent on a ladder in the ring: from the ring 139, from the apron 33, else 34; with someone on a ladder in the ring ai_press_focus_switch. Decompiled 2026-11-03 (src/nomercy/nm_ai.cpp, from the code and asm)."
+status = "confirmed"
+port = "src/nomercy/nm_ai.cpp"
 
 [[func]]
 addr = 0x800FD188
 name = "ai_update_perception"
-desc = "As Revenge ai_update_perception (0x800ADB44), matched by call graph (score 1.13). Revenge: Noisy perceived values into the AI block, as World Tour's 0x800DF548."
-status = "likely"
+proto = "void ai_update_perception(void)"
+desc = "As Revenge ai_update_perception (0x800ADB44), matched by call graph (score 1.13). Revenge: Noisy perceived values into the AI block, as World Tour's 0x800DF548. Decompiled 2026-11-03 (src/nomercy/nm_ai.cpp, from the code and asm). Caps (ai_perceive's second argument): own health 0.1, opponent's health 0.3, own spirit 0.1, opponent's spirit 0.2, distance 0.2, height difference 0.1, own five regions 0.1, the opponent's time down 0.3. The where-class (+0x82, bits 0x1E00 kept): self in the ring 0x01 / 0x2000 / 0x02 / 0x04 (opponent in the ring / on the cage wall / on the apron / else), self on the apron 0x08 / 0x10 / 0x20, self on the floor 0x40 / 0x80 (ring / apron), self on the cage wall 0x4000 / 0x8000 (ring / wall), anything else 0x100. Mode flags: 0x10 both have attrs +0x34 0x2000 (or only self, in finisher mode), 0x20 an illegal man in tag, 0x40 over-the-top elimination."
+status = "confirmed"
+port = "src/nomercy/nm_ai.cpp"
 
 [[func]]
 addr = 0x8010A084
-name = "ai_mode_11_evade"
-desc = "As Revenge ai_mode_11_evade (0x800AF23C), matched by call graph (score 1.05). Revenge: AI mode 11; same mode as World Tour mode 11 (ai.md)."
-status = "likely"
+name = "ai_stick_taunt"
+proto = "void ai_stick_taunt(void)"
+desc = "As Revenge ai_stick_taunt (0x800AF23C), matched by call graph (score 1.05). Revenge: AI mode 11; same mode as World Tour mode 11 (ai.md). Renamed 2026-11-03 from ai_mode_11_evade: it is not a mode in No Mercy but mode 49's taunt: 40% the first favourite (record flag 0x8000) of the taunts 227 / 231 / 229 / 228 (0x80145F18), else a random one, as the stick up / down / right / left (+0x12 / +0x13 = 0 / 80). Decompiled 2026-11-03 (src/nomercy/nm_ai.cpp, from the code and asm; its comment there has the full reading)."
+status = "confirmed"
+port = "src/nomercy/nm_ai.cpp"
 
 [[func]]
 addr = 0x8010FF78
 name = "run_start"
-desc = "As Revenge run_start (0x800B4690), matched by call graph (score 1.19). Revenge: Matches World Tour run_start (0x800B7430), call-graph score 1.00."
-status = "likely"
+proto = "s32 run_start(struct WrestlerCtx *ctx, s32 *dir)"
+desc = "Sets the run's direction from the d-pad (a side, a corner, along the apron, or with no d-pad toward the opponent, facing_to_opponent) and its step at walk_speed(8). 0 when the run cannot start. Decompiled 2026-11-03 (src/nomercy/nm_run.cpp, from the code and asm)."
+status = "confirmed"
+port = "src/nomercy/nm_run.cpp"
 
 [[func]]
 addr = 0x80110410
 name = "run_inputs"
-desc = "As Revenge run_inputs (0x800B5730), matched by call graph (score 1.14). Revenge: Matches World Tour run_inputs (0x800B87DC), call-graph score 0.96."
+proto = "s32 run_inputs(struct WrestlerCtx *ctx)"
+desc = "The buttons while running. Decompiled 2026-11-03 (src/nomercy/nm_run.cpp, from the code and asm)."
 status = "likely"
+port = "src/nomercy/nm_run.cpp"
+notes = "Port: partial (paths the traces have not reached yet stop a replay with NM_UNPORTED)."
 
 [[func]]
 addr = 0x80110D7C
 name = "run_step"
-desc = "As Revenge run_step (0x800B4C60), matched by call graph (score 1.03). Revenge: Matches World Tour run_step (0x800B7A60), call-graph score 1.21."
+proto = "s32 run_step(struct WrestlerCtx *ctx, s32 mode)"
+desc = "One frame of the run: the step, what it meets, the ropes (rebound 0x04), the corners and walls. 1 when the state changed. Decompiled 2026-11-03 (src/nomercy/nm_run.cpp, from the code and asm)."
 status = "likely"
+port = "src/nomercy/nm_run.cpp"
+notes = "Port: partial (paths the traces have not reached yet stop a replay with NM_UNPORTED)."
 
 [[func]]
 addr = 0x801118D8
 name = "corner_run_step"
-desc = "Checked against No Mercy's code 2026-11-02: run_step(ctx, 1) and, when it ends, run_corner_stop (state 0x78). As Revenge corner_run_step (0x800B60C8), matched by call graph (score 0.98). Revenge: Matches World Tour corner_run_step (0x800B926C), call-graph score 0.93."
-status = "likely"
+proto = "s32 corner_run_step(struct WrestlerCtx *ctx)"
+desc = "Run_step, and when it ends run_corner_stop (state 0x78). Decompiled 2026-11-03 (src/nomercy/nm_run.cpp, from the code and asm). Earlier notes: Checked against No Mercy's code 2026-11-02: run_step(ctx, 1) and, when it ends, run_corner_stop (state 0x78). As Revenge corner_run_step (0x800B60C8), matched by call graph (score 0.98). Revenge: Matches World Tour corner_run_step (0x800B926C), call-graph score 0.93."
+status = "confirmed"
+port = "src/nomercy/nm_run.cpp"
 
 [[func]]
 addr = 0x80115000
@@ -533,26 +589,35 @@ status = "likely"
 [[func]]
 addr = 0x801163C4
 name = "referee_count_tick"
+proto = "void referee_count_tick(void)"
 desc = "As Revenge referee_count_tick (0x800B8D8C), matched by call graph (score 1.61). Revenge: Matches World Tour referee_count_tick (0x800B2238), call-graph score 1.19."
-status = "likely"
+status = "confirmed"
+port = "src/nomercy/nm_frame.cpp"
 
 [[func]]
 addr = 0x80118368
 name = "wrestler_tick"
+proto = "void wrestler_tick(s32 slot)"
 desc = "Checked against No Mercy's code 2026-11-02: per slot from wrestlers_update_all: copies the pad (0x8009EDA4 + 12 x pad) into the input entry (0x80159540 + 56 x slot) through input_remap; Z with a C button toggles CPU control (flags_e9 0x08, AI block cleared) when the match type allows (not for a legal man under 0x1000 unless 0x400000, not in elimination / ladder matches); then the per-slot update. As Revenge wrestler_tick (0x800BBFD8), matched by call graph (score 0.91). Revenge: Matches World Tour wrestler_tick (0x800B47D4), call-graph score 1.39."
-status = "likely"
+status = "confirmed"
+port = "src/nomercy/nm_wrestler.cpp"
 
 [[func]]
 addr = 0x80118A20
 name = "match_record_fall"
-desc = "Checked against No Mercy's code 2026-11-02: records a fall (match_end, match_result, match_abort_draw): result_stats_record, the fall time per slot (0x8009FE58), the move that ended it (0x800A84C4), the cause word 0x800A10EC (plus 0x100 / 0x200 by the winner's team flags_e9 0x20 in tag / handicap), end_flags 0x04 on the winners' bits from 0x8014637C, then the elimination / entrant bookkeeping. As Revenge match_record_fall (0x800B9730), matched by call graph (score 0.94). Revenge: Records a fall (World Tour match_record_result): result word 0x8007E848, winners lo 0x4000, losers lo 0x8000; each loser gets the next battle-royal entrant (br_next_entrant, then lo 0x10) or, with none left, loses LEGAL (lo 0x200)."
+proto = "void match_record_fall(const s32 *winners, const s32 *losers, u32 code, s32 record_stats)"
+desc = "Decompiled 2026-11-02 (src/nomercy/nm_frame.cpp) and trace-checked through a singles pin (nm_count3.json); the tag / elimination / multi-fall branches stop a replay at NM_UNPORTED. Checked against No Mercy's code 2026-11-02: records a fall (match_end, match_result, match_abort_draw): result_stats_record, the fall time per slot (0x8009FE58), the move that ended it (0x800A84C4), the cause word 0x800A10EC (plus 0x100 / 0x200 by the winner's team flags_e9 0x20 in tag / handicap), end_flags 0x04 on the winners' bits from 0x8014637C, then the elimination / entrant bookkeeping. As Revenge match_record_fall (0x800B9730), matched by call graph (score 0.94). Revenge: Records a fall (World Tour match_record_result): result word 0x8007E848, winners lo 0x4000, losers lo 0x8000; each loser gets the next battle-royal entrant (br_next_entrant, then lo 0x10) or, with none left, loses LEGAL (lo 0x200)."
 status = "likely"
+port = "src/nomercy/nm_frame.cpp"
+notes = "Port: partial (paths the traces have not reached yet stop a replay with NM_UNPORTED)."
 
 [[func]]
 addr = 0x80119328
 name = "result_stats_record"
-desc = "As Revenge result_stats_record (0x800B9D60), matched by call graph (score 1.27). Revenge: Adds a fall to the per-wrestler win/loss tallies at 0x8007E850 (24 bytes each) by result kind (pin 0x2000, submission 0x1000, TKO 0x8000, count-out 0x10000)."
-status = "likely"
+proto = "s32 result_stats_record(const s32 *winners, const s32 *losers, u32 code)"
+desc = "Decompiled 2026-11-02 (src/nomercy/nm_frame.cpp) and trace-checked through a singles pin (nm_count3.json); the tag / elimination / multi-fall branches stop a replay at NM_UNPORTED. As Revenge result_stats_record (0x800B9D60), matched by call graph (score 1.27). Revenge: Adds a fall to the per-wrestler win/loss tallies at 0x8007E850 (24 bytes each) by result kind (pin 0x2000, submission 0x1000, TKO 0x8000, count-out 0x10000). 2026-11-03: the elimination tallies are decompiled (code; not trace-checked): two columns by flags_e9 0x08, wins +0x02 / +0x16, pins +0x10 / +0x0C, submissions +0x11 / +0x0D, count-outs +0x12 / +0x0E, over the top +0x13 / +0x0F (+0x15 / +0x14 when the winner is out too), the beaten slots +0x08 / +0x04 + slot, losses +0x03 / +0x17, all bytes of the 28-byte slot record at 0x800A3DC0."
+status = "confirmed"
+port = "src/nomercy/nm_frame.cpp"
 
 [[func]]
 addr = 0x80119C20
@@ -563,14 +628,18 @@ status = "likely"
 [[func]]
 addr = 0x8011A2E4
 name = "hold_for_partner_walk"
-desc = "As Revenge hold_for_partner_walk (0x800C8D84), matched by call graph (score 1.24). Revenge: Matches World Tour hold_for_partner_walk (0x800DC0B4), call-graph score 1.59."
-status = "likely"
+proto = "void hold_for_partner_walk(struct Wrestler *w, struct Wrestler *held, u16 buttons, f32 dist)"
+desc = "One frame of walking while holding the opponent (`held`, kept `dist` in front): the d-pad moves the holder at walk speed (class 0x20): on the apron (flags78 0x20) only along its side (0x80146590 by ring_zone & 1: x for even sides, z for odd), else in the eight directions (diagonals x 0.707). The 4.0 slide ignoring the held one, which follows by the same x / z, the pair kept in bounds; off the apron A / B turn the pair by +-34 and the holder is put back `dist` in front of the held one. Decompiled 2026-11-03 (src/nomercy/nm_grapple.cpp, from the code and asm)."
+status = "confirmed"
+port = "src/nomercy/nm_grapple.cpp"
 
 [[func]]
 addr = 0x8011B524
 name = "whip_place_runner"
-desc = "As Revenge whip_place_runner (0x800BE450), matched by call graph (score 1.16). Revenge: Matches World Tour whip_place_runner (0x800D5A58), call-graph score 0.97."
-status = "likely"
+proto = "void whip_place_runner(struct WrestlerCtx *ctx)"
+desc = "Puts the runner at its point_120 moved (1.43, 0, 27.77) along its facing, and the whipper 73.5 in front of it. Decompiled 2026-11-03 (src/nomercy/nm_grapple.cpp, from the code and asm)."
+status = "confirmed"
+port = "src/nomercy/nm_grapple.cpp"
 
 [[func]]
 addr = 0x8011BF68
@@ -599,26 +668,34 @@ status = "likely"
 [[func]]
 addr = 0x801211F8
 name = "run_collide_check"
+proto = "void run_collide_check(struct Wrestler *w, u32 bits)"
 desc = "As Revenge run_collide_check (0x800C38FC), matched by call graph (score 1.25). Revenge: Matches World Tour run_collide_check (0x800CA83C), call-graph score 1.03."
-status = "likely"
+status = "confirmed"
+port = "src/nomercy/nm_run.cpp"
 
 [[func]]
 addr = 0x8012265C
 name = "relative_facing"
+proto = "void relative_facing(const struct Wrestler *w, struct Wrestler *d, s32 from_behind)"
 desc = "As Revenge relative_facing (0x800C4610), matched by call graph (score 1.53). Revenge: Matches World Tour relative_facing (0x8009FEEC), call-graph score 1.00."
-status = "likely"
+status = "confirmed"
+port = "src/nomercy/nm_strike.cpp"
 
 [[func]]
 addr = 0x80122AB0
 name = "hits_taken_decay"
+proto = "void hits_taken_decay(struct Wrestler *w, s32 op)"
 desc = "As Revenge hits_taken_decay (0x800C49B4), matched by call graph (score 1.24). Revenge: Matches World Tour hits_taken_decay (0x800CC14C), call-graph score 1.23."
-status = "likely"
+status = "confirmed"
+port = "src/nomercy/nm_wrestler.cpp"
 
 [[func]]
 addr = 0x801250C4
 name = "strike_reaction_anim"
+proto = "s32 strike_reaction_anim(const struct Wrestler *w, s32 fallback)"
 desc = "As Revenge strike_reaction_anim (0x800C778C), matched by call graph (score 1.08). Revenge: Picks a hit-reaction animation (4169-4174) from the hit flags (+0x30) and the header strike style (+0x1E)."
-status = "likely"
+status = "confirmed"
+port = "src/nomercy/nm_strike.cpp"
 
 [[func]]
 addr = 0x80125748
@@ -629,8 +706,11 @@ status = "likely"
 [[func]]
 addr = 0x8012712C
 name = "grapple_double_team_check"
+proto = "s32 grapple_double_team_check(struct Wrestler *att, struct Wrestler *def)"
 desc = "As Revenge grapple_double_team_check (0x800CD6C4), matched by call graph (score 1.09). Revenge: From grapple_attempt_resolve: when a partner (+851) is next to the grapple (state 0x46 with ctx 0x400) starts a double-team grapple."
 status = "likely"
+port = "src/nomercy/nm_grapple.cpp"
+notes = "Port: partial (paths the traces have not reached yet stop a replay with NM_UNPORTED)."
 
 [[func]]
 addr = 0x80127214
@@ -665,56 +745,74 @@ status = "likely"
 [[func]]
 addr = 0x8012BF50
 name = "wrestler_translate_pushed"
+proto = "s32 wrestler_translate_pushed(struct Wrestler *w, const struct Vec3 *d, s32 exclude)"
 desc = "As Revenge wrestler_translate_pushed (0x800D26A0), matched by call graph (score 2.02). Revenge: Matches World Tour wrestler_translate_pushed (0x800A45A0), call-graph score 1.12."
-status = "likely"
+status = "confirmed"
+port = "src/nomercy/nm_run.cpp"
 
 [[func]]
 addr = 0x8012C00C
 name = "wrestler_slide"
+proto = "s32 wrestler_slide(struct Wrestler *w, f32 scale)"
 desc = "As Revenge wrestler_slide (0x800D25D0), matched by call graph (score 1.11). Revenge: sub_800D2758(w, a2, 0, -1): the plain form of the per-frame slide / movement step used by most states."
-status = "likely"
+status = "confirmed"
+port = "src/nomercy/nm_bounds.cpp"
 
 [[func]]
 addr = 0x8012C044
 name = "wrestler_slide_with"
-desc = "As Revenge wrestler_slide_with (0x800D2600), matched by call graph (score 1.10). Revenge: sub_800D2758 with an extra partner argument (carry and hold-for-partner walks)."
-status = "likely"
+proto = "s32 wrestler_slide_with(struct Wrestler *w, s32 slot, f32 scale)"
+desc = "Wrestler_move_step(w, none, scale, 0, slot, 1): a slide that ignores the wrestler in `slot` (the one being carried or held). Decompiled 2026-11-03 (src/nomercy/nm_grapple.cpp, from the code and asm)."
+status = "confirmed"
+port = "src/nomercy/nm_grapple.cpp"
 
 [[func]]
 addr = 0x8012C0A0
 name = "wrestler_slide_b"
-desc = "As Revenge wrestler_slide_b (0x800D2670), matched by call graph (score 1.61). Revenge: wrestler_move_step(w, a2, 0, -1), used by state 0x70."
-status = "likely"
+proto = "s32 wrestler_slide_b(struct Wrestler *w, f32 scale)"
+desc = "As Revenge wrestler_slide_b (0x800D2670), matched by call graph (score 1.61). Revenge: wrestler_move_step(w, a2, 0, -1), used by state 0x70. Decompiled 2026-11-03 (src/nomercy/nm_tag.cpp; code, not trace-checked). wrestler_move_step(w, none, scale, 0, -1, 2)."
+status = "confirmed"
+port = "src/nomercy/nm_tag.cpp"
 
 [[func]]
 addr = 0x8012C474
 name = "wrestler_move_step"
+proto = "s32 wrestler_move_step(struct Wrestler *w, struct Wrestler *other, f32 scale, u32 mask, s32 exclude, s32 mode)"
 desc = "As Revenge wrestler_move_step (0x800D2758), matched by call graph (score 1.36). Revenge: The per-frame movement step behind wrestler_slide / wrestler_slide_with (speed, partner, turn)."
-status = "likely"
+status = "confirmed"
+port = "src/nomercy/nm_bounds.cpp"
 
 [[func]]
 addr = 0x8012C884
 name = "wrestler_translate_bounded"
+proto = "u16 wrestler_translate_bounded(struct Wrestler *w, u32 joints, const struct Vec3 *d)"
 desc = "As Revenge wrestler_translate_bounded (0x800D2ACC), matched by call graph (score 2.01). Revenge: Matches World Tour wrestler_translate_bounded (0x800A4638), call-graph score 1.78."
-status = "likely"
+status = "confirmed"
+port = "src/nomercy/nm_run.cpp"
 
 [[func]]
 addr = 0x8012C928
 name = "keep_in_bounds_self"
+proto = "u16 keep_in_bounds_self(struct Wrestler *w, f32 scale, u16 mask, u32 joints)"
 desc = "As Revenge keep_in_bounds_self (0x800D2B64), matched by call graph (score 1.12). Revenge: Matches World Tour keep_in_bounds_self (0x800A46F0), call-graph score 1.39."
-status = "likely"
+status = "confirmed"
+port = "src/nomercy/nm_bounds.cpp"
 
 [[func]]
 addr = 0x8012C974
 name = "keep_in_bounds_pair"
+proto = "u16 keep_in_bounds_pair(struct Wrestler *w, struct Wrestler *other, struct Wrestler *other2, f32 scale, u32 joints)"
 desc = "As Revenge keep_in_bounds_pair (0x800D2BAC), matched by call graph (score 1.12). Revenge: keep_in_bounds(w, opp, 0, factor)."
-status = "likely"
+status = "confirmed"
+port = "src/nomercy/nm_grapple.cpp"
 
 [[func]]
 addr = 0x8012C9B0
 name = "pair_follow"
+proto = "u16 pair_follow(struct Wrestler *w, struct Wrestler *other, struct Wrestler *other2, f32 scale, u16 mask, u32 joints)"
 desc = "As Revenge pair_follow (0x800D2BEC), matched by call graph (score 1.25). Revenge: keep_in_bounds with all arguments passed through."
-status = "likely"
+status = "confirmed"
+port = "src/nomercy/nm_grapple.cpp"
 
 [[func]]
 addr = 0x8012C9F4
@@ -725,14 +823,18 @@ status = "likely"
 [[func]]
 addr = 0x8012CA34
 name = "keep_in_bounds_pair_c"
-desc = "As Revenge keep_in_bounds_pair_c (0x800D2C68), matched by call graph (score 1.12). Revenge: Matches World Tour keep_in_bounds_pair_c (0x800A4924), call-graph score 1.03."
-status = "likely"
+proto = "u16 keep_in_bounds_pair_c(struct Wrestler *w, struct Wrestler *other, f32 scale, struct Vec3 *pts3, u32 joints)"
+desc = "Read for the decompilation 2026-11-02: keep_in_bounds(w, other, 0, scale, 0, pts3, 0, 0, joints, 1): the pair bounds for a wrestler walking an approach curve, moving its three control points (a3, Wrestler +0x264) with it. As Revenge keep_in_bounds_pair_c (0x800D2C68), matched by call graph (score 1.12). Revenge: Matches World Tour keep_in_bounds_pair_c (0x800A4924), call-graph score 1.03."
+status = "confirmed"
+port = "src/nomercy/nm_down.cpp"
 
 [[func]]
 addr = 0x8012D404
 name = "run_step_corner"
+proto = "s32 run_step_corner(u32 wall, const struct Vec3 *center, f32 radius, f32 *depth)"
 desc = "Checked against No Mercy's code 2026-11-02: from keep_in_bounds: the distance of a point from a collision quad along its normal, pushing it back when inside (quad_contains_point) or near the first two corners; writes the depth into a4. As Revenge run_step_corner (0x800B6114), matched by constants (score 0.80). Revenge: Matches World Tour run_step_corner (0x800B92D4), call-graph score 1.11."
-status = "likely"
+status = "confirmed"
+port = "src/nomercy/nm_bounds.cpp"
 
 [[func]]
 addr = 0x8012DF70
@@ -743,80 +845,106 @@ status = "likely"
 [[func]]
 addr = 0x8012DFF4
 name = "rand_pool_next"
+proto = "s32 rand_pool_next(void)"
 desc = "As Revenge rand_pool_next (0x800D4148), matched by call graph (score 2.25). Revenge: Matches World Tour rand_pool_next (0x800A039C), call-graph score 1.89."
-status = "likely"
+status = "confirmed"
+port = "src/nomercy/nm_rng.cpp"
 
 [[func]]
 addr = 0x8012E0DC
 name = "abs_i"
+proto = "s32 abs_i(s32 v)"
 desc = "As Revenge abs_i (0x800D3550), matched by call graph (score 1.20). Revenge: Matches World Tour abs_i (0x8009F650), call-graph score 1.00."
-status = "likely"
+status = "confirmed"
+port = "src/nomercy/nm_math.cpp"
 
 [[func]]
 addr = 0x8012E11C
 name = "angle_wrap"
+proto = "s32 angle_wrap(s32 a)"
 desc = "As Revenge angle_wrap (0x800D3590), matched by identical machine code. Revenge: Sign-extends a 12-bit angle (4096 = full turn)."
-status = "likely"
+status = "confirmed"
+port = "src/nomercy/nm_math.cpp"
 
 [[func]]
 addr = 0x8012E158
 name = "angle_to_float"
+proto = "f32 angle_to_float(s32 a)"
 desc = "As Revenge angle_to_float (0x800D35D4), matched by identical machine code. Revenge: Converts a 12-bit angle to radians (or degrees) by a double constant."
-status = "likely"
+status = "confirmed"
+port = "src/nomercy/nm_math.cpp"
 
 [[func]]
 addr = 0x8012E178
 name = "float_to_angle"
+proto = "s32 float_to_angle(f32 r)"
 desc = "As Revenge float_to_angle (0x800D35F4), matched by identical machine code. Revenge: Inverse of angle_to_float."
-status = "likely"
+status = "confirmed"
+port = "src/nomercy/nm_math.cpp"
 
 [[func]]
 addr = 0x8012E198
 name = "angle_dir8_back"
-desc = "As Revenge angle_dir8_back (0x800D3614), matched by call graph (score 2.06). Revenge: angle_dir8 of the angle turned half a turn."
-status = "likely"
+proto = "s32 angle_dir8_back(s32 angle)"
+desc = "As Revenge angle_dir8_back (0x800D3614), matched by call graph (score 2.06). Revenge: angle_dir8 of the angle turned half a turn. Decompiled 2026-11-03 (src/nomercy/nm_ai.cpp, from the code and asm; its comment there has the full reading)."
+status = "confirmed"
+port = "src/nomercy/nm_ai.cpp"
 
 [[func]]
 addr = 0x8012E1CC
 name = "angle_dir8"
-desc = "As Revenge angle_dir8 (0x800D3638), matched by identical machine code. Revenge: Octant 0-7 of an angle ((a + 256) / 512, wrapped)."
-status = "likely"
+proto = "s32 angle_dir8(s32 angle)"
+desc = "As Revenge angle_dir8 (0x800D3638), matched by identical machine code. Revenge: Octant 0-7 of an angle ((a + 256) / 512, wrapped). Decompiled 2026-11-03 (src/nomercy/nm_ai.cpp, from the code and asm; its comment there has the full reading)."
+status = "confirmed"
+port = "src/nomercy/nm_ai.cpp"
 
 [[func]]
 addr = 0x8012E374
 name = "point_at_offset"
+proto = "void point_at_offset(const struct Vec3 *base, const struct Vec3 *offset, s32 angle, struct Vec3 *out)"
 desc = "As Revenge point_at_offset (0x800D3E40), matched by call graph (score 1.07). Revenge: Matches World Tour point_at_offset (0x800A000C), call-graph score 1.34."
-status = "likely"
+status = "confirmed"
+port = "src/nomercy/nm_math.cpp"
 
 [[func]]
 addr = 0x8012ED0C
 name = "vec2_len"
+proto = "f32 vec2_len(f32 x, f32 z)"
 desc = "As Revenge vec2_len (0x800D371C), matched by identical machine code. Revenge: sqrt(x*x + z*z)."
-status = "likely"
+status = "confirmed"
+port = "src/nomercy/nm_math.cpp"
 
 [[func]]
 addr = 0x8012FA78
 name = "wrestlers_ground_contact"
+proto = "void wrestlers_ground_contact(void)"
 desc = "As Revenge wrestlers_ground_contact (0x800D43DC), matched by call graph (score 1.05). Revenge: Matches World Tour wrestlers_ground_contact (0x800A1070), call-graph score 1.33."
-status = "likely"
+status = "confirmed"
+port = "src/nomercy/nm_anim.cpp"
 
 [[func]]
 addr = 0x8012FBD0
-name = "wrestler_floor_height"
-desc = "Checked against No Mercy's code 2026-11-02: the lying wrestler's tilt (wrestlers_ground_contact): with flags8a 0x100 turns the body toward the holder's angle (8 units a frame, +-67.5) and the pitch (4 a frame, +-30); otherwise relaxes both. As Revenge wrestler_floor_height (0x800D4604), matched by call graph (score 0.96). Revenge: Matches World Tour wrestler_floor_height (0x800A13A4), call-graph score 1.46."
-status = "likely"
+name = "head_look_update"
+proto = "s32 head_look_update(s32 slot, struct Vec3 *lean)"
+desc = "Full read for the decompilation 2026-11-02 (was wrestler_floor_height, from Revenge, which did not fit): the head-look lean of a standing wrestler (flags8a 0x100, set by state_01_stand every frame), kept per slot at 0x801593A8 (x, y, z degrees) and passed to model_animate by wrestlers_ground_contact. From joint 4 (joints[3]) of itself and of its opponent (segment_distance): y follows the angle to the opponent against the facing (x 0.0879 degrees a unit, at most 8 a frame, +-67.5; held at 0 unless on the apron or a ladder (location 0x0A) or in animation 12092), x the pitch from the height difference (4 a frame, +-30). Returns 1; without flags8a 0x100 the lean is zeroed and it returns 0 (no lean passed). As Revenge wrestler_floor_height (0x800D4604), matched by call graph (score 0.96). Revenge: Matches World Tour wrestler_floor_height (0x800A13A4), call-graph score 1.46."
+status = "confirmed"
+port = "src/nomercy/nm_anim.cpp"
 
 [[func]]
 addr = 0x801301F4
 name = "dazed_turn_target"
+proto = "s32 dazed_turn_target(const struct Wrestler *w, s32 *angle)"
 desc = "Checked against No Mercy's code 2026-11-02: for the dazed animations listed at 0x8014DAC0 (0-ended): the facing plus the animation's turn (+0x2E8) into a2, else the facing. As Revenge dazed_turn_target (0x800A9208), matched by call graph (score 0.99). Revenge: For C-up on a dazed opponent: facing to use, adjusted by +872 when the opponent animation is in the table at 0x800E3270."
-status = "likely"
+status = "confirmed"
+port = "src/nomercy/nm_strike.cpp"
 
 [[func]]
 addr = 0x8013026C
 name = "anim_is_dazed_like"
+proto = "void anim_is_dazed_like(struct Wrestler *w)"
 desc = "As Revenge anim_is_dazed_like (0x800A9290), matched by call graph (score 1.34). Revenge: True when the wrestler animation is in the zero-ended list at 0x800E3270."
-status = "likely"
+status = "confirmed"
+port = "src/nomercy/nm_down.cpp"
 
 [[func]]
 addr = 0x80131BA0
@@ -833,227 +961,305 @@ status = "likely"
 [[func]]
 addr = 0x80131DC8
 name = "side_input_check"
+proto = "s32 side_input_check(const struct Wrestler *w, u16 dpad)"
 desc = "As Revenge side_input_check (0x800D65D0), matched by call graph (score 1.10). Revenge: Tests input bits against the per-side tables at 0x800E3F84 / 0x800E3F8C for the wrestler side (+0x3C): 1 toward, 2 away, 0 neither."
-status = "likely"
+status = "confirmed"
+port = "src/nomercy/nm_walk.cpp"
 
 [[func]]
 addr = 0x80131E08
 name = "walk_step"
+proto = "u16 walk_step(struct WrestlerCtx *ctx, u16 buttons, s32 flags)"
 desc = "Checked against No Mercy's code 2026-11-02: the walk from standing and the rope / exit states: speeds walk_speed 2 / 3 (toward the opponent faster), world-axis d-pad, the apron line (11794 / 11745), then walk_move. As Revenge walk_step (0x800D6658), matched by call graph (score 0.91). Revenge: Matches World Tour walk_step (0x800A2964), call-graph score 1.05."
-status = "likely"
+status = "confirmed"
+port = "src/nomercy/nm_walk.cpp"
 
 [[func]]
 addr = 0x80132700
 name = "side_point"
+proto = "s32 side_point(const struct Vec3 *p, s32 angle, struct Vec3 *out)"
 desc = "As Revenge side_point (0x800D746C), matched by constants (score 0.83). Revenge: Matches World Tour side_point (0x800A37F8), call-graph score 2.03."
-status = "likely"
+status = "confirmed"
+port = "src/nomercy/nm_run.cpp"
 
 [[func]]
 addr = 0x80132940
 name = "input_remap"
+proto = "void input_remap(s32 pad, u16 *word)"
 desc = "As Revenge input_remap (0x800BC69C), matched by constants (score 0.86). Revenge: Matches World Tour input_remap (0x800B4C38), call-graph score 1.80."
-status = "likely"
+status = "confirmed"
+port = "src/nomercy/nm_wrestler.cpp"
 
 [[func]]
 addr = 0x80132E24
 name = "recover_tick"
+proto = "s32 recover_tick(struct Wrestler *w, u16 pressed)"
 desc = "As Revenge recover_tick (0x800D7894), matched by call graph (score 1.57). Revenge: recover_count (+0x18) -= 1, once more when mash_count counts a press."
-status = "likely"
+status = "confirmed"
+port = "src/nomercy/nm_down.cpp"
 
 [[func]]
 addr = 0x80132EEC
 name = "dpad_to_side"
+proto = "s32 dpad_to_side(u16 buttons)"
 desc = "As Revenge dpad_to_side (0x800D7A2C), matched by identical machine code. Revenge: Matches World Tour dpad_to_side (0x800A3FA4), call-graph score 2.03."
-status = "likely"
+status = "confirmed"
+port = "src/nomercy/nm_run.cpp"
 
 [[func]]
 addr = 0x80132F28
 name = "dpad_dir8"
+proto = "s32 dpad_dir8(u16 buttons)"
 desc = "As Revenge dpad_dir8 (0x800D7A68), matched by constants (score 1.00). Revenge: Matches World Tour dpad_dir8 (0x800A4010), call-graph score 2.05."
-status = "likely"
+status = "confirmed"
+port = "src/nomercy/nm_walk.cpp"
 
 [[func]]
 addr = 0x80132F90
 name = "dpad_diagonal_quadrant"
+proto = "s32 dpad_diagonal_quadrant(u16 buttons)"
 desc = "As Revenge dpad_diagonal_quadrant (0x800D7B08), matched by constants (score 1.00). Revenge: Matches World Tour dpad_diagonal_quadrant (0x800A40EC), call-graph score 2.04."
-status = "likely"
+status = "confirmed"
+port = "src/nomercy/nm_run.cpp"
 
 [[func]]
 addr = 0x80134420
 name = "pair_scripted_place"
-desc = "As Revenge pair_scripted_place (0x800D7E80), matched by call graph (score 1.06). Revenge: Matches World Tour pair_scripted_place (0x800D6EA0), call-graph score 1.09."
+proto = "void pair_scripted_place(struct Wrestler *w, struct Wrestler *other)"
+desc = "Places a wrestler for a scripted paired animation against another, by its state (0xDC4 bytes; the whip, state 0x0B, and the drop, 0x6E, are decompiled): an opponent whipped into a corner (state_flags 0x04) slides the CPU over 15 frames to 56.57 in front of the corner it faces (0x8014D1A8 / 0x8014D208 by dir) and turns it to that corner's angle; otherwise place_from_zone (15 frames, 40 in front of the wall, 50 for a cage whip, state_flags 0x10). Decompiled 2026-11-03 (src/nomercy/nm_tag.cpp, from the code and asm)."
 status = "likely"
+port = "src/nomercy/nm_tag.cpp"
+notes = "Port: partial (paths the traces have not reached yet stop a replay with NM_UNPORTED)."
 
 [[func]]
 addr = 0x801356A4
 name = "pair_slide_step"
-desc = "As Revenge pair_slide_step (0x800D8D74), matched by call graph (score 1.01). Revenge: Moves the wrestler (and the partner a2) by the slide vector while the state timer runs down, turning by +840."
-status = "likely"
+proto = "s32 pair_slide_step(struct Wrestler *w, struct Wrestler *other)"
+desc = "One step of the slide pair_scripted_place set up: while count_timer runs, move the wrestler (and `other`, when given) by step_vec and turn by turn_step; then count down. 1 once the count has run out. Decompiled 2026-11-03 (src/nomercy/nm_tag.cpp, from the code and asm)."
+status = "confirmed"
+port = "src/nomercy/nm_tag.cpp"
 
 [[func]]
 addr = 0x80136FBC
 name = "ground_grapple_defend"
-desc = "As Revenge ground_grapple_defend (0x800CBD5C), matched by call graph (score 1.60). Revenge: Matches World Tour ground_grapple_defend (0x800D1CE8), call-graph score 1.60."
-status = "likely"
+proto = "void ground_grapple_defend(struct Wrestler *w, struct Wrestler *o, u16 pressed)"
+desc = "A press of A, B, L or R by one being taken (not in finisher mode against a normal attacker, nor flags_e9 0x01) gets one try, ground_side 0x04: chance_roll kind 0 is a reversal, 0x08. Decompiled 2026-11-03 (src/nomercy/nm_down.cpp, from the code and asm)."
+status = "confirmed"
+port = "src/nomercy/nm_down.cpp"
 
 [[func]]
 addr = 0x80137D90
 name = "wrestler_may_act"
+proto = "s32 wrestler_may_act(const struct Wrestler *w)"
 desc = "Code 2026-11-02: 1 (may act) except in tag matches (g_match_type 0x2000) without rule 0x40, in the ring arenas, for a wrestler not in play (flags_e9 0x10 clear; the partner on the apron) when every wrestler in play who has not lost a fall is in the ring or on the apron (and +0x96 0xC0 is clear or 0x400 set): then 0. So the partner may only join in while a legal man is outside. As Revenge wrestler_may_act (0x800D8DF0), matched by call graph (score 1.25). Revenge: Matches World Tour wrestler_may_act (0x800DD200), call-graph score 1.45."
-status = "likely"
+status = "confirmed"
+port = "src/nomercy/nm_stand.cpp"
 
 [[func]]
 addr = 0x80137FD0
 name = "illegal_man_check"
+proto = "void illegal_man_check(struct Wrestler *w)"
 desc = "As Revenge illegal_man_check (0x800D93DC), matched by call graph (score 1.15). Revenge: In tag rules (0x8007E280 0x200): checks whether a wrestler who is not the legal man should leave the ring."
-status = "likely"
+status = "confirmed"
+port = "src/nomercy/nm_stand.cpp"
 
 [[func]]
 addr = 0x801380F8
 name = "illegal_man_leave"
-desc = "As Revenge illegal_man_leave (0x800D9568), matched by call graph (score 1.06). Revenge: Makes an illegal wrestler head back to the apron (tag rules)."
-status = "likely"
+proto = "s32 illegal_man_leave(struct Wrestler *w)"
+desc = "The illegal man of a tag match going back to his apron (0x95). Standing (state 1, not under rule 0x40) when apron_side_ok says he is in his own corner; otherwise, not the legal man, on his team's ring side (dir 0 for team 0x20, else 2), at step 2. Decompiled 2026-11-03 (src/nomercy/nm_tag.cpp, from the code and asm)."
+status = "confirmed"
+port = "src/nomercy/nm_tag.cpp"
 
 [[func]]
 addr = 0x801381E0
 name = "apron_side_ok"
-desc = "As Revenge apron_side_ok (0x800D9814), matched by call graph (score 1.12). Revenge: Tag rules: whether the wrestler is on its own team side of the apron."
-status = "likely"
+proto = "s32 apron_side_ok(const struct Wrestler *w)"
+desc = "Decompiled 2026-11-03 (src/nomercy/nm_tag.cpp; code, not trace-checked). Whether a wrestler is where a tag can be made from: in the ring perched on its own team's corner (state 0x0A with dir 0 for team flags_e9 0x20, else 2), or on the apron in its own team's quarter (team 0x20: pos.x and pos.z both above 20.0; the other team: both below -20.0). As Revenge apron_side_ok (0x800D9814), matched by call graph (score 1.12)."
+status = "confirmed"
+port = "src/nomercy/nm_tag.cpp"
 
 [[func]]
 addr = 0x801384E4
 name = "tag_exchange"
-desc = "Checked against No Mercy's code 2026-11-02: the tag: the legal man into 0x94 (tag out) and the partner into 0x93 (tag received), flags80 0x01, the partner's flags88 0x02; a3 starts both at step 2. As Revenge tag_exchange (0x800D9E1C), matched by call graph (score 0.92). Revenge: Matches World Tour tag_exchange (0x800DE564), call-graph score 0.96."
-status = "likely"
+proto = "void tag_exchange(struct Wrestler *a, struct Wrestler *b, s32 at_step2)"
+desc = "Checked against No Mercy's code 2026-11-02: the tag: the legal man into 0x94 (tag out) and the partner into 0x93 (tag received), flags80 0x01, the partner's flags88 0x02; a3 starts both at step 2. As Revenge tag_exchange (0x800D9E1C), matched by call graph (score 0.92). Revenge: Matches World Tour tag_exchange (0x800DE564), call-graph score 0.96. Decompiled 2026-11-03 (src/nomercy/nm_tag.cpp; code, not trace-checked). Arguments (a, b, at_step2): a goes to 0x94 when it is the legal man (flags_e9 0x10), else 0x93; b the other."
+status = "confirmed"
+port = "src/nomercy/nm_tag.cpp"
 
 [[func]]
 addr = 0x80138994
 name = "tag_in"
-desc = "As Revenge tag_in (0x800DA3D8), matched by call graph (score 1.10). Revenge: Matches World Tour tag_in (0x800DEC6C), call-graph score 1.07."
-status = "likely"
+proto = "void tag_in(struct Wrestler *w)"
+desc = "Decompiled 2026-11-03 (src/nomercy/nm_tag.cpp; code, not trace-checked). The tagged-in partner becomes the legal man: flags_e9 0x10 moves to it (the partner gets idle_flags 0x04), tag_state (+0xDC) = 0, tag_health (+0xDE) = health; flags_e9 0x08 moves to it when the two differ; its opponent is re-picked (slot ^ 2, or slot ^ 3 when that one is out or not legal) and both opponents' +0x08 point at it. Called by state_93_tag_received. As Revenge tag_in (0x800DA3D8), matched by call graph (score 1.10)."
+status = "confirmed"
+port = "src/nomercy/nm_tag.cpp"
 
 [[func]]
 addr = 0x80138B14
 name = "apron_walk_dpad"
-desc = "As Revenge apron_walk_dpad (0x800DA5E8), matched by call graph (score 1.58). Revenge: Matches World Tour apron_walk_dpad (0x800B9954), call-graph score 0.93."
-status = "likely"
+proto = "s32 apron_walk_dpad(s32 slot)"
+desc = "As Revenge apron_walk_dpad (0x800DA5E8), matched by call graph (score 1.58). Revenge: Matches World Tour apron_walk_dpad (0x800B9954), call-graph score 0.93. No Mercy reading (code 2026-11-03): returns 1 when the slot's wrestler may walk along the apron in a tag match with tag rules: not legal, with a partner, and either its partner_flags80 has 0xC0 without 0x400, or it may act (wrestler_may_act) or may stay inside. Decompiled in src/nomercy/nm_ai.cpp."
+status = "confirmed"
+port = "src/nomercy/nm_ai.cpp"
 
 [[func]]
 addr = 0x80138BE0
 name = "idle_check"
-desc = "Checked against No Mercy's code 2026-11-02: an illegal man (not flags_e9 0x10) not in a hold that may not act goes through may_stay_inside. As Revenge idle_check (0x800DA6DC), matched by call graph (score 0.91). Revenge: Calls sub_800D96A0 when the wrestler is not on the floor, has no +0x358 bits 0x6000 and may not act."
-status = "likely"
+proto = "s32 idle_check(struct Wrestler *w)"
+desc = "Decompiled 2026-11-03 (src/nomercy/nm_tag.cpp; code, not trace-checked). Corrected from the asm: returns 1 (may stay) for the legal man; with the partner in a hold (partner_flags80 0xC0) 1 unless that hold has flags80 0x400; else wrestler_may_act, then may_stay_inside; 0 sends stand_flags_update's wrestler into 0x92 (walk back). As Revenge idle_check (0x800DA6DC), matched by call graph (score 0.91)."
+status = "confirmed"
+port = "src/nomercy/nm_tag.cpp"
 
 [[func]]
 addr = 0x80138C54
 name = "may_stay_inside"
-desc = "As Revenge may_stay_inside (0x800D96A0), matched by call graph (score 1.26). Revenge: Tag rules: whether a wrestler may stay in the ring (rules 0x200 / 0x40 and +0x358 bits)."
-status = "likely"
+proto = "s32 may_stay_inside(const struct Wrestler *w)"
+desc = "Decompiled 2026-11-03 (src/nomercy/nm_tag.cpp; code, not trace-checked). Whether an illegal man may stay in the ring: always outside tag rules (type 0x2000 without rule 0x40), for the legal man, or while its partner is in a hold (partner_flags80 0xC0); otherwise only while another illegal wrestler still in play is in the ring with idle_flags 0x04 and not 0x02. As Revenge may_stay_inside (0x800D96A0), matched by call graph (score 1.26)."
+status = "confirmed"
+port = "src/nomercy/nm_tag.cpp"
 
 [[func]]
 addr = 0x80138E30
 name = "clock_tick"
+proto = "s32 clock_tick(s32 *c, s32 frames_per_second)"
 desc = "As Revenge clock_tick (0x800DA850), matched by call graph (score 2.06). Revenge: Matches World Tour clock_tick (0x8009DE70), call-graph score 2.08."
-status = "likely"
+status = "confirmed"
+port = "src/nomercy/nm_frame.cpp"
 
 [[func]]
 addr = 0x80138E80
 name = "match_flags_clear"
+proto = "void match_flags_clear(s32 *p, s32 a, s32 b)"
 desc = "As Revenge match_flags_clear (0x800D548C), matched by call graph (score 1.16). Revenge: Clears the match flags 0x800FABD8 and 0x800F97D2."
-status = "likely"
+status = "confirmed"
+port = "src/nomercy/nm_frame.cpp"
 
 [[func]]
 addr = 0x80138F54
 name = "dive_aim"
-desc = "Checked against No Mercy's code 2026-11-02: aims a dive / aerial move: flight frames from the record (+0x2FA to +0x2FB), 6 turn frames, flags_ea 0x40 / 0xC0, the location by state (0x72 / 0x75 the floor, 0x76 / 0x77 the ring, 0x79-0x7D the floor / apron with the fall per frame), then the target (dive_aim_target). As Revenge dive_aim (0x800DACE4), matched by call graph (score 0.95). Revenge: Matches World Tour dive_aim (0x800BC888), call-graph score 1.56."
-status = "likely"
+proto = "void dive_aim(struct Wrestler *w, struct Wrestler *o)"
+desc = "Aims a dive at `o`. The flight lasts from the move record's +0x12 to +0x13 frame (aux_timer, at least 1), with 6 turn frames (slide_frames); flags_ea keeps 0x08 and gets 0x40 (0xC0 from a ladder, location 0x08). By state the minimum reach and where it ends: 0x72 / 0x75 the floor (0x04, no turn 0x40), 0x73 / 0x78 100, 0x74 60, 0x76 the floor 100, 0x77 the ring 100, 0x79 / 0x7B / 0x7C into the ring (0x03; from a ladder 120 and the climb to 90 above 23.7 as step_vec.y, else 60), 0x7A / 0x7D onto the floor (0x06; from a ladder 120 and down to 23.7, else 60 and down 90), 0xC0 the floor 60. The aim is the line from point_120 to the opponent's joint by the record's aim byte, clamped by move: 272 within 512 of the corner past the side (0x8014D1F8, 480.83 out); 269 / 278 within 227 of the side's angle (0x8014D1E8) and 270 of 0x8014D208, lockup_facing turned about; 273-275 / 281 within 341 of the facing; 256 / 257 / 279 (and 261 / 262 with flags_ea 0x02) within 455 of 0x8014D208, 263 / 280 (264 with 0x02) within 1251 of 0x8014D1F8, unless from a ladder; lockup_facing takes the aim (turned about with record flag 0x08). The reach is the distance, at most twice the record's +0x02 scaled by the build (0x8014DCC0; flags_ea 0x01 when cut short) and at least the minimum; dive_target = point_120 + the reach along the aim. From a ladder the states 0x79-0x7D re-aim at a target off the ring (dive_aim_target) and pick the ring or the floor by where that lands. Decompiled 2026-11-03 (src/nomercy/nm_aerial.cpp, from the code and asm). Earlier notes: Checked against No Mercy's code 2026-11-02: aims a dive / aerial move: flight frames from the record (+0x2FA to +0x2FB), 6 turn frames, flags_ea 0x40 / 0xC0, the location by state (0x72 / 0x75 the floor, 0x76 / 0x77 the ring, 0x79-0x7D the floor / apron with the fall per frame), then the target (dive_aim_target). As Revenge dive_aim (0x800DACE4), matched by call graph (score 0.95). Revenge: Matches World Tour dive_aim (0x800BC888), call-graph score 1.56."
+status = "confirmed"
+port = "src/nomercy/nm_aerial.cpp"
 
 [[func]]
 addr = 0x8013A1A4
 name = "dive_counter"
-desc = "Checked against No Mercy's code 2026-11-02: the defender's counter to a dive: a timed press (op 2) catches it (state 0x68 dodge, or 0x4C step 3 with the roles swapped), sfx 21, stats table 1. As Revenge dive_counter (0x800DB72C), matched by call graph (score 0.93). Revenge: Matches World Tour dive_counter (0x800BD684), call-graph score 1.28."
-status = "likely"
+proto = "s32 dive_counter(struct Wrestler *d, struct Wrestler *w)"
+desc = "Whether `d` counters w's dive: not w's partner; one in a corner or the ropes (flags8a 0x02) not mid-roll (0x82) with a timed press dodges (0x68); one blocking (0x4C, under 3 frames in) or with a timed press, unless a cage escaper (flags_e9 0x01), catches it (0x4C step 3, the two paired); the counter sound and statistics either way. Decompiled 2026-11-03 (src/nomercy/nm_aerial.cpp, from the code and asm). Earlier notes: Checked against No Mercy's code 2026-11-02: the defender's counter to a dive: a timed press (op 2) catches it (state 0x68 dodge, or 0x4C step 3 with the roles swapped), sfx 21, stats table 1. As Revenge dive_counter (0x800DB72C), matched by call graph (score 0.93). Revenge: Matches World Tour dive_counter (0x800BD684), call-graph score 1.28."
+status = "confirmed"
+port = "src/nomercy/nm_aerial.cpp"
 
 [[func]]
 addr = 0x8013A2F0
 name = "dive_land_hit"
-desc = "Checked against No Mercy's code 2026-11-02: a dive landing on a2: hit_move_copy (half damage with flags_ea 0x80), a climber knocked off the ladder (0xB2), a downed target 0x63, strike_flags 0x800, the reaction by its state (ropes 0x70, lying hit ...). As Revenge dive_land_hit (0x800DB874), matched by call graph (score 0.99). Revenge: Matches World Tour dive_land_hit (0x800BD810), call-graph score 1.02."
-status = "likely"
+proto = "void dive_land_hit(struct Wrestler *w, struct Wrestler *d)"
+desc = "W's dive lands on d. On a grapple pair (0x44 / 0x48 / 0x4A the attacker, 0x45 / 0x49 / 0x4B the defender's attacker) state_flags 0x10 breaks it up. Otherwise d is paired with w (and targets w unless partners), drops its weapon and takes the move (hit_move_copy; x1.25 damage with flags_ea 0x80): on a ladder it falls off (0xB2), lying the hit while down (0x63); else strike flags 0x800 from the side it faces, 10 spirit off in a taunt, off the apron over the ropes (0x70), 0x81's catcher (0x82) passes it on, by the frame flags (0x01 knocked down 0x04, 0x08 0x02, 0x10 over the ropes) or the aftermath, else the stagger (0x2D). Decompiled 2026-11-03 (src/nomercy/nm_aerial.cpp, from the code and asm). Earlier notes: Checked against No Mercy's code 2026-11-02: a dive landing on a2: hit_move_copy (half damage with flags_ea 0x80), a climber knocked off the ladder (0xB2), a downed target 0x63, strike_flags 0x800, the reaction by its state (ropes 0x70, lying hit ...). As Revenge dive_land_hit (0x800DB874), matched by call graph (score 0.99). Revenge: Matches World Tour dive_land_hit (0x800BD810), call-graph score 1.02."
+status = "confirmed"
+port = "src/nomercy/nm_aerial.cpp"
 
 [[func]]
 addr = 0x8013D630
 name = "input_apron_moves"
-desc = "Checked against No Mercy's code 2026-11-02: from standing with the opponent on the apron / floor (0x44) at an exit segment: 0x72 (over the ropes), 0x75 with attrs +0x38 0x8000, 0xC0 at the ropes toward it; then apron_grapple_start (move 275) and the apron grapple 0x7F when the opponent is standing in the ring. As Revenge input_apron_moves (0x800DE9C0), matched by call graph (score 0.92). Revenge: Matches World Tour input_apron_moves (0x800B93F0), call-graph score 1.17."
-status = "likely"
+proto = "s32 input_apron_moves(struct WrestlerCtx *ctx)"
+desc = "A on the apron. Unless over-the-top rules (0x400): at an opponent on the floor or a raised place (0x44) from the ropes' side (+0x26 0x02) the weapon drops and the dive over the ropes (0x72); with trait 0x8000 from the apron's edge (0x04 with a way down) and the d-pad toward it the jump down onto it (0x75); at one on the floor from a raised place's edge (0x10E0 with a way down, the d-pad toward it, facing it within 80 degrees of the wall's normal) the dive from there (0xC0). Then the springboard / apron grapple apron_grapple_start allows at an opponent in the ring, from the apron's way in with the d-pad toward it, when w may act (0x77, move_num). Last, with trait 0x2000, a straight d-pad at the ropes at a downed opponent in the ring: the slingshot (0x73, dir the joint zone, weapon dropped). Decompiled 2026-11-03 (src/nomercy/nm_stand.cpp, from the code and asm). Earlier notes: Checked against No Mercy's code 2026-11-02: from standing with the opponent on the apron / floor (0x44) at an exit segment: 0x72 (over the ropes), 0x75 with attrs +0x38 0x8000, 0xC0 at the ropes toward it; then apron_grapple_start (move 275) and the apron grapple 0x7F when the opponent is standing in the ring. As Revenge input_apron_moves (0x800DE9C0), matched by call graph (score 0.92). Revenge: Matches World Tour input_apron_moves (0x800B93F0), call-graph score 1.17."
+status = "confirmed"
+port = "src/nomercy/nm_stand.cpp"
 
 [[func]]
 addr = 0x8013E108
 name = "input_leapfrog"
+proto = "s32 input_leapfrog(struct WrestlerCtx *ctx)"
 desc = "As Revenge input_leapfrog (0x800DF214), matched by call graph (score 1.46). Revenge: From stand / taunt with C-down pressed: d-pad direction; facing a runner within 512 starts state 0x89 (hop over / leapfrog the runner)."
 status = "likely"
+port = "src/nomercy/nm_stand.cpp"
+notes = "Port: partial (paths the traces have not reached yet stop a replay with NM_UNPORTED)."
 
 [[func]]
 addr = 0x8013E280
 name = "input_climb_turnbuckle"
-desc = "As Revenge input_climb_turnbuckle (0x800DF5C4), matched by call graph (score 1.03). Revenge: Matches World Tour input_climb_turnbuckle (call graph; calls can_climb_turnbuckle and the side check). With header trait 0x400000 and the opponent lying in the ring it starts state 0x66 instead: a trait-gated climb or springboard onto a downed opponent."
-status = "likely"
+proto = "s32 input_climb_turnbuckle(struct WrestlerCtx *ctx)"
+desc = "At a free corner the d-pad points at (0x8014D228 by corner). In the ring: C-down with a dive available (climb_check) climbs up for it (0x0A, move_num); A with trait 0x4000 at a downed opponent in the ring, 0x74 (weapon dropped); the stay-down input (in_byte) sits up on the corner (0x1C, or 0x1B with a weapon) unless flags_e9 0x01. On the apron, C-down with a dive available and the d-pad along it (0x8014DF6C by side) climbs the corner ahead when it is free. Decompiled 2026-11-03 (src/nomercy/nm_stand.cpp, from the code and asm)."
+status = "confirmed"
+port = "src/nomercy/nm_stand.cpp"
 
 [[func]]
 addr = 0x8013E4C4
 name = "input_cup_opponent"
-desc = "As Revenge input_cup_opponent (0x800DF99C), matched by call graph (score 1.54). Revenge: Matches World Tour input_cup_opponent (0x800BADA4), call-graph score 1.07."
-status = "likely"
+proto = "s32 input_cup_opponent(struct WrestlerCtx *ctx)"
+desc = "B held from standing: in a place shared with the opponent, a downed opponent (flags80 0x08) within 120 and facing it within a sixth of a turn gives 40 (with a weapon) or 97; a dazed or lying one (stay_flags 0x05, or flags80 0x40 without 0x200) within 120 and facing within a quarter turn gives 41; else the strike 34 (flags8a 0x80 from state 27). On the apron the strike across the ropes; up on the cage 204 at an opponent in the ring. Decompiled 2026-11-03 (src/nomercy/nm_strike.cpp, from the code and asm)."
+status = "confirmed"
+port = "src/nomercy/nm_strike.cpp"
 
 [[func]]
 addr = 0x8013E6C0
 name = "strike_across_ropes"
+proto = "void strike_across_ropes(struct WrestlerCtx *ctx)"
 desc = "As Revenge strike_across_ropes (0x800DFC8C), matched by call graph (score 1.03). Revenge: Matches World Tour strike_across_ropes (0x800BA694), call-graph score 1.13."
-status = "likely"
+status = "confirmed"
+port = "src/nomercy/nm_strike.cpp"
 
 [[func]]
 addr = 0x8013E798
-name = "taunt_stir_opponent"
-desc = "Checked against No Mercy's code 2026-11-02: A from standing / the apron wait: on the turnbuckle (0x400) state 0xCF (0x8B armed); else input_stir (the stick ground move), or the taunt 0x50 (0x1B sets flags8a 0x80). As Revenge taunt_stir_opponent (0x800A7828), matched by call graph (score 0.93). Revenge: Matches World Tour taunt_stir_opponent (0x800A5DEC), call-graph score 0.97."
-status = "likely"
+name = "input_a"
+proto = "s32 input_a(struct WrestlerCtx *ctx)"
+desc = "Renamed 2026-11-03 from taunt_stir_opponent: A held from standing (the grapple attempt 0x50, the stir, the cage / weapon moves). Checked against No Mercy's code 2026-11-02, full read for the decompilation the same day: A held from standing / the apron wait (it clears flags8a 0x80 first). Up on the cage wall / turnbuckle (location 0x400) A gives 0xCF; with a weapon 0x8B; otherwise input_stir (the ground move at a downed opponent), then with A held the grapple attempt 0x50 (from 0x1B it sets flags8a 0x80 first). So this, not input_stick, starts a grapple from standing. As Revenge input_a (0x800A7828), matched by call graph (score 0.93). Revenge: Matches World Tour input_a (0x800A5DEC), call-graph score 0.97."
+status = "confirmed"
+port = "src/nomercy/nm_stand.cpp"
 
 [[func]]
 addr = 0x8013E9C4
 name = "input_r"
+proto = "s32 input_r(struct WrestlerCtx *ctx)"
 desc = "R held from standing (buttons 0x10; code 2026-11-02, renamed from input_strike: it never tests B). In order: location 0x400 does nothing; on the apron state 0x09; holding a weapon 0x8B; at a downed opponent in the same place running_ground_attack_check gives 0x38 / 0x39; both in the ring within 120: an opponent slumped in the corner (frame_flags 0x01, not 0x02) gives 0x3A / 0x3B (pulling it out), frame_flags 0x08 gives 0x40 / 0x41; otherwise the block 0x4C. As Revenge input_strike (0x800DF3E4), matched by call graph (score 1.01). Revenge: Matches World Tour input_strike (0x800BA448), call-graph score 1.29."
-status = "likely"
+status = "confirmed"
+port = "src/nomercy/nm_stand.cpp"
 
 [[func]]
 addr = 0x8013EB58
 name = "input_l"
+proto = "s32 input_l(struct WrestlerCtx *ctx)"
 desc = "As Revenge input_l (0x800E022C), matched by call graph (score 1.49). Revenge: Matches World Tour input_l (0x800BAC04), call-graph score 1.29."
-status = "likely"
+status = "confirmed"
+port = "src/nomercy/nm_stand.cpp"
 
 [[func]]
 addr = 0x8013F538
-name = "input_grapple_attempt"
-desc = "As Revenge input_grapple_attempt (0x800E06C0), matched by call graph (score 1.46). Revenge: From stand: starts the grapple attempt 0x44 (step 3, grapple ctx 0x200000) when sub_800A94B4(w, opp, 86) holds, else state 0x17."
-status = "likely"
+name = "input_stick"
+proto = "s32 input_stick(struct WrestlerCtx *ctx)"
+desc = "The control stick pushed (1 when it acted), not up on the cage wall: with move 94 allowed (move_allowed) the weapon is dropped and 0x50 starts at step 3 with flags78 0x400000 (the taunt as a move), otherwise the taunt state 0x1B. Decompiled 2026-11-03 (src/nomercy/nm_stand.cpp, from the code and asm)."
+status = "confirmed"
+port = "src/nomercy/nm_stand.cpp"
 
 [[func]]
 addr = 0x8013F820
 name = "corner_free"
+proto = "s32 corner_free(const struct Wrestler *w)"
 desc = "As Revenge corner_free (0x800E07DC), matched by call graph (score 1.18). Revenge: Matches World Tour corner_free (0x800BB194), call-graph score 0.90."
-status = "likely"
+status = "confirmed"
+port = "src/nomercy/nm_stand.cpp"
 
 [[func]]
 addr = 0x80142730
 name = "weapon_tip_point"
-desc = "As Revenge weapon_tip_point (0x800E2230), matched by call graph (score 1.32). Revenge: Matches World Tour weapon_tip_point (0x800D8210), call-graph score 1.11."
-status = "likely"
+proto = "f32 weapon_tip_point(const struct Wrestler *w, s32 obj, struct Vec3 *out)"
+desc = "Where a held or thrown object strikes from: of its probe points (the model record's +0x2C, x negated) the nearest to and farthest from w's point_120 (in xz) give the middle (x, z) and the lowest probe the y. Returns half the distance between those two (the reach). Decompiled 2026-11-03 (src/nomercy/nm_object.cpp, from the code and asm)."
+status = "confirmed"
+port = "src/nomercy/nm_object.cpp"
 
 [[func]]
 addr = 0x80142AE4
-name = "wrestler_set_move_from"
-desc = "As Revenge wrestler_set_move_from (0x800A7D1C), matched by call graph (score 1.00). Revenge: Selects move slot a2 of the wrestler move set (+902) and unpacks its record (texture_stamp_by_class, 24-byte table at 0x8007BD78) into +908."
-status = "likely"
+name = "move_texture_stamp"
+proto = "void move_texture_stamp(struct Wrestler *w, struct Wrestler *other)"
+desc = "Renamed 2026-11-03 from wrestler_set_move_from (a Revenge call-graph name): the texture stamp of a move. Read for the decompilation 2026-11-02: not a move setter (the name is a Revenge call-graph match, kept). A texture stamp: 7 frames after the move player's frame anim_player[0x15] of a move with anim_player[0x14] set, it stamps the move's texture class (texture_stamp_by_class) on the opponent's model (blood / sweat). Rendering only; the decompilation's oracle keeps it a no-op. Revenge: move_texture_stamp (0x800A7D1C), the same stamp."
+status = "confirmed"
+port = "src/nomercy/nm_grapple.cpp"
 
 [[func]]
 addr = 0x80142E24
 name = "wrestler_move_anim"
+proto = "s32 wrestler_move_anim(const struct Wrestler *w, s32 carry)"
 desc = "As Revenge wrestler_move_anim (0x800D5438), matched by call graph (score 1.23). Revenge: Animation id for part a2 of the current move: move set table at 0x8007C5B8 (1536 bytes per set) + 4363."
-status = "likely"
+status = "confirmed"
+port = "src/nomercy/nm_walk.cpp"

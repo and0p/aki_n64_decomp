@@ -687,7 +687,7 @@ status = "guess"
 
 [[func]]
 addr = 0x800A5DEC
-name = "taunt_stir_opponent"
+name = "input_a"
 desc = "Taunting next to a lying opponent: 30 % chance it stirs (3052, 3053 face down) and goes to the down state step 4."
 status = "confirmed"
 

@@ -179,7 +179,7 @@ Function and field details are in `symbols/nomercy/` (`match.toml`, `types.h`); 
 - **Clock.** `match_clock_tick`: time limits 5 / 10 / 15 / 30 / 60 minutes, then a draw (or, under
   one match type, end by falls: ironman?); after 10 minutes a run-in roll each minute.
 - **CPU.** AI mode 0 runs `ai_choose_mode`, which picks the next mode from about 15 situation
-  checks; `ai_can_act` gates starting one. Each mode plays the pad: it writes the buttons to its
+  checks; `ai_press_focus_switch` gates starting one. Each mode plays the pad: it writes the buttons to its
   AI block (+0x0C), so a mode's code shows what it does. Profiled families: grapple (A), strike
   (B), defend / counter (R, L by chance), walk (d-pad), run and runner responses (C-down),
   ground actions by a downed opponent (C-left / C-down / A in situation 53), lock-up move choice,
@@ -261,6 +261,15 @@ functions read in full) the whole database stands at 258 `confirmed`, 868 `likel
 (engine, graphics, audio, file loading; 975 functions) is mostly unnamed (228 named).
 
 ## Next
+
+- **Decompilation** (started 2026-11-02, `src/nomercy/README.md`): a faithful C-style C++17 translation of
+  the match overlay, checked frame by frame against emulator traces (`tools/trace/`). Walking and
+  running, model_animate (the main segment's posing, `animation_data.md` "Posing"), strikes, the
+  grapple attempt and lock-up, front and rear moves, the down / get-up states, the pin from a move
+  the cover from standing and a finished fall (the three, match_end's results bookkeeping, the end
+  phases, the winner's pose, the results copy) all replay exactly: a singles match end to end (295
+  functions, 244 complete; the symbol files carry their C prototypes as `proto` and
+  `status = "confirmed"`). Next: holds, the other lock-up kinds, the other fall causes, then the CPU.
 
 - The open items per system are in each doc's **Open** list and in `QUESTIONS.md` ("No Mercy", including the RAM
   follow-ups). Code first: RAM only when an item is truly blocked.

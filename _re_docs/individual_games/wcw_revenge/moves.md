@@ -9,7 +9,7 @@ emulator (`akiemu --game revenge`) and the move lists of the SayainPrince GameFA
 
 | What | File | RAM | Size |
 |------|------|-----|------|
-| Global moves (generic slots, `wrestler_set_move_from`) | 294 | `0x8007BD78` | 1440 = 60 x 24 |
+| Global moves (generic slots, `move_texture_stamp`) | 294 | `0x8007BD78` | 1440 = 60 x 24 |
 | Reversal tables, one per match slot | 295-298 | `0x80064AE0` + 0x190 x slot | 400 |
 | Per-wrestler header | base + 0 | `0x800705A0` + 0x40 x slot | 64 |
 | Per-wrestler move records | base + 1 | `0x80075478` + 6704 x slot | **279 x 24**, with no 8-byte prefix (World Tour: 8 + 222 x 24) |

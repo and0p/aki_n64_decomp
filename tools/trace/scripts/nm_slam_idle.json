@@ -1,0 +1,10 @@
+{
+ "game": "nomercy",
+ "state": "_tools/libretro/states/nm_p2_about_to_be_slammed_down.state",
+ "note": "Exploration only: no input after the slam, to see where P2 lies and how long. Not a CTest trace.",
+ "steps": [
+  {
+   "frames": 300
+  }
+ ]
+}
