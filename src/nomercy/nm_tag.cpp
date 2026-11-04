@@ -93,7 +93,27 @@ void place_from_zone_pair(Wrestler *w, Wrestler *other) {
 // (state_flags 0x04) slides the CPU over 15 frames to 56.57 in front of the corner it faces
 // (0x8014D1A8 / 0x8014D208 by dir) and turns it to that corner's angle; otherwise place_from_zone
 // (15 frames, 40 in front of the wall, 50 for a cage whip, state_flags 0x10).
-void pair_scripted_place(Wrestler *w, Wrestler *other) {
+// The last part of pair_scripted_place: `frames` frames to `target` (at the wrestler's own height), turned to `face`.
+static void slide_to_target(Wrestler *w, Vec3 target, s32 face, s32 frames) {
+    wrestler_move_pos_to_pelvis(w);
+    target.y = w->pos.y;
+    slide_vector(w, &w->pos, &target, frames);
+    w->count_timer = (u16)frames;
+    w->turn_step = angle_diff(face, w->facing) / frames;
+}
+
+// The same, with the target at `off` from `base` along the angle `along`.
+static void slide_to_offset(Wrestler *w, const Vec3 &base, const Vec3 &off, s32 along, s32 face, s32 frames) {
+    Vec3 target;
+    wrestler_move_pos_to_pelvis(w);
+    point_at_offset(&base, &off, along, &target);
+    target.y = w->pos.y;
+    slide_vector(w, &w->pos, &target, frames);
+    w->count_timer = (u16)frames;
+    w->turn_step = angle_diff(face, w->facing) / frames;
+}
+
+void pair_scripted_place(Wrestler *w, Wrestler *other, u16 dpad) {
     if (w->state == state::DropDown) {
         // Dropping off the apron or a raised place: 6 frames to 30 in front of the wall (55 from
         // the ring), turned to face away from it; from the cage wall place_from_zone_pair.
@@ -232,8 +252,132 @@ void pair_scripted_place(Wrestler *w, Wrestler *other) {
         place_from_zone(w, 8, 2048, 55.0f);
         return;
     }
-    if (w->state != state::IrishWhipAttacker)
-        NM_UNPORTED("pair_scripted_place: a state other than the whip (0x0B), the drop (0x6E) or the grab (0x8A)");
+    switch (w->state) {
+    case state::RopesLockupPushFromRingAttacker:
+    case state::RopesLockupPushFromApronAttacker: {
+        // Across the ropes: stays put but for the d-pad's way along the side, kept within 125 of its middle.
+        Vec3 t = w->point_120;
+        if (w->dir == 0 || w->dir == 2) {
+            if ((dpad & 0x200) && (f64)t.x < -125.0)
+                t.x = -125.0f;
+            if ((dpad & 0x100) && 125.0 < (f64)t.x)
+                t.x = 125.0f;
+        } else if (w->dir == 1 || w->dir == 3) {
+            if ((dpad & 0x400) && (f64)t.z < -125.0)
+                t.z = -125.0f;
+            if ((dpad & 0x800) && 125.0 < (f64)t.z)
+                t.z = 125.0f;
+        } else {
+            return;
+        }
+        slide_to_target(w, t, w->facing, w->anim_player[4]);
+        return;
+    }
+    case state::CornerTaunt: {
+        // At its corner, 8 frames out: facing the corner when the move has 0x18, else out of it.
+        u32 c = 0x8014D1A8 + 12u * (u32)w->dir;
+        Vec3 base = {mem_f32(c), 0.0f, mem_f32(c + 8)};
+        s32 along = mem_s32(0x8014D208 + 4u * (u32)w->dir);
+        s32 face = (mem_u32(w->move + 0x20) & 0x18) ? along : mem_s32(0x8014D1F8 + 4u * (u32)w->dir);
+        slide_to_offset(w, base, {0.0f, 0.0f, 73.5391083f}, along, face, 8);
+        return;
+    }
+    case state::CornerPullDownAttacker:
+    case state::CornerPlaceOnTopAttacker: {
+        // 12 frames to 40 from the other, on the side it faces (flags8a 0x01 behind it).
+        Vec3 base = {other->pos.x, 0.0f, other->pos.z};
+        Vec3 off = {0.0f, 0.0f, 40.0f};
+        if (other->flags8a & 1)
+            slide_to_offset(w, base, off, angle_add(other->facing, 2048), other->facing, 12);
+        else
+            slide_to_offset(w, base, off, other->facing, angle_add(other->facing, 2048), 12);
+        return;
+    }
+    case state::YankDownAttacker:
+        slide_to_offset(w, {other->pos.x, 0.0f, other->pos.z}, {0.0f, 0.0f, 40.0f}, other->facing, angle_add(other->facing, 2048), 12);
+        return;
+    case state::RopeTaunt:
+        place_from_zone(w, 7, 2048, 47.0f);
+        return;
+    case state::ApronMove:
+        place_from_zone(w, 7, 2048, 50.0f);
+        return;
+    case state::AerialAttackAtDownedOpponent: {
+        u32 c = 0x8014D1A8 + 12u * (u32)w->dir;
+        Vec3 base = {mem_f32(c), mem_f32(c + 4), mem_f32(c + 8)};
+        slide_to_offset(w, base, {0.0f, 0.0f, 73.5391083f}, mem_s32(0x8014D208 + 4u * (u32)w->dir), mem_s32(0x8014D1F8 + 4u * (u32)w->dir), 7);
+        return;
+    }
+    case state::RearLiftAttacker:
+        // state_counter 0x10 / 0x08: to the barrier's line at this zone, or the other's. Else 53.5 from it, facing as it does.
+        if (w->state_counter & 0x10) {
+            slide_to_target(w, {w->point_120.x, 0.0f, 266.5f}, mem_s32(A_SIDE_FACING + 4u * (u32)w->ring_zone), 6);
+        } else if (w->state_counter & 8) {
+            slide_to_target(w, {other->point_120.x, 0.0f, 193.5f}, mem_s32(0x8014D1D8 + 4u * (u32)other->ring_zone), 6);
+        } else {
+            slide_to_offset(w, {other->point_120.x, 0.0f, other->point_120.z}, {0.0f, 0.0f, 53.5f}, angle_add(other->facing, 2048), other->facing, 6);
+        }
+        return;
+    case state::RearLiftDefender:
+        if (other->state_counter & 0x10) {
+            slide_to_target(w, {other->pos.x, 0.0f, 193.5f}, mem_s32(A_SIDE_FACING + 4u * (u32)other->ring_zone), 6);
+        } else if (other->state_counter & 8) {
+            slide_to_target(w, {w->point_120.x, 0.0f, 266.5f}, mem_s32(0x8014D1D8 + 4u * (u32)w->ring_zone), 6);
+        } else {
+            slide_to_offset(w, {other->pos.x, 0.0f, other->pos.z}, {0.0f, 0.0f, 73.0f}, other->facing, other->facing, 6);
+        }
+        return;
+    case state::CatchFlyerDefender: {
+        // Caught off a corner: 6 frames to just inside or outside the corner by the catcher's flags78 0x80.
+        bool out = (other->flags78 & 0x80) != 0;
+        f32 d = out ? 229.15f : 230.85f;
+        s32 face = mem_s32((out ? 0x8014D1F8 : 0x8014D208) + 4u * (u32)w->dir);
+        Vec3 t = {0.0f, 0.0f, 0.0f};
+        switch (w->dir) {
+        case 0: t.x = d; t.z = d; break;
+        case 1: t.x = d; t.z = -d; break;
+        case 2: t.x = -d; t.z = -d; break;
+        case 3: t.x = -d; t.z = d; break;
+        default: return;
+        }
+        slide_to_target(w, t, face, 6);
+        return;
+    }
+    case state::TagOut: {
+        // 12 frames to 80 from the partner: at its side of the apron, from step 2 at its corner.
+        Vec3 base = other->point_120;
+        Vec3 off = {0.0f, 0.0f, 80.0f};
+        if (w->state_step < 2)
+            slide_to_offset(w, base, off, mem_s32(A_SIDE_FACING + 4u * (u32)other->ring_zone), mem_s32(0x8014D1D8 + 4u * (u32)other->ring_zone), 12);
+        else
+            slide_to_offset(w, base, off, mem_s32(0x8014D208 + 4u * (u32)other->dir), mem_s32(0x8014D1F8 + 4u * (u32)other->dir), 12);
+        return;
+    }
+    case state::RunningGrappleDefender: {
+        // 6 frames, placed by the move's side byte (+0x17), move 104 from farther in front.
+        s32 side = mem_s8(other->move + 0x17);
+        Vec3 off = {0.0f, 0.0f, 0.0f};
+        if (side == 0) {
+            off.z = other->move_num == 104 ? 100.0f : 70.0f;
+        } else if (side == 1 || side == 2) {
+            off.x = side == 1 ? 33.0f : -33.0f;
+            off.z = 52.0f;
+        }
+        s32 face = angle_add(other->facing, (other->flags78 & 0x80) ? 0 : 2048);
+        slide_to_offset(w, {other->pos.x, 0.0f, other->pos.z}, off, other->facing, face, 6);
+        return;
+    }
+    case state::CageClimbStart:
+        place_from_zone(w, 8, 2048, 60.0f);
+        return;
+    case state::DragAttacker:
+        place_from_zone(w, 15, 0, 50.0f);
+        return;
+    case state::IrishWhipAttacker:
+        break;
+    default:
+        return;
+    }
     if (other->state_flags & 4) {
         u32 c = 0x8014D1A8 + 12u * (u32)w->dir;
         Vec3 base = {mem_f32(c), mem_f32(c + 4), mem_f32(c + 8)};
@@ -303,7 +447,7 @@ void tag_exchange(Wrestler *a, Wrestler *b, s32 at_step2) {
 // partner. The legal man in the ring tags a partner who is on its own apron quarter (apron_side_ok)
 // within 130: when the partner holds its hand out (idle_flags 0x08) and the d-pad held points at the
 // partner's apron side, or (idle_flags 0x10) the d-pad holds both bits toward the own corner (then
-// from step 2). Otherwise (the partner, or the legal man outside) a wrestler on its own apron quarter
+// from step 2). Otherwise (only the partner: the legal man never tags from outside) a wrestler on its own apron quarter
 // within 130 of the partner tags it when the partner stands (0x01) in the ring and this one is on
 // the apron, or perched on the corner (0x0A, from step 2).
 s32 tag_try_partner(WrestlerCtx *ctx) {
@@ -315,25 +459,21 @@ s32 tag_try_partner(WrestlerCtx *ctx) {
     if (w->partner == w->slot)
         return 0;
     Wrestler *p = &g_wrestlers[w->partner];
-    if (w->location & 1) {
-        if (w->flags_e9 & 0x10) {
-            if (apron_side_ok(p) && dist_between(w, p)) {
-                if ((p->idle_flags & 8) && (mem_u16(A_SIDE_DPAD + 2u * (u32)p->ring_zone) & ctx->buttons)) {
-                    tag_exchange(w, p, 0);
-                    return 1;
-                }
-                if (p->idle_flags & 0x10) {
-                    u16 want = mem_u16(A_CORNER_DPAD + ((w->flags_e9 & 0x20) ? 0u : 4u));
-                    if ((want & ctx->buttons) == want) {
-                        tag_exchange(w, p, 1);
-                        return 1;
-                    }
-                }
+    if ((w->location & 1) && (w->flags_e9 & 0x10) && apron_side_ok(p) && dist_between(w, p)) {
+        if ((p->idle_flags & 8) && (mem_u16(A_SIDE_DPAD + 2u * (u32)p->ring_zone) & ctx->buttons)) {
+            tag_exchange(w, p, 0);
+            return 1;
+        }
+        if (p->idle_flags & 0x10) {
+            u16 want = mem_u16(A_CORNER_DPAD + ((w->flags_e9 & 0x20) ? 0u : 4u));
+            if ((want & ctx->buttons) == want) {
+                tag_exchange(w, p, 1);
+                return 1;
             }
-            if (w->flags_e9 & 0x10)
-                return 0;
         }
     }
+    if (w->flags_e9 & 0x10)
+        return 0;
     if (!apron_side_ok(w))
         return 0;
     if (!dist_between(w, p))

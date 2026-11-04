@@ -661,6 +661,20 @@ emulator with recorded traces (`dump.py`):
     tag help time option (0x800AA04E) are not read yet.
   - `pair_scripted_place` (0xDC4 bytes) is not decompiled; 0x94 and about 30 paired states use it.
 
+- AI port and the 4-CPU match (2026-11-03): 106 of the 145 modes are now ported; 22 functions (about 0x5E00
+  bytes, modes 4 / 5, 11-14, 36, 37, 63-67, 77-85, 91, 96-99, 103, 110, 117, 118, 120, 127-129, 133, 135, 139, 141)
+  are left and still stop a replay by number. All key-frame chunks of `nm_4_fighters_all_cpu` k0000-k0009 replay with
+  no skips and identical states and AI blocks (6,180 frames, each stepped from the recorded frame before it). That run found and fixed:
+  - `tag_try_partner`: the legal man outside the ring never tags (the check applied only inside the ring).
+  - `move_across_ropes_follow`: pair_follow takes mask 0x300 / 0xC00 by dir and joints 0xFFFFE, not (0, 2).
+  - `strike_land`: a hit on a slumped wrestler (strike 0x20000) sets hit_flags 0x04; 0x20 makes it 0x0C.
+  - `pair_scripted_place` is now complete, with the third argument (the d-pad, for states 0x11 / 0x13) the IDA draft
+    drops. Its callers in state 0x11 are not ported yet.
+  - Renamed `ai_behind_opponent` to `ai_ground_move_needs_pickup`: it picks the ground move slot by side and asks
+    whether the moveset marks it 0x200 or it is move 2843. Mode 23 is now `GrappleUnlessPickUpMove`.
+  Open: in k0004 from frame 64, 28 frames of object 4's model record lag the recording by one frame (the object record
+  itself matches). It looks like the order the held object's model is updated in. It does not affect game state.
+
 ## World Tour: outside the match code
 
 - The default button bindings at `0x80061FF8` (set by the options menu). (`frame_loop.md`)

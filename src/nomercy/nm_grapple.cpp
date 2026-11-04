@@ -1669,7 +1669,8 @@ s32 move_chain_check(WrestlerCtx *ctx) {
 
 // The place bits a move's record sets by the player's end place (byte 6: 1 ring, 2 floor, 3
 // apron) while the pair moves across the ropes (flags78 0x600), with pair_follow at scale 6 past
-// the player's frame 0x15, else in the ring at scale 4 keeping flags80.
+// the player's frame 0x15, else in the ring at scale 4 keeping flags80. Bounds are free along the
+// ropes' side: mask 0x300, or 0xC00 for dir 1 and 3.
 void move_across_ropes_follow(WrestlerCtx *ctx) {
     Wrestler *w = ctx->self;
     u8 place = w->anim_player[AP_END_PLACE];
@@ -1681,12 +1682,13 @@ void move_across_ropes_follow(WrestlerCtx *ctx) {
         w->location = (w->location & 0xF800) | 2;
     if (w->anim_player[AP_END_PLACE] == 2)
         w->location = (w->location & 0xF800) | 4;
+    u16 mask = (w->dir & 1) ? 0xC00 : 0x300;
     if (!(w->anim_frame < w->anim_player[0x15])) {
-        pair_follow(w, ctx->rec_a, nullptr, 6.0f, 0, 2);
+        pair_follow(w, ctx->rec_a, nullptr, 6.0f, mask, 0xFFFFE);
     } else {
         u16 f80 = w->flags80;
         w->location = (w->location & 0xF800) | 1;
-        pair_follow(w, ctx->rec_a, nullptr, 4.0f, 0, 2);
+        pair_follow(w, ctx->rec_a, nullptr, 4.0f, mask, 0xFFFFE);
         w->flags80 = f80;
     }
 }
@@ -2205,8 +2207,10 @@ void state_7F_rear_lift(WrestlerCtx *ctx) {
     switch (w->state_step) {
     case 0:
         w->flags80 |= 1;
-        if ((w->flags78 & 0x180) == 0x180)
-            NM_UNPORTED("state_7F_rear_lift: the slide into place (pair_scripted_place, state 0x7F)");
+        if ((w->flags78 & 0x180) == 0x180) {
+            w->state_counter |= 0x20;
+            pair_scripted_place(w, o);
+        }
         wrestler_set_anim(w, (w->flags78 & 0x20) ? 12635 : 12641, 2);
         w->state_step++;
         [[fallthrough]];
@@ -2285,11 +2289,15 @@ void state_80_carried_escape(WrestlerCtx *ctx) {
     Wrestler *o = ctx->rec_a;
     switch (w->state_step) {
     case 0:
-        if (o->flags78 & 0x20)
-            NM_UNPORTED("state_80_carried_escape: the apron lift's slide (pair_scripted_place, state 0x80)");
-        wrestler_set_anim(w, 12642, 6);
-        w->state_step = 2;
-        return;
+        if (!(o->flags78 & 0x20)) {
+            wrestler_set_anim(w, 12642, 6);
+            w->state_step = 2;
+            return;
+        }
+        pair_scripted_place(w, o);
+        wrestler_set_anim(w, o->anim_id + 1, 2);
+        w->state_step++;
+        [[fallthrough]];
     case 1:
         if (pair_slide_step(w, nullptr))
             w->state_step++;

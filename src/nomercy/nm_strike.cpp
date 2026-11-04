@@ -1283,8 +1283,8 @@ void strike_land(Wrestler *w, s32 target, u32 flags) {
         return;
     }
     sf = d->strike_flags;
-    if ((sf & 0x20000) && (sf & 0x20))
-        d->hit_flags |= 0xC;
+    if (sf & 0x20000)
+        d->hit_flags |= (sf & 0x20) ? 0xC : 4;
     if ((sf & 0x40000) && !(d->hit_flags & 1))
         d->hit_flags |= 2;
     if ((sf & 0x400000) && (mem_u16(d->grab_zone_info + 40) & 4)) {

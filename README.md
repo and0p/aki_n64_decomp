@@ -22,9 +22,9 @@ As of writing, No Mercy has been roughly 65% decompiled with annotations and par
 * Eventually, a port using modern game architecture can be built much easier using this annotated decomp than by comparing the original byte code. In a way this repo contains the first very large step in supporting that type of project.
 
 ## Contributing
-This approach to decompilation is WIP, so the approach is being actively explored still and .
+This approach to decompilation is WIP, so collaboration will be a little tough. Once No Mercy is closer to 100% I can solidify the project structure and open other games up to collaborates.
 
-As of writing the annotated decomp is going well but slowly, and a $100/month Claude subscription is being churned through pretty quickly -- a the weekly limit is hit in about 3 days.
+As of writing the annotated decomp is going well but slowly, and a $100/month Claude subscription is being churned through pretty quickly -- the weekly limit is hit in about 3 days. If you want me to churn through this a little faster throw me some money on [kofi](https://ko-fi.com/apdecomp).
 
 
 ## Future port

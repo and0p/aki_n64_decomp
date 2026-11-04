@@ -1025,11 +1025,10 @@ port = "src/nomercy/nm_run.cpp"
 [[func]]
 addr = 0x80134420
 name = "pair_scripted_place"
-proto = "void pair_scripted_place(struct Wrestler *w, struct Wrestler *other)"
+proto = "void slide_to_target(struct Wrestler *w, struct Vec3 target, s32 face, s32 frames)"
 desc = "Places a wrestler for a scripted paired animation against another, by its state (0xDC4 bytes; the whip, state 0x0B, and the drop, 0x6E, are decompiled): an opponent whipped into a corner (state_flags 0x04) slides the CPU over 15 frames to 56.57 in front of the corner it faces (0x8014D1A8 / 0x8014D208 by dir) and turns it to that corner's angle; otherwise place_from_zone (15 frames, 40 in front of the wall, 50 for a cage whip, state_flags 0x10). Decompiled 2026-11-03 (src/nomercy/nm_tag.cpp, from the code and asm)."
-status = "likely"
+status = "confirmed"
 port = "src/nomercy/nm_tag.cpp"
-notes = "Port: partial (paths the traces have not reached yet stop a replay with NM_UNPORTED)."
 
 [[func]]
 addr = 0x801356A4

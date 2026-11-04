@@ -148,6 +148,9 @@ void state_unported(WrestlerCtx *ctx) {
 
 StateHandler state_handler(s32 state) {
     switch (state) {
+    case state::SlumpedInCorner: return state_18_corner_slump;
+    case state::ApronDodge: return state_09_apron_dodge;
+    case state::StrikeAtOpponentSlumpedInCorner: return state_2B;
     case state::Standing: return state_01_stand;
     case state::Running: return state_03_run;
     case state::RunningRopeRebound: return state_04_run_rebound;

@@ -79,8 +79,9 @@ port = "src/nomercy/nm_run.cpp"
 addr = 0x800E638C
 name = "state_09_apron_dodge"
 proto = "void state_09_apron_dodge(struct WrestlerCtx *ctx)"
-desc = "Confirmed 2026-11-02: the setter read from code and Andrew's animation tags agree. On the apron, dodging back while holding the ropes (11876) (Andrew's viewer tags, 2026-11-02). Handler for state 0x09 in No Mercy's table (0x80144CF0). Name from its Revenge match state_09 (0x8009F774), unchecked. As Revenge state_09 (0x8009F774), matched by call graph (score 1.28). Revenge: Handler for Revenge state 0x09; World Tour state 0x08 (state_08) by the state-table alignment (README)."
+desc = "On the apron, dodging back: anim 11876, then standing. Decompiled 2026-11-03 (src/nomercy/src/nomercy/nm_stand.cpp, from the code and asm)."
 status = "confirmed"
+port = "src/nomercy/nm_stand.cpp"
 
 [[func]]
 addr = 0x8013A9D4
@@ -166,8 +167,9 @@ port = "src/nomercy/nm_down.cpp"
 addr = 0x8010E9E8
 name = "state_18_corner_slump"
 proto = "void state_18_corner_slump(struct WrestlerCtx *ctx)"
-desc = "Checked 2026-11-02: corner_place, sets frame_flags 0x01 (slumped in the corner, which input_l / input_r test), escape_time / mash_count / recover_tick to get out; entered from run_step for a whipped runner in a free corner. Handler for state 0x18 in No Mercy's table (0x80144CF0). Name from its Revenge match state_14_corner_slump (0x8009FCBC), unchecked. As Revenge state_14_corner_slump (0x8009FCBC), matched by call graph (score 0.93). Revenge: Handler for Revenge state 0x14; matches World Tour state 0x13 (state_13_corner_slump) by shared animations and constants and its place in the table. Entered through the state setters from: state_35, sub_800ED6E8."
+desc = "Slumped in a corner after being run into it: turned to the corner's facing (a move 13 hit once the fall anim ends), then held by the escape count (frame_flags 0x05) until recover_tick lets it stand; a finished elimination falls instead. flags86 0x40 face-up takes the short slide (12060) with step 6. Decompiled 2026-11-03 (src/nomercy/src/nomercy/nm_run.cpp, from the code and asm)."
 status = "confirmed"
+port = "src/nomercy/nm_run.cpp"
 
 [[func]]
 addr = 0x8010EC90
@@ -281,8 +283,9 @@ status = "confirmed"
 addr = 0x801244C0
 name = "state_2B"
 proto = "void state_2B(struct WrestlerCtx *ctx)"
-desc = "Confirmed 2026-11-02: setter conditions (state_22_strike / run_inputs / run_step / state_4F / strike_land, read from code) and the handler (its move and hit test) agree. Own moves 176 / 177 (with a direction). Strike at an opponent slumped in the corner (its frame_flags 0x01), from state_22_strike. From code (state_22_strike, 2026-11-01). Handler for state 0x2B in No Mercy's table (0x80144CF0). Entered through the state setters from: state_22_strike."
+desc = "The strike with move 0xB0 (0xB1 for a press_kind 0x20): swings until it lands (strike_land with 0x1000). Decompiled 2026-11-03 (src/nomercy/src/nomercy/nm_strike.cpp, from the code and asm)."
 status = "confirmed"
+port = "src/nomercy/nm_strike.cpp"
 
 [[func]]
 addr = 0x801245F0
@@ -809,7 +812,6 @@ proto = "void state_7F_rear_lift(struct WrestlerCtx *ctx)"
 desc = "State 0x7F, the lift from behind (paired with 0x80): step 0 flags80 0x01, animation 12641 (12635 from the apron, flags78 0x20; with flags78 0x180 the slide into place first). Step 1: when the lift is up, the hold distance (0x80159240 by slot) and the carry animation 12643 / 12637. Step 2: off the apron flags80 0x240; while the opponent is held (0x80) the walk (hold_for_partner_walk), R or an interruption ends it (state_flags 0x01, then 0x04 and the step back), else unpaired and on. Step 3: the end animation (12639 from the apron; 12647, or 12645 / 12647 by state_flags 0x01 with the opponent still held), then the events with flags80 0x01. Decompiled 2026-11-03 (src/nomercy/nm_grapple.cpp, from the code and asm)."
 status = "confirmed"
 port = "src/nomercy/nm_grapple.cpp"
-notes = "Port: partial (paths the traces have not reached yet stop a replay with NM_UNPORTED)."
 
 [[func]]
 addr = 0x8011A06C
@@ -818,7 +820,6 @@ proto = "void state_80_carried_escape(struct WrestlerCtx *ctx)"
 desc = "State 0x80, lifted from behind (paired with 0x7F). Step 0: from the apron (the lifter's flags78 0x20) the slide into place, else the struggle 12642 and step 2. Step 2: when the lift is up, the lifter's animation + 1, the escape time (escape_time op 5, 1.5 times against a strong hold) and the mash count reset. Step 3: off the apron flags80 0x280; while the lifter holds (0x7F): its state_flags 0x04 steps back, else mashing (recover_tick) breaks out (escape 0 with the stick held, else the lifter's state_flags 0x02), kept in bounds off the apron; when it lets go, on. Step 4: the end animation (12640 from the apron; 12648, 12646 when the lifter has state_flags 0x01), then the events with flags80 0x01. Decompiled 2026-11-03 (src/nomercy/nm_grapple.cpp, from the code and asm)."
 status = "confirmed"
 port = "src/nomercy/nm_grapple.cpp"
-notes = "Port: partial (paths the traces have not reached yet stop a replay with NM_UNPORTED)."
 
 [[func]]
 addr = 0x80125190

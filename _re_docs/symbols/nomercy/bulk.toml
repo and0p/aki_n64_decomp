@@ -1087,8 +1087,10 @@ port = "src/nomercy/nm_ai.cpp"
 [[func]]
 addr = 0x80100850
 name = "ai_ground_move_needs_pickup"
-desc = "Renamed from ai_behind_opponent (2026-11-03). For an opponent on the mat (flags80 0x08), the CPU's ground move by side, flags8a 0x01 and flags80 0x10 through 0x80145D74: 1 when the moveset marks that slot 0x200 or its animation is move 2843."
-status = "likely"
+proto = "s32 ai_ground_move_needs_pickup(void)"
+desc = "For an opponent on the mat (flags80 0x08): the CPU's ground move from where it stands, chosen by the side (under 1024 of the opponent's facing), flags8a 0x01 and flags80 0x10 through 0x80145D74. 1 when the moveset marks that slot 0x200 or its animation is move 2843; such a move starts from a pick-up instead. Renamed from ai_behind_opponent. Decompiled 2026-11-03 (src/nomercy/src/nomercy/nm_ai.cpp, from the code and asm)."
+status = "confirmed"
+port = "src/nomercy/nm_ai.cpp"
 
 [[func]]
 addr = 0x801011E4
@@ -1213,14 +1215,18 @@ port = "src/nomercy/nm_ai.cpp"
 [[func]]
 addr = 0x80105F14
 name = "ai_apron_react"
-desc = "On the apron: with chance skill + spirit reacts to a strike (modes 46 / 47 by trait attrs +35) or a grapple attempt."
-status = "likely"
+proto = "s32 ai_apron_react(void)"
+desc = "On the apron, a roll of skill + spirit: at a running opponent (8) mode 46 or 47 by trait 35, at a striking one (11) mode 21 or 42 by trait 36. 1 when a mode was set. Decompiled 2026-11-03 (src/nomercy/src/nomercy/nm_ai.cpp, from the code and asm)."
+status = "confirmed"
+port = "src/nomercy/nm_ai.cpp"
 
 [[func]]
 addr = 0x80106210
 name = "ai_go_outside_steps"
-desc = "Steps of mode 62: through the ropes by zone, then on."
-status = "likely"
+proto = "s32 ai_go_outside_steps(void)"
+desc = "Mode 62's way through the ropes (AI_TIMER the step; attrs +0x38 0x04): C-down along the side whose corner is farther from the opponent's line, then at the rebound A / B. 0 when the CPU is doing something else. Decompiled 2026-11-03 (src/nomercy/src/nomercy/nm_ai.cpp, from the code and asm)."
+status = "confirmed"
+port = "src/nomercy/nm_ai.cpp"
 
 [[func]]
 addr = 0x80106C7C
@@ -1232,15 +1238,17 @@ status = "likely"
 addr = 0x80107584
 name = "ai_struggle_rate"
 proto = "f32 ai_struggle_rate(u32 b)"
-desc = "Mash rate for struggles: 0.75 (health < 65), 0.65 (< 129) or 0.55, + (spirit * 16 / 100 - 8) x a constant. Decompiled 2026-11-03 (src/nomercy/nm_ai.cpp, from the code and asm; its comment there has the full reading)."
+desc = "How hard the CPU mashes out of a struggle: 0.75 at perceived health under 65, 0.65 under 129, 0.55 above, plus (spirit x 16 / 100 - 8) x 0.01. Decompiled 2026-11-03 (src/nomercy/src/nomercy/nm_ai.cpp, from the code and asm)."
 status = "confirmed"
 port = "src/nomercy/nm_ai.cpp"
 
 [[func]]
 addr = 0x80108A34
 name = "ai_run_time"
-desc = "Frames to run to a ring side (ai_side_distance / walk_speed)."
-status = "likely"
+proto = "s32 ai_run_time(s32 walk_frames)"
+desc = "How long to wait before running at a runner headed for the ring side: its frames to that side past 100 (+18), plus its frames to come back over 460 less the reach (AI_LISTS +0x68) and 30, less the walk time and the list's +0x6C. Decompiled 2026-11-03 (src/nomercy/src/nomercy/nm_ai.cpp, from the code and asm)."
+status = "confirmed"
+port = "src/nomercy/nm_ai.cpp"
 
 # Match-code helpers 0x80110000-0x80150000 named in one pass (2026-11-02); most `guess`.
 
@@ -2999,7 +3007,7 @@ status = "likely"
 [[func]]
 addr = 0x8010EEE8
 name = "corner_place"
-proto = "void corner_place(struct Wrestler *w, s32 dir, s32 set_facing)"
+proto = "s32 corner_place(struct Wrestler *w, s32 dir, s32 set_facing)"
 desc = "At corner `dir`: pos from 0x80146130 face down, 0x80146100 face up; with `set_facing` also the corner's facing (0x8014D1F8, 0x8014D208). Decompiled 2026-11-03 (src/nomercy/nm_run.cpp, from the code and asm)."
 status = "confirmed"
 port = "src/nomercy/nm_run.cpp"

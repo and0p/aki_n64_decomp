@@ -205,7 +205,7 @@ s32 lockup_place_move(WrestlerCtx *ctx);
 
 // ---- nm_tag.cpp ----
 s32 wrestler_slide_b(Wrestler *w, f32 scale);
-void pair_scripted_place(Wrestler *w, Wrestler *other);
+void pair_scripted_place(Wrestler *w, Wrestler *other, u16 dpad = 0);
 s32 pair_slide_step(Wrestler *w, Wrestler *other);
 void wrestler_move_pos_to_pelvis(Wrestler *w);
 void place_from_zone(Wrestler *w, s32 frames, s32 angle, f32 dist);

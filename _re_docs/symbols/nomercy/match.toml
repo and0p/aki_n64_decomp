@@ -461,9 +461,8 @@ addr = 0x801112F0
 name = "run_collide"
 proto = "s32 run_collide(struct Wrestler *w, s32 mode, u16 held)"
 desc = "What a running wrestler hits (from code 2026-11-02). Another runner (flags80 0x20): both bounce into 0x05, or from the apron both are knocked down (0x2D). A blocker facing it (0x4C / 0x4D): runner 0x05, blocker 0x4D at step 2. With a charged run (flags8a 0x20): a wrestler slumped in the corner (0x18) is knocked down (0x2D, hit flags 4) while the runner bounces (0x05); one with frame_flags 0x10 goes over the ropes (0x70); one on a ladder is knocked off (0xB2) and the runner is knocked down 10% (0x2D) or back 90% (0x35). run_target_downed 1: the runner dodges (0x9F). From the apron into a standing wrestler: both knocked down. Otherwise the run goes on (state 3, step 3). Objects in the way are pushed (object_set_motion); a charged run into a ladder (type2 25) tips it and knocks the runner down or back. As Revenge run_collide (0x800B5340)."
-status = "likely"
+status = "confirmed"
 port = "src/nomercy/nm_run.cpp"
-notes = "Port: partial (paths the traces have not reached yet stop a replay with NM_UNPORTED)."
 
 [[func]]
 addr = 0x8011C5AC
