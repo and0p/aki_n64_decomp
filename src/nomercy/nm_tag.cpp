@@ -217,7 +217,7 @@ void pair_scripted_place(Wrestler *w, Wrestler *other) {
         w->turn_step = angle_diff(face, w->facing) / frames;
         return;
     }
-    if (w->state == state::ShoveAtWallAttacker || w->state == state::ShoveAtWallAttackerAlternate) {
+    if (w->state == state::ShoveAtWallAttacker || w->state == state::PutOntoTableOrStepsAttacker) {
         // A shove at a wall: 15 frames to 40 from it, facing it.
         place_from_zone(w, 15, 0, 40.0f);
         return;

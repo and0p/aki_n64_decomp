@@ -285,8 +285,34 @@ s32 run_collide(Wrestler *w, s32 mode, u16 held) {
         o->state_step = 2;
         return 1;
     }
-    if (w->flags86 & 0x20)
-        NM_UNPORTED("run_collide: a charged (whipped) runner meets a wrestler");
+    if (w->flags86 & 0x20) {
+        // A whipped runner: an opponent slumped in the corner is knocked (hit_flags 0x04); one flagged
+        // frame_flags 0x10 gets 0x70, knocked over the ropes; one on a ladder is knocked off (0xB2) and the
+        // runner is hurt (generic move 92, the knockdown 0x35, or 0x2D one time in ten).
+        if (o->state == state::SlumpedInCorner) {
+            wrestler_set_state(w, state::HitByRunner);
+            wrestler_set_state_free(o, state::KnockedDown);
+            o->strike_flags = 0;
+            o->hit_flags = 4;
+            return 1;
+        }
+        if (o->frame_flags & 0x10) {
+            wrestler_set_state(w, state::HitByRunner);
+            wrestler_set_state_now(o, state::KnockedOverTopRope);
+            o->state_counter |= 1;
+            return 1;
+        }
+        if (o->location & 8) {
+            wrestler_set_generic_move(w, 92);
+            hit_move_copy(w, w);
+            w->strike_flags = 0;
+            w->hit_flags = 0x8000000;
+            wrestler_set_state_now(w, chance_check(100) ? state::KnockedDown : state::KnockedBack);
+            wrestler_set_state_free_now(o, state::LadderHit);
+            o->state_counter |= (w->flags86 & 0x40) ? 7 : 5;
+            return 1;
+        }
+    }
     s32 down = run_target_downed(w, o, held);
     if (down == 1) {
         weapon_release(w, 0);
@@ -821,7 +847,7 @@ void state_03_run(WrestlerCtx *ctx) {
         if (run_inputs(ctx)) {
             s32 st = w->state;
             if (st != state::RunningWeaponStrike) {
-                if ((st != state::RunningGroundAttack&& st != state::RunningBreakUpPinOrHold) || !(w->flags_ef & 1))
+                if ((st != state::RunningGroundAttack && st != state::RunningBreakUpPinOrHold) || !(w->flags_ef & 1))
                     weapon_release(w, 0);
             }
         }
@@ -923,7 +949,16 @@ void state_04_run_rebound(WrestlerCtx *ctx) {
         if (!(w->flags_e9 & 1) && !(w->flags_ef & 1) && (mem_u32(w->attrs + 0x34) & 0x2000) &&
             (w->flags86 & 0x20) && !(w->flags86 & 0x280) && w->rebound_count == 1 &&
             ((w->flags_ee & 4) || !(ctx->rec_a->flags_ee & 4)) && w->anim_frame < 3 && (ctx->pressed & 0xC030))
-            NM_UNPORTED("state_04: the whipped runner's reversal (chance_roll)");
+        {
+            if (chance_roll(w, nullptr, 3)) {
+                if (!(ctx->pressed & 0x8000)) {
+                    wrestler_set_anim(w, 11955, 1);
+                    w->state_step = 3;
+                    return;
+                }
+                w->flags86 |= 0x200;
+            }
+        }
         if (w->anim_frames_left > 0)
             return;
         wrestler_set_anim(w, w->anim_id + 1, 1);
@@ -1412,12 +1447,14 @@ s32 climb_check(const Wrestler *w, const Wrestler *o) {
 }
 
 // N64 0x8010EEE8: at corner `dir`: pos from 0x80146130 face down, 0x80146100 face up; with `set_facing` also
-// the corner's facing (0x8014D1F8, 0x8014D208).
-static void corner_place(Wrestler *w, s32 dir, s32 set_facing) {
+// the corner's facing (0x8014D1F8, 0x8014D208), which it returns either way.
+static s32 corner_place(Wrestler *w, s32 dir, s32 set_facing) {
     u32 p = ((w->flags8a & 1) ? 0x80146130 : 0x80146100) + 12u * (u32)dir;
     w->pos = {mem_f32(p), mem_f32(p + 4), mem_f32(p + 8)};
+    s32 angle = mem_s32(((w->flags8a & 1) ? 0x8014D1F8 : 0x8014D208) + 4u * (u32)dir);
     if (set_facing)
-        w->facing = mem_s32(((w->flags8a & 1) ? 0x8014D1F8 : 0x8014D208) + 4u * (u32)dir);
+        w->facing = angle;
+    return angle;
 }
 
 // N64 0x801118D8: run_step, and when it ends run_corner_stop (state 0x78).
@@ -1988,6 +2025,77 @@ void state_A1_running_grapple_defender(WrestlerCtx *ctx) {
     case 2:
         finisher_effects(w);
         move_event(ctx, 0x7A00);
+        return;
+    default:
+        return;
+    }
+}
+
+// N64 0x8010E9E8: slumped in a corner after being run into it: turned to the corner's facing (a move 13 hit once the
+// fall anim ends), then held by the escape count (frame_flags 0x05) until recover_tick lets it stand; a finished
+// elimination falls instead. flags86 0x40 face-up takes the short slide (12060) with step 6.
+void state_18_corner_slump(WrestlerCtx *ctx) {
+    Wrestler *w = ctx->self;
+    u16 up = w->flags8a & 1;
+    switch (w->state_step) {
+    case 0: {
+        s32 angle = corner_place(w, w->dir, 0);
+        wrestler_set_anim(w, up | 0x2F12, 2);
+        if (wrestler_turn_toward(w, angle, 341, 0)) {
+            if (up || !(w->flags86 & 0x40)) {
+                wrestler_set_anim(w, up | 0x2F14, 2);
+                w->state_step++;
+            } else {
+                wrestler_set_anim(w, 12060, 2);
+                w->state_step = 6;
+            }
+        }
+        return;
+    }
+    case 1:
+        w->frame_flags |= 1;
+        if (w->anim_frames_left <= 0) {
+            wrestler_set_generic_move(w, 13);
+            hit_move_copy(w, w);
+            apply_damage(ctx->rec_a, w);
+            wrestler_set_step(w, 2);
+        }
+        return;
+    case 2:
+        w->escape = escape_time(w, nullptr, 2);
+        w->fall_chance = 0;
+        mash_count(w, 0, 0);
+        w->state_step++;
+        // fall through
+    case 3:
+        corner_place(w, w->dir, 1);
+        wrestler_set_anim(w, up | 0x2F18, 0);
+        w->fall_chance++;
+        w->state_step++;
+        // fall through
+    case 4:
+        w->frame_flags |= 5;
+        if ((g_match_flags[1] & 0x40) && (w->end_flags & 4)) {
+            wrestler_set_anim(w, up | 0x2F1A, 2);
+            w->state_step++;
+        } else if (recover_tick(w, ctx->pressed)) {
+            if (ctx->in_byte) {
+                w->escape = 0;
+            } else {
+                wrestler_set_anim(w, up | 0x2F1A, 0);
+                w->state_step++;
+            }
+        }
+        return;
+    case 5:
+        w->frame_flags |= 3;
+        keep_in_bounds_self(w, 2.0f, 0, 2);
+        move_event(ctx, 0);
+        return;
+    case 6:
+        w->flags8c |= 0x40;
+        wrestler_slide(w, 4.0f);
+        move_event(ctx, 512);
         return;
     default:
         return;

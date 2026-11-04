@@ -2,6 +2,7 @@
 #pragma once
 #include "nm_math.h"
 #include "nm_state_ids.h"
+#include "nm_ai_mode_ids.h"
 #include "nm_state.h"
 
 namespace nm {

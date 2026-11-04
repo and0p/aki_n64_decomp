@@ -6,6 +6,9 @@
 namespace nm {
 
 void state_01_stand(WrestlerCtx *ctx);
+void state_2B(WrestlerCtx *ctx);
+void state_09_apron_dodge(WrestlerCtx *ctx);
+void state_18_corner_slump(WrestlerCtx *ctx);
 void state_90_hit_holding_weapon(WrestlerCtx *ctx);
 void state_A1_running_grapple_defender(WrestlerCtx *ctx);
 void state_A0_running_grapple_attacker(WrestlerCtx *ctx);
@@ -218,8 +221,8 @@ StateHandler state_handler(s32 state) {
     case state::OnLadderTop: return state_AE_ladder_control;
     case state::LadderHit: return state_B2_ladder_knocked;
     case state::LadderFallOff: return state_B3_ladder_fall;
-    case state::LadderPulledOff: return state_B4_ladder_pull_off;
-    case state::LadderFallOffAlternate: return state_B3_ladder_fall;
+    case state::LadderPullOffAttacker: return state_B4_ladder_pull_off;
+    case state::LadderPullOffDefender: return state_B3_ladder_fall;
     case state::LadderJumpOff: return state_B6_ladder_jump;
     case state::LadderTopStrike: return state_B7_ladder_strike;
     case state::LadderClimbToDive: return state_B8_ladder_climb_top;
@@ -253,9 +256,9 @@ StateHandler state_handler(s32 state) {
     case state::CatchFlyerDefender: return state_89_caught_flying;
     case state::RunningWeaponStrike: return state_08_run_weapon_strike;
     case state::ShoveAtWallAttacker: return state_0D_shove;
-    case state::ShoveAtWallAttackerAlternate: return state_0D_shove;
+    case state::PutOntoTableOrStepsAttacker: return state_0D_shove;
     case state::ShoveAtWallDefender: return state_0E_shoved;
-    case state::ShoveAtWallDefenderAlternate: return state_0E_shoved;
+    case state::PutOntoTableOrStepsDefender: return state_0E_shoved;
     case state::RunIntoCorner: return state_15_run_into_corner;
     case state::RunKnockoutFall: return state_16_run_knockout_fall;
     case state::TurningInCorner: return state_19_run_stop_turn;

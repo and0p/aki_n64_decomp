@@ -19,16 +19,16 @@ port = "src/nomercy/nm_ai.cpp"
 
 [[func]]
 addr = 0x800FDCD8
-name = "ai_mode_3_defend"
-proto = "void ai_mode_3_defend(void)"
-desc = "Run in and counter (code 2026-11-02): step 0 presses C-down (run) when in the ring; step 1 by its own situation: a rebound (4) -> mode 119, still running (2 / 5 / 11) stays; at run step 2 close to the opponent with a skill chance against a striking / grappling opponent (8 / 11) presses L; near an opponent in a move (flags80 0x03) or situation 15: with chance skill a roll under 200 R, under 600 L, else mode 119; otherwise presses A (the running grapple). Decompiled 2026-11-03 (src/nomercy/nm_ai.cpp, from the code and asm; its comment there has the full reading)."
+name = "ai_mode_3_run_in_and_counter"
+proto = "void ai_mode_3_run_in_and_counter(void)"
+desc = "Renamed from ai_mode_3_defend (2026-11-03). Run in and counter (code 2026-11-02): step 0 presses C-down (run) when in the ring; step 1 by its own situation: a rebound (4) -> mode 119, still running (2 / 5 / 11) stays; at run step 2 close to the opponent with a skill chance against a striking / grappling opponent (8 / 11) presses L; near an opponent in a move (flags80 0x03) or situation 15: with chance skill a roll under 200 R, under 600 L, else mode 119; otherwise presses A (the running grapple). Decompiled 2026-11-03 (src/nomercy/nm_ai.cpp, from the code and asm; its comment there has the full reading)."
 status = "confirmed"
 port = "src/nomercy/nm_ai.cpp"
 
 [[func]]
 addr = 0x800FDEB8
-name = "ai_mode_4_defend_b"
-desc = "Modes 4 / 5, line up on a side and run in (code 2026-11-02): step 0 picks the ring side facing the opponent (angle_to_side into +0x9C) and, when far from that side, walks toward it (the pad from word_80145C54 + 8 / + 16, 15 frames, step 1; blocked directions swapped); steps 2 / 3 align on the side's axis (d-pad until within 0x8014FC88); step 4 saves the mode (4 facing the opponent, 5 from behind) and presses C-down with the direction (the run); steps 5-6 wait for the run (situations 2 / 4); step 7 on arrival as mode 3: close with a skill chance L against a striking / grappling opponent, near an opponent in a move or situation 15 a roll under 200 R / 600 L / else mode 119, otherwise A; a rebound (4) -> 119. Mode 0 when standing again."
+name = "ai_mode_4_line_up_and_run_in"
+desc = "Renamed from ai_mode_4_defend_b (2026-11-03). Modes 4 / 5, line up on a side and run in (code 2026-11-02): step 0 picks the ring side facing the opponent (angle_to_side into +0x9C) and, when far from that side, walks toward it (the pad from word_80145C54 + 8 / + 16, 15 frames, step 1; blocked directions swapped); steps 2 / 3 align on the side's axis (d-pad until within 0x8014FC88); step 4 saves the mode (4 facing the opponent, 5 from behind) and presses C-down with the direction (the run); steps 5-6 wait for the run (situations 2 / 4); step 7 on arrival as mode 3: close with a skill chance L against a striking / grappling opponent, near an opponent in a move or situation 15 a roll under 200 R / 600 L / else mode 119, otherwise A; a rebound (4) -> 119. Mode 0 when standing again."
 status = "likely"
 
 [[func]]
@@ -69,14 +69,14 @@ port = "src/nomercy/nm_ai.cpp"
 
 [[func]]
 addr = 0x800FF288
-name = "ai_mode_11_evade_b"
-desc = "Modes 11 / 12, side-step and run (code 2026-11-02): step 0 picks the direction toward the opponent (dir8), turned a quarter turn at random when the opponent stands near the ropes (within 0x8014FD00 of the facing side), into +0x10; step 1 standing: when the opponent is out of reach (AI +0x68 beyond 0x8014FD08) presses C-down and prepares B (11) or A+B (12) with the move's reach; step 2 as mode 10's run step (L / R / the prepared input / 119)."
+name = "ai_mode_11_side_step_and_run"
+desc = "Renamed from ai_mode_11_evade_b (2026-11-03). Modes 11 / 12, side-step and run (code 2026-11-02): step 0 picks the direction toward the opponent (dir8), turned a quarter turn at random when the opponent stands near the ropes (within 0x8014FD00 of the facing side), into +0x10; step 1 standing: when the opponent is out of reach (AI +0x68 beyond 0x8014FD08) presses C-down and prepares B (11) or A+B (12) with the move's reach; step 2 as mode 10's run step (L / R / the prepared input / 119)."
 status = "likely"
 
 [[func]]
 addr = 0x800FF5CC
-name = "ai_mode_13_block_counter"
-desc = "Modes 13 / 14, line up on a side and run in with a strike (code 2026-11-02): like modes 4 / 5 (tables word_80145C54 + 96 / + 104 / + 208 for the sides) but the run (step 3) presses C-down with B (13) or A+B (14) and the reach from the move's record (+0x28 / +0x30); steps 4-6 as mode 4's arrival."
+name = "ai_mode_13_line_up_and_run_in_strike"
+desc = "Renamed from ai_mode_13_block_counter (2026-11-03). Modes 13 / 14, line up on a side and run in with a strike (code 2026-11-02): like modes 4 / 5 (tables word_80145C54 + 96 / + 104 / + 208 for the sides) but the run (step 3) presses C-down with B (13) or A+B (14) and the reach from the move's record (+0x28 / +0x30); steps 4-6 as mode 4's arrival."
 status = "likely"
 
 [[func]]
@@ -121,8 +121,8 @@ port = "src/nomercy/nm_ai.cpp"
 
 [[func]]
 addr = 0x801006E0
-name = "ai_mode_23_grapple_b"
-desc = "Modes 23 / 24, the grapple (code 2026-11-02): step 0 (23 only) ends with mode 19 when ai_behind_opponent; step 1 presses A (A+B for 23 in finisher mode against an opponent with perceived spirit below 10) while standing and waits for situation 57; step 2 on the floor with the count-out under 3 (no rule 0x4000) presses R; mode 0 when the situation changes."
+name = "ai_mode_23_grapple"
+desc = "Renamed from ai_mode_23_grapple_b (2026-11-03). Modes 23 / 24, the grapple (code 2026-11-02): step 0 (23 only) ends with mode 19 when ai_ground_move_needs_pickup; step 1 presses A (A+B for 23 in finisher mode against an opponent with perceived spirit below 10) while standing and waits for situation 57; step 2 on the floor with the count-out under 3 (no rule 0x4000) presses R; mode 0 when the situation changes."
 status = "likely"
 
 [[func]]
@@ -143,14 +143,14 @@ port = "src/nomercy/nm_ai.cpp"
 
 [[func]]
 addr = 0x801023CC
-name = "ai_mode_27_none"
-desc = "Goes straight back to mode 0. Read from code 2026-11-02 (quick pass). AI mode 27 in No Mercy's table (0x80145A10). Not identified."
+name = "ai_mode_27_do_nothing"
+desc = "Renamed from ai_mode_27_none (2026-11-03). Goes straight back to mode 0. Read from code 2026-11-02 (quick pass). AI mode 27 in No Mercy's table (0x80145A10). Not identified."
 status = "likely"
 
 [[func]]
 addr = 0x801023E8
-name = "ai_mode_28_none_b"
-desc = "Goes straight back to mode 0. Read from code 2026-11-02 (quick pass). AI mode 28 in No Mercy's table (0x80145A10). Not identified."
+name = "ai_mode_28_do_nothing"
+desc = "Renamed from ai_mode_28_none_b (2026-11-03). Goes straight back to mode 0. Read from code 2026-11-02 (quick pass). AI mode 28 in No Mercy's table (0x80145A10). Not identified."
 status = "likely"
 
 [[func]]
@@ -375,8 +375,8 @@ status = "likely"
 
 [[func]]
 addr = 0x80106438
-name = "ai_mode_63_walk_b"
-desc = "Modes 63 / 64, walk to the opponent's zone edge and dive (code 2026-11-02): with the opponent on the floor (not situation 48): steps 0 / 1 walk to the ring edge of the opponent's zone (+0x54; limits 0x80150210-0x80150248); step 2 presses the d-pad toward the zone with C-down and prepares A (63) or the taunt stick 80 (64, the special); steps 3 / 4 hold it while running (the C buttons when the opponent is gone); step 5 waits for situation 26 / 43; mode 0."
+name = "ai_mode_63_walk_to_edge_and_dive"
+desc = "Renamed from ai_mode_63_walk_b (2026-11-03). Modes 63 / 64, walk to the opponent's zone edge and dive (code 2026-11-02): with the opponent on the floor (not situation 48): steps 0 / 1 walk to the ring edge of the opponent's zone (+0x54; limits 0x80150210-0x80150248); step 2 presses the d-pad toward the zone with C-down and prepares A (63) or the taunt stick 80 (64, the special); steps 3 / 4 hold it while running (the C buttons when the opponent is gone); step 5 waits for situation 26 / 43; mode 0."
 status = "likely"
 
 [[func]]
@@ -423,32 +423,32 @@ status = "likely"
 
 [[func]]
 addr = 0x80107854
-name = "ai_mode_73_ground_a"
-desc = "Modes 73-76, C-left at a downed opponent (code 2026-11-02): step 0 presses C-left (2) when the opponent is face down (flags8a 0x01) for 75 / 76, face up for 73 / 74 (the other pair skips to step 3); steps 1-2 wait for situation 53 (0x36) and then standing / 47; step 3 with the opponent down (flags80 0x08), sitting (0x10) for 73 / 74: saves the mode and goes to 20 (the pick-up); step 4 presses B; step 5 waits for situation 9."
+name = "ai_mode_73_c_left_at_downed_opponent"
+desc = "Renamed from ai_mode_73_ground_a (2026-11-03). Modes 73-76, C-left at a downed opponent (code 2026-11-02): step 0 presses C-left (2) when the opponent is face down (flags8a 0x01) for 75 / 76, face up for 73 / 74 (the other pair skips to step 3); steps 1-2 wait for situation 53 (0x36) and then standing / 47; step 3 with the opponent down (flags80 0x08), sitting (0x10) for 73 / 74: saves the mode and goes to 20 (the pick-up); step 4 presses B; step 5 waits for situation 9."
 status = "likely"
 
 [[func]]
 addr = 0x80107A64
-name = "ai_mode_77_ground_b"
-desc = "Modes 77-81, C-left or B at a downed opponent (code 2026-11-02): step 0 by mode: 77 -> step 4; 78 / 80 press C-left when the opponent is face up, 79 / 81 when face down, else step 3; steps 1-2 wait for situation 53 and standing; step 3 with the opponent down (and sitting for 78-79) saves the mode and goes to 20 (pick-up); step 4 stores the d-pad toward the opponent (turned a quarter turn near the ropes); step 5 standing, out of reach (+0x7C + k beyond +0x68) holds it (mode 0 when blocked); step 6 presses C-down; step 7 while running presses B when within reach, 119 on a rebound."
+name = "ai_mode_77_c_left_or_strike_at_downed_opponent"
+desc = "Renamed from ai_mode_77_ground_b (2026-11-03). Modes 77-81, C-left or B at a downed opponent (code 2026-11-02): step 0 by mode: 77 -> step 4; 78 / 80 press C-left when the opponent is face up, 79 / 81 when face down, else step 3; steps 1-2 wait for situation 53 and standing; step 3 with the opponent down (and sitting for 78-79) saves the mode and goes to 20 (pick-up); step 4 stores the d-pad toward the opponent (turned a quarter turn near the ropes); step 5 standing, out of reach (+0x7C + k beyond +0x68) holds it (mode 0 when blocked); step 6 presses C-down; step 7 while running presses B when within reach, 119 on a rebound."
 status = "likely"
 
 [[func]]
 addr = 0x80107E4C
-name = "ai_mode_82_ground_c"
-desc = "Modes 82-85, approach a downed opponent and act (code 2026-11-02): step 0 saves the mode when the opponent sits (flags80 0x10), else prepares mode 22; step 1 presses C-left for 83 / 85 (face up) or 82 / 84 (face down), else step 4; steps 2-3 wait for situation 53 and standing; step 4 with the opponent in situation 15: when blocked for 16 frames presses A; by the angle between the perceived facing (+0x64) and the opponent's: 82 / 84 press A within 70 degrees, C-down toward the opponent's facing beyond 155 (step 6); 83 / 85 A beyond 70, C-down within 25; step 5 waits for situation 57, step 6 holds C-down until situation 42 / 1; mode 0."
+name = "ai_mode_82_approach_downed_opponent_and_act"
+desc = "Renamed from ai_mode_82_ground_c (2026-11-03). Modes 82-85, approach a downed opponent and act (code 2026-11-02): step 0 saves the mode when the opponent sits (flags80 0x10), else prepares mode 22; step 1 presses C-left for 83 / 85 (face up) or 82 / 84 (face down), else step 4; steps 2-3 wait for situation 53 and standing; step 4 with the opponent in situation 15: when blocked for 16 frames presses A; by the angle between the perceived facing (+0x64) and the opponent's: 82 / 84 press A within 70 degrees, C-down toward the opponent's facing beyond 155 (step 6); 83 / 85 A beyond 70, C-down within 25; step 5 waits for situation 57, step 6 holds C-down until situation 42 / 1; mode 0."
 status = "likely"
 
 [[func]]
 addr = 0x80108238
-name = "ai_mode_86_approach_47"
-desc = "Walk round to the opponent's side, then block (code 2026-11-02): step 0 stores the d-pad a quarter turn (either way at random) off the opponent's facing; ends when the opponent leaves the state it was seen in (+0x56); step 1 standing holds it; close (0x801504A0), not on the apron, with a chance skill x k twice -> mode 47 (block a dive); mode 0 otherwise."
+name = "ai_mode_86_circle_then_block"
+desc = "Renamed from ai_mode_86_approach_47 (2026-11-03). Walk round to the opponent's side, then block (code 2026-11-02): step 0 stores the d-pad a quarter turn (either way at random) off the opponent's facing; ends when the opponent leaves the state it was seen in (+0x56); step 1 standing holds it; close (0x801504A0), not on the apron, with a chance skill x k twice -> mode 47 (block a dive); mode 0 otherwise."
 status = "likely"
 
 [[func]]
 addr = 0x8010838C
-name = "ai_mode_87_walk_c"
-desc = "Walk to the opponent's zone axis (code 2026-11-02): when the CPU's zone (+0x42) is not the opponent's (+0x54): step 1 walks along the axis until within 0x801504B0; step 2 presses A with the d-pad toward the opponent's zone unless it is in a move, on the apron or in situation 48 (a grapple at the apron / floor, situation 26); step 3 waits; mode 0."
+name = "ai_mode_87_walk_to_opponent_zone_axis"
+desc = "Renamed from ai_mode_87_walk_c (2026-11-03). Walk to the opponent's zone axis (code 2026-11-02): when the CPU's zone (+0x42) is not the opponent's (+0x54): step 1 walks along the axis until within 0x801504B0; step 2 presses A with the d-pad toward the opponent's zone unless it is in a move, on the apron or in situation 48 (a grapple at the apron / floor, situation 26); step 3 waits; mode 0."
 status = "likely"
 
 [[func]]
@@ -483,8 +483,8 @@ status = "likely"
 
 [[func]]
 addr = 0x80108FEC
-name = "ai_mode_93_none_c"
-desc = "Goes straight back to mode 0. Read from code 2026-11-02 (quick pass). AI mode 93 in No Mercy's table (0x80145A10). Not identified."
+name = "ai_mode_93_do_nothing"
+desc = "Renamed from ai_mode_93_none_c (2026-11-03). Goes straight back to mode 0. Read from code 2026-11-02 (quick pass). AI mode 93 in No Mercy's table (0x80145A10). Not identified."
 status = "likely"
 
 [[func]]
@@ -501,8 +501,8 @@ status = "likely"
 
 [[func]]
 addr = 0x80109244
-name = "ai_mode_96_ground_d"
-desc = "Modes 96-99, like 82-85 (C-left by face up / down, then A or C-down by the angle: 96 / 98 A within 65 degrees, 97 / 99 A beyond 115, C-down within 25 / beyond 155) with the pick-up (mode 20) when the opponent sits, only while the opponent's flags80 are not 0x180000 (code 2026-11-02)."
+name = "ai_mode_96_approach_downed_opponent_by_angle"
+desc = "Renamed from ai_mode_96_ground_d (2026-11-03). Modes 96-99, like 82-85 (C-left by face up / down, then A or C-down by the angle: 96 / 98 A within 65 degrees, 97 / 99 A beyond 115, C-down within 25 / beyond 155) with the pick-up (mode 20) when the opponent sits, only while the opponent's flags80 are not 0x180000 (code 2026-11-02)."
 status = "likely"
 
 [[func]]
@@ -569,8 +569,8 @@ status = "likely"
 
 [[func]]
 addr = 0x8010AEDC
-name = "ai_mode_115_strike_follow_b"
-desc = "Follow-up strike timed on the opponent's recovery (code 2026-11-02): step 0, standing, when the opponent is in situation 41 sets a timer from its countdown (+0xA2) minus 6 minus the move record's +4; step 1 counts it down holding the d-pad toward the target when far, then presses B; step 2 holds B while in its own strike (state 0x22); mode 0."
+name = "ai_mode_115_timed_follow_up_strike"
+desc = "Renamed from ai_mode_115_strike_follow_b (2026-11-03). Follow-up strike timed on the opponent's recovery (code 2026-11-02): step 0, standing, when the opponent is in situation 41 sets a timer from its countdown (+0xA2) minus 6 minus the move record's +4; step 1 counts it down holding the d-pad toward the target when far, then presses B; step 2 holds B while in its own strike (state 0x22); mode 0."
 status = "likely"
 
 [[func]]
@@ -587,8 +587,8 @@ status = "likely"
 
 [[func]]
 addr = 0x8010B544
-name = "ai_mode_118_apron_walk_b"
-desc = "Apron walk to the partner's side and tag (code 2026-11-02): step 0 presses C-down (4) with the apron pad for its ring zone (word_80145C54 + 772) and sets the target point at +-265 beside the partner (0x8016B71C), timer 100; step 1 in situation 2 within 0x80150610 of it presses the C buttons (3840), then with the opponent flags_e9 0x10 ai_press_focus_switch, else mode 68 (run) when far or 0; step 2 counts the timer down, near the point (0x80150618) presses the C buttons and step 3; step 3 presses C-up with the d-pad toward its zone (apron_walk_dpad) when the timer runs out; mode 0."
+name = "ai_mode_118_apron_walk_to_tag"
+desc = "Renamed from ai_mode_118_apron_walk_b (2026-11-03). Apron walk to the partner's side and tag (code 2026-11-02): step 0 presses C-down (4) with the apron pad for its ring zone (word_80145C54 + 772) and sets the target point at +-265 beside the partner (0x8016B71C), timer 100; step 1 in situation 2 within 0x80150610 of it presses the C buttons (3840), then with the opponent flags_e9 0x10 ai_press_focus_switch, else mode 68 (run) when far or 0; step 2 counts the timer down, near the point (0x80150618) presses the C buttons and step 3; step 3 presses C-up with the d-pad toward its zone (apron_walk_dpad) when the timer runs out; mode 0."
 status = "likely"
 
 [[func]]
@@ -613,8 +613,8 @@ status = "likely"
 
 [[func]]
 addr = 0x8010BE00
-name = "ai_mode_123_walk_d"
-desc = "Walk to the opponent's zone edge, then C-right (code 2026-11-02): standing, holds the d-pad until within the limits (0x80150660-0x80150678) of the opponent's zone (+0x64); step 1 presses C-right (1) with the d-pad toward the zone (the focus switch / cage whip input); mode 0."
+name = "ai_mode_123_walk_to_edge_then_c_right"
+desc = "Renamed from ai_mode_123_walk_d (2026-11-03). Walk to the opponent's zone edge, then C-right (code 2026-11-02): standing, holds the d-pad until within the limits (0x80150660-0x80150678) of the opponent's zone (+0x64); step 1 presses C-right (1) with the d-pad toward the zone (the focus switch / cage whip input); mode 0."
 status = "likely"
 
 [[func]]
@@ -625,8 +625,8 @@ status = "likely"
 
 [[func]]
 addr = 0x8010C188
-name = "ai_mode_127_walk_e"
-desc = "Modes 127 / 128, walk to a zone edge and climb out (code 2026-11-02): step 0 (SPECIAL -> mode 50): 127 by the CPU's own zone (+0x42), 128 by the opponent's (+0x64) stores the d-pad for that zone; step 1 standing walks until within the zone's limits (0x80150680-0x80150698); step 2 presses C-up with the stored pad; mode 0."
+name = "ai_mode_127_walk_to_edge_and_climb_out"
+desc = "Renamed from ai_mode_127_walk_e (2026-11-03). Modes 127 / 128, walk to a zone edge and climb out (code 2026-11-02): step 0 (SPECIAL -> mode 50): 127 by the CPU's own zone (+0x42), 128 by the opponent's (+0x64) stores the d-pad for that zone; step 1 standing walks until within the zone's limits (0x80150680-0x80150698); step 2 presses C-up with the stored pad; mode 0."
 status = "likely"
 
 [[func]]
@@ -637,20 +637,20 @@ status = "likely"
 
 [[func]]
 addr = 0x8010C48C
-name = "ai_mode_131_block_b"
-desc = "Presses R when the height difference (+0x90) is small, expecting the block state 0x4C. Read from code 2026-11-02 (quick pass). AI mode 131 in No Mercy's table (0x80145A10). Not identified."
+name = "ai_mode_131_block_when_level"
+desc = "Renamed from ai_mode_131_block_b (2026-11-03). Presses R when the height difference (+0x90) is small, expecting the block state 0x4C. Read from code 2026-11-02 (quick pass). AI mode 131 in No Mercy's table (0x80145A10). Not identified."
 status = "likely"
 
 [[func]]
 addr = 0x8010C51C
-name = "ai_mode_132_strike_b"
-desc = "Holds B while in state 0xCC (idle on the cage top), then mode 0 (code 2026-11-02)."
+name = "ai_mode_132_strike_from_cage_wall"
+desc = "Renamed from ai_mode_132_strike_b (2026-11-03). Holds B while in state 0xCC (idle on the cage top), then mode 0 (code 2026-11-02)."
 status = "likely"
 
 [[func]]
 addr = 0x8010C58C
-name = "ai_mode_133_ladder_match_a"
-desc = "Ladder-match logic around object 6 (its holder and position): heads for it. Read from code 2026-11-02 (quick pass). AI mode 133 in No Mercy's table (0x80145A10). Not identified."
+name = "ai_mode_133_head_for_ladder"
+desc = "Renamed from ai_mode_133_ladder_match_a (2026-11-03). Ladder-match logic around object 6 (its holder and position): heads for it. Read from code 2026-11-02 (quick pass). AI mode 133 in No Mercy's table (0x80145A10). Not identified."
 status = "likely"
 
 [[func]]
@@ -673,8 +673,8 @@ status = "likely"
 
 [[func]]
 addr = 0x8010D6F0
-name = "ai_mode_137_none_d"
-desc = "Goes straight back to mode 0. Read from code 2026-11-02 (quick pass). AI mode 137 in No Mercy's table (0x80145A10). Not identified."
+name = "ai_mode_137_do_nothing"
+desc = "Renamed from ai_mode_137_none_d (2026-11-03). Goes straight back to mode 0. Read from code 2026-11-02 (quick pass). AI mode 137 in No Mercy's table (0x80145A10). Not identified."
 status = "likely"
 
 [[func]]
@@ -685,14 +685,14 @@ status = "likely"
 
 [[func]]
 addr = 0x8010D93C
-name = "ai_mode_139_ladder_match_b"
-desc = "Object 6 free: goes for it by x / z, else mode 9. Read from code 2026-11-02 (quick pass). AI mode 139 in No Mercy's table (0x80145A10). Not identified."
+name = "ai_mode_139_go_for_free_ladder"
+desc = "Renamed from ai_mode_139_ladder_match_b (2026-11-03). Object 6 free: goes for it by x / z, else mode 9. Read from code 2026-11-02 (quick pass). AI mode 139 in No Mercy's table (0x80145A10). Not identified."
 status = "likely"
 
 [[func]]
 addr = 0x8010DED4
-name = "ai_mode_140_none_e"
-desc = "Goes straight back to mode 0. Read from code 2026-11-02 (quick pass). AI mode 140 in No Mercy's table (0x80145A10). Not identified."
+name = "ai_mode_140_do_nothing"
+desc = "Renamed from ai_mode_140_none_e (2026-11-03). Goes straight back to mode 0. Read from code 2026-11-02 (quick pass). AI mode 140 in No Mercy's table (0x80145A10). Not identified."
 status = "likely"
 
 [[func]]
@@ -703,8 +703,8 @@ status = "likely"
 
 [[func]]
 addr = 0x8010E250
-name = "ai_mode_142_none_f"
-desc = "Goes straight back to mode 0. Read from code 2026-11-02 (quick pass). AI mode 142 in No Mercy's table (0x80145A10). Not identified."
+name = "ai_mode_142_do_nothing"
+desc = "Renamed from ai_mode_142_none_f (2026-11-03). Goes straight back to mode 0. Read from code 2026-11-02 (quick pass). AI mode 142 in No Mercy's table (0x80145A10). Not identified."
 status = "likely"
 
 [[func]]

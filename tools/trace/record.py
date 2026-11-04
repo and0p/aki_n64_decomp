@@ -76,16 +76,19 @@ def match_tick(d, game):
     return (m * 60 + s) * 30 + f
 
 
-def record(d, game, steps, out, note="", state=None, inputs=None, strict=True, load_pads=None, ram_crc=None):
+def record(d, game, steps, out, note="", state=None, inputs=None, strict=True, load_pads=None, ram_crc=None, align=True, more=None):
     regions = [dict(name=r["name"], addr=r["addr"], size=r["size"]) for r in fields.field_list(game)["regions"]]
     d.pause()
     if state:
         d.load(file=state)
         # The first frame step after a load stops at a flip whose frame had already run before the
         # save; one step lines the pause up with the match frames.
+        # A state saved at a tick boundary (record_keyframes.py, align=False) needs no such step: it would
+        # run a tick.
         if load_pads:
             set_pads(d, {int(k): parse_pad(v) for k, v in load_pads.items()})
-        d.step(1)
+        if align:
+            d.step(1)
     image = b"".join(d.read(0x80000000 + k, 0x100000) for k in range(0, RAM, 0x100000))
     w = trace.Writer(out, dict(game=game, regions=regions, note=note, state=state, inputs=inputs or steps,
                                mode="emulator"), image)
@@ -123,6 +126,16 @@ def record(d, game, steps, out, note="", state=None, inputs=None, strict=True, l
                 print("warning: frame %d: match tick %d after %d (not one frame of play)" % (n, tick, last),
                       file=sys.stderr)
             last = tick
+    # more(): called after the script's frames; true runs one more frame with no input (record_keyframes.py).
+    while more and more(regions):
+        set_pads(d, {})
+        d.step(1)
+        tick = sample()
+        n += 1
+        if strict and tick != last + 1:
+            print("warning: frame %d: match tick %d after %d (not one frame of play)" % (n, tick, last),
+                  file=sys.stderr)
+        last = tick
     d.pad_clear()
     w.close()
     if ram_crc is not None:

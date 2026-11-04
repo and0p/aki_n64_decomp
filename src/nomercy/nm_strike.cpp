@@ -562,13 +562,13 @@ s32 timed_press_check(Wrestler *w, u16 held, u16 pressed, s32 op) {
             mem_w16(bits, 0);
         }
         mem_w16(bits, mem_u16(bits) | 1);
-        u16 st = state::PreBell;
+        u16 st = 0;
         if (w->state == state::OffBalance)
             st = 256;
         else if (w->state == state::Dazed)
             st = w->state_step == 1 ? 64 : 32;
         else if (w->state == state::KnockedBack)
-            st = state::RearLiftDefender;
+            st = 128;
         mem_w16(bits, mem_u16(bits) | st);
         return 0;
     }
@@ -682,15 +682,15 @@ s32 strike_counter_check(Wrestler *d, Wrestler *w) {
                     return 1;
                 if (st == state::RunningShoulderBlock)
                     return (!kick && w->move_num == 204) ? 0 : 1;
-                return st == state::ApronStrikeDownToFloor? 2 : 0;
+                return st == state::ApronStrikeDownToFloor ? 2 : 0;
             }
             return 1;  // 34, 35
         }
         if (st == state::StrikeFromRaisedPlaceAtFloor)
             return 2;
         if (st < 192)
-            return (st == state::WeaponSwingLight|| st == state::WeaponSwingHard) ? 1 : 0;
-        return st == state::CageWallStrike? 2 : 0;
+            return (st == state::WeaponSwingLight || st == state::WeaponSwingHard) ? 1 : 0;
+        return st == state::CageWallStrike ? 2 : 0;
     };
     if (d->flags8a & 2) {
         if (d->state == state::Blocking)
@@ -1160,7 +1160,7 @@ void strike_land(Wrestler *w, s32 target, u32 flags) {
             if (!(d->location & 0x10))
                 return;
         }
-    } else if (st == state::Dazed|| st == state::OffBalance|| st == state::KnockedBack) {
+    } else if (st == state::Dazed || st == state::OffBalance || st == state::KnockedBack) {
         if (timed_press_check(d, 0, 0, 2) && strike_counter_check(d, w))
             return;
     } else if (st == state::DrapedOverRopes) {
@@ -2157,7 +2157,7 @@ void state_1F_apron_strike(WrestlerCtx *ctx) {
     s32 st = w->state;
     switch (w->state_step) {
     case 0: {
-        s32 move = st == state::ApronStrikeIntoRing? 218 : st == state::ApronStrikeDownToFloor? 219 : ((w->flags8a & 4) ? 221 : 220);
+        s32 move = st == state::ApronStrikeIntoRing ? 218 : st == state::ApronStrikeDownToFloor ? 219 : ((w->flags8a & 4) ? 221 : 220);
         wrestler_start_move(w, ctx->slot, move);
         wrestler_set_anim(w, anim_style(w, 0), 2);
         w->state_step++;
@@ -2165,11 +2165,11 @@ void state_1F_apron_strike(WrestlerCtx *ctx) {
     }
     case 1: {
         g_frame_bits &= ~mem_u32(A_SLOT_BITS + 4u * (u32)ctx->slot);
-        s32 kind = st == state::ApronStrikeIntoRing? 17 : st == state::ApronStrikeDownToFloor? 19 : 18;
+        s32 kind = st == state::ApronStrikeIntoRing ? 17 : st == state::ApronStrikeDownToFloor ? 19 : 18;
         s32 t = strike_hit_test(w, 0, kind);
         if (t != -1) {
             w->state_step++;
-            strike_land(w, t, st == state::ApronStrikeIntoRing? 0x20u : st == state::ApronStrikeDownToFloor? 0x40u : 0x80u);
+            strike_land(w, t, st == state::ApronStrikeIntoRing ? 0x20u : st == state::ApronStrikeDownToFloor ? 0x40u : 0x80u);
         }
         [[fallthrough]];
     }
@@ -2267,14 +2267,14 @@ void state_28_weapon_ground_attack(WrestlerCtx *ctx) {
     switch (w->state_step) {
     case 0: {
         s32 st = w->state;
-        if (st == state::RunningGroundAttack&& (w->flags_ef & 1)) {
+        if (st == state::RunningGroundAttack && (w->flags_ef & 1)) {
             wrestler_set_anim(w, 5 * wrestler_move_anim(w, st) + 12494, 3);
             wrestler_set_generic_move(w, 104);
         } else if (st == state::WeaponGroundAttack) {
             wrestler_set_anim(w, 5 * wrestler_move_anim(w, st) + 12493, 3);
             wrestler_set_generic_move(w, 110);
         } else {
-            u32 e = st == state::RunningGroundAttack? 0x801469B8u : 0x801469B0u;
+            u32 e = st == state::RunningGroundAttack ? 0x801469B8u : 0x801469B0u;
             if (ctx->rec_a->flags80 & 0x10) {
                 e += 4;
                 w->state_counter |= 1;
@@ -2485,6 +2485,29 @@ void state_4D_block_hit(WrestlerCtx *ctx) {
     default:
         return;
     }
+}
+
+// N64 0x801244C0: the strike with move 0xB0 (0xB1 for a press_kind 0x20): swings until it lands (strike_land with 0x1000).
+void state_2B(WrestlerCtx *ctx) {
+    Wrestler *w = ctx->self;
+    if (w->state_step == 0) {
+        wrestler_start_move(w, ctx->slot, ((w->press_kind & 0x20) ? 1 : 0) | 0xB0);
+        wrestler_set_anim(w, anim_style(w, 0), 3);
+        w->state_step++;
+    }
+    if (w->state_step == 1) {
+        g_frame_bits &= ~mem_u32(A_SLOT_BITS + 4u * (u32)ctx->slot);
+        s32 t = strike_hit_test(w, 0, 21);
+        if (t != -1) {
+            w->state_step++;
+            strike_land(w, t, 0x1000);
+        }
+    } else if (w->state_step != 2) {
+        return;
+    }
+    wrestler_slide(w, 2.0f);
+    strike_keep_in_bounds(w);
+    move_event(ctx, 0);
 }
 
 }  // namespace nm

@@ -23,6 +23,7 @@ import os
 import struct
 import sys
 import urllib.error
+import time
 import urllib.parse
 import urllib.request
 
@@ -42,13 +43,20 @@ class Debugger:
         wait = max(self.timeout, int(q.get("timeout", 0)) / 1000 + 5)
         q = {k: (hex(v) if isinstance(v, int) and not isinstance(v, bool) else str(v)) for k, v in q.items()}
         url = self.base + path + ("?" + urllib.parse.urlencode(q) if q else "")
-        try:
-            with urllib.request.urlopen(url, data=data, timeout=wait) as r:
-                body = r.read()
-        except urllib.error.HTTPError as e:
-            raise DebuggerError(json.loads(e.read()).get("error", str(e))) from None
-        except urllib.error.URLError as e:
-            raise DebuggerError("no aki_debug server at %s (%s)" % (self.base, e.reason)) from None
+        # One connection a request: a long recording can run out of local ports (WinError 10048) until
+        # closed ones time out, so that one is waited out.
+        for attempt in range(180):
+            try:
+                with urllib.request.urlopen(url, data=data, timeout=wait) as r:
+                    body = r.read()
+                break
+            except urllib.error.HTTPError as e:
+                raise DebuggerError(json.loads(e.read()).get("error", str(e))) from None
+            except urllib.error.URLError as e:
+                if getattr(e.reason, "winerror", None) == 10048 and attempt < 179:
+                    time.sleep(1)
+                    continue
+                raise DebuggerError("no aki_debug server at %s (%s)" % (self.base, e.reason)) from None
         return body if raw else json.loads(body)
 
     # Control. Each returns the status dict (frame, paused, reason, ...).

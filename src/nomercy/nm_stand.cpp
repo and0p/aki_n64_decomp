@@ -737,7 +737,7 @@ s32 input_c_left(WrestlerCtx *ctx) {
     if (!(o->flags_e9 & x->flags_e9 & 0x10))
         return 0;
     const Wrestler *a = (o->state == state::GroundHoldAttacker || o->state == state::PinAttacker || o->state == state::PinFromMoveAttacker) ? o : x;
-    s32 st = state::PreBell;
+    s32 st = 0;
     if (o->state == state::GroundHoldAttacker || o->state == state::GroundHoldDefender) {
         if ((g_match_rules & 0x10) && (mem_u32(a->move + 0x20) & 0x80))
             st = state::DuckBackBreakingGrab;
@@ -1833,5 +1833,18 @@ void state_6F_climb_onto(WrestlerCtx *ctx) {
 }
 
 
+
+// N64 0x800E638C: on the apron, dodging back: anim 11876, then standing.
+void state_09_apron_dodge(WrestlerCtx *ctx) {
+    Wrestler *w = ctx->self;
+    keep_in_bounds_self(w, 2.0f, 0, 0xFFFFE);
+    illegal_man_check(w);
+    if (w->state_step == 0) {
+        wrestler_set_anim(w, 11876, 2);
+        w->state_step++;
+    } else if (w->state_step == 1 && w->anim_frames_left <= 0) {
+        wrestler_set_state_now(w, state::Standing);
+    }
+}
 
 }  // namespace nm

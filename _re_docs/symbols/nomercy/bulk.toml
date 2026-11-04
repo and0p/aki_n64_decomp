@@ -694,9 +694,9 @@ port = "src/nomercy/nm_ai.cpp"
 
 [[func]]
 addr = 0x800F66B8
-name = "ai_try_mode_89"
-proto = "s32 ai_try_mode_89(void)"
-desc = "Mode 89 (run the opponent against the ropes side) in the ring when the CPU lines up (ai_line_up) with the move-set bit attrs +0x38 0x80000: against a lying opponent (19) after a skill roll, or one down longer than the trait +37 time (0x80145574); 1 when set. Decompiled 2026-11-03 (src/nomercy/nm_ai.cpp, from the code and asm)."
+name = "ai_try_line_up_on_lying_opponent"
+proto = "s32 ai_try_line_up_on_lying_opponent(void)"
+desc = "Renamed from ai_try_mode_89 (2026-11-03). Mode 89 (run the opponent against the ropes side) in the ring when the CPU lines up (ai_line_up) with the move-set bit attrs +0x38 0x80000: against a lying opponent (19) after a skill roll, or one down longer than the trait +37 time (0x80145574); 1 when set. Decompiled 2026-11-03 (src/nomercy/nm_ai.cpp, from the code and asm)."
 status = "confirmed"
 port = "src/nomercy/nm_ai.cpp"
 
@@ -920,7 +920,7 @@ port = "src/nomercy/nm_ai.cpp"
 addr = 0x800FA26C
 name = "ai_decide_vs_lying_c"
 proto = "s32 ai_decide_vs_lying_c(void)"
-desc = "The finish plan against a lying or dazed opponent (1 when it acted). Armed: hold R (0x10). Lying (19): 55, beyond 130 walk up (48). SPECIAL the taunt (50). Then the plan's move (0x8016B580 by slot; none: 0), not with target bit 0x08 outside finisher mode: 257 (finisher mode only) and 256 the corner climb, 105 mode 5, 273 and 275 (finisher mode only) ai_try_mode_67. Else beyond 130 48; by the plan's target bits (AI +0x84): 0x1000 with AI flags 0x10 the grapple (1, 2 with 0x4000) when the opponent faces the CPU, else 100; without the flag move 192 / 194 / 196 / 198 / 104 modes 11 / 12 / 13 / 14 / 4, 278 ai_try_mode_89. 0x2000 with the flag 1 or 100. 0x100: with 0x10 (or faced) 2 / 1 by 0x4000, else 100. 0x200: 9. Decompiled 2026-11-03 (src/nomercy/nm_ai.cpp, from the code and asm)."
+desc = "The finish plan against a lying or dazed opponent (1 when it acted). Armed: hold R (0x10). Lying (19): 55, beyond 130 walk up (48). SPECIAL the taunt (50). Then the plan's move (0x8016B580 by slot; none: 0), not with target bit 0x08 outside finisher mode: 257 (finisher mode only) and 256 the corner climb, 105 mode 5, 273 and 275 (finisher mode only) ai_try_run_at_dazed_opponent. Else beyond 130 48; by the plan's target bits (AI +0x84): 0x1000 with AI flags 0x10 the grapple (1, 2 with 0x4000) when the opponent faces the CPU, else 100; without the flag move 192 / 194 / 196 / 198 / 104 modes 11 / 12 / 13 / 14 / 4, 278 ai_try_line_up_on_lying_opponent. 0x2000 with the flag 1 or 100. 0x100: with 0x10 (or faced) 2 / 1 by 0x4000, else 100. 0x200: 9. Decompiled 2026-11-03 (src/nomercy/nm_ai.cpp, from the code and asm)."
 status = "confirmed"
 port = "src/nomercy/nm_ai.cpp"
 
@@ -944,15 +944,15 @@ port = "src/nomercy/nm_ai.cpp"
 addr = 0x800FA920
 name = "ai_list_pick_d"
 proto = "s32 ai_list_pick_d(s32 slot)"
-desc = "The slot's fourth CPU list (count 0x801594E6 + 12 x slot, entries 0x8016B620 + 12 x slot: 256, 273, 278), not at an opponent on the floor; 1 when it acted. A favourite at 50%, else another: 273 ai_try_mode_67, 278 ai_try_mode_89, 256 the corner climb. Decompiled 2026-11-03 (src/nomercy/nm_ai.cpp, from the code and asm)."
+desc = "The slot's fourth CPU list (count 0x801594E6 + 12 x slot, entries 0x8016B620 + 12 x slot: 256, 273, 278), not at an opponent on the floor; 1 when it acted. A favourite at 50%, else another: 273 ai_try_run_at_dazed_opponent, 278 ai_try_line_up_on_lying_opponent, 256 the corner climb. Decompiled 2026-11-03 (src/nomercy/nm_ai.cpp, from the code and asm)."
 status = "confirmed"
 port = "src/nomercy/nm_ai.cpp"
 
 [[func]]
 addr = 0x800FAB0C
-name = "ai_try_mode_67"
-proto = "s32 ai_try_mode_67(void)"
-desc = "Mode 67 against a dazed opponent (16) down 31+ frames, in the ring or on the apron side (where-class 0x09), with the move-set bit attrs +0x38 0x20000 (or in finisher mode +0x3C 0x8000000); 1 when set. Decompiled 2026-11-03 (src/nomercy/nm_ai.cpp, from the code and asm)."
+name = "ai_try_run_at_dazed_opponent"
+proto = "s32 ai_try_run_at_dazed_opponent(void)"
+desc = "Renamed from ai_try_mode_67 (2026-11-03). Mode 67 against a dazed opponent (16) down 31+ frames, in the ring or on the apron side (where-class 0x09), with the move-set bit attrs +0x38 0x20000 (or in finisher mode +0x3C 0x8000000); 1 when set. Decompiled 2026-11-03 (src/nomercy/nm_ai.cpp, from the code and asm)."
 status = "confirmed"
 port = "src/nomercy/nm_ai.cpp"
 
@@ -1086,8 +1086,8 @@ port = "src/nomercy/nm_ai.cpp"
 
 [[func]]
 addr = 0x80100850
-name = "ai_behind_opponent"
-desc = "Angle between the CPU's view of the opponent (AI +0x64) and the opponent's facing, when the opponent is lying (flags80 0x08)."
+name = "ai_ground_move_needs_pickup"
+desc = "Renamed from ai_behind_opponent (2026-11-03). For an opponent on the mat (flags80 0x08), the CPU's ground move by side, flags8a 0x01 and flags80 0x10 through 0x80145D74: 1 when the moveset marks that slot 0x200 or its animation is move 2843."
 status = "likely"
 
 [[func]]

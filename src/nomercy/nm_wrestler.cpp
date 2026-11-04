@@ -630,7 +630,7 @@ void wrestlers_update_all(s32 op) {
     for (s32 i = 0; i < 4; i++) {
         Wrestler *w = &g_wrestlers[i];
         s32 st = w->state;
-        if (st == state::SettleAfterAnimation|| st == state::Standing)
+        if (st == state::SettleAfterAnimation || st == state::Standing)
             continue;
         if (st == g_state_history[i][0] && !(w->flags88 & 0x10))
             continue;

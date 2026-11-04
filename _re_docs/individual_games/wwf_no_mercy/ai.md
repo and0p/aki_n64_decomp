@@ -446,11 +446,11 @@ Read 2026-11-02:
   mode:** level 0 → `ai_decide_vs_down_far`, 1 → `_near`, 2 → move list D.
 - **`_c`** (the finish plan on a lying opponent): flat on the back (19) → wait (55) or walk up (48) beyond
   130; in SPECIAL → taunt (50); a finisher-slot class (+0x84 0x08) only in finisher mode. Finisher 257 or
-  275 (finisher mode) → `ai_try_corner_climb` / `ai_try_mode_67`; 273 → `ai_try_mode_67`; 256 →
+  275 (finisher mode) → `ai_try_corner_climb` / `ai_try_run_at_dazed_opponent`; 273 → `ai_try_run_at_dazed_opponent`; 256 →
   `ai_try_corner_climb`; 105 → mode 5. Beyond **130** → walk up (48). Class 0x1000 (on a staggered or
   lying opponent): with AI flag 0x10 and the angle right (`ai_faced_by`) engage (1) or grapple (2,
   class 0x4000), else mode 100; by number 104 → mode 4, 192 → 11, 194 → 12, 196 → 13, 198 → 14, 278 →
-  `ai_try_mode_89`. Class 0x2000 (running): the same angle check → 1, else 100. Class 0x0100 → 1 / 2 by
+  `ai_try_line_up_on_lying_opponent`. Class 0x2000 (running): the same angle check → 1, else 100. Class 0x0100 → 1 / 2 by
   angle and 0x4000. Class 0x0200 → follow-up strikes (9).
 
 - **`ai_decide_vs_down_far`** (checked line by line): flat on its back (19) → wait (55). Farther than
@@ -685,7 +685,7 @@ The other traits' arrays found so far (levels 0-4; read 2026-11-02 with their de
 | Mode / helper | Trait | What it does |
 |---------------|-------|--------------|
 | `ai_try_grapple` | +34 | grapple-try chance 0x801453C0: 800, 600, 500, 400, 200 (with 800 / 200 fallbacks) |
-| `ai_try_mode_89` | +37 | 0x80145574: 10, 10, 15, 20, 20 |
+| `ai_try_line_up_on_lying_opponent` | +37 | 0x80145574: 10, 10, 15, 20, 20 |
 | `ai_lockup_ropes` | +38 | toward the ropes from the lock-up: 0x80145E40 (0, 50, 100, 150, 50) → 102; 0x80145E4C (1000, 800, 250, 150, 400) → 103 |
 | 29 (struggling in a lock-up) | +36, +37 | float factors 0x80145ECC / 0x80145EB8 on the struggle chance |
 | 69 (holding a caught kick) | +35 | waits 0x80145EF8 (15, 35, 60, 0) + up to 0x80145F00 (5, 10, 15, 0) frames |

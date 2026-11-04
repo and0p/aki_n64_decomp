@@ -6,212 +6,418 @@ namespace nm {
 namespace state {
 
 enum Id : s32 {
-    PreBell = 0x00,  // state_00_pre_bell
-    Standing = 0x01,  // state_01_stand
-    ApronCornerWalk = 0x02,  // state_02_apron_corner_walk
-    Running = 0x03,  // state_03_run
-    RunningRopeRebound = 0x04,  // state_04_run_rebound
-    HitByRunner = 0x05,  // state_05_run_collide_hit
-    RunningRButtonMove = 0x06,  // state_06_run_r_move
-    RunningShoulderBlock = 0x07,  // state_07_running_shoulder_block
-    RunningWeaponStrike = 0x08,  // state_08_run_weapon_strike
-    ApronDodge = 0x09,  // state_09_apron_dodge
-    TurnbucklePerch = 0x0A,  // state_0A_turnbuckle_perch
-    IrishWhipAttacker = 0x0B,  // state_0B_whip_attacker
-    IrishWhipRunner = 0x0C,  // state_0C_whip_runner
-    ShoveAtWallAttacker = 0x0D,  // state_0D_shove
-    ShoveAtWallDefender = 0x0E,  // state_0E_shoved
-    ShoveAtWallAttackerAlternate = 0x0F,  // state_0D_shove
-    ShoveAtWallDefenderAlternate = 0x10,  // state_0E_shoved
-    RopesLockupPushFromRingAttacker = 0x11,  // state_11_apron_lockup_c_down
-    RopesLockupPushFromRingDefender = 0x12,  // state_12_apron_lockup_pushed
-    RopesLockupPushFromApronAttacker = 0x13,  // state_11_apron_lockup_c_down
-    RopesLockupPushFromApronDefender = 0x14,  // state_12_apron_lockup_pushed
-    RunIntoCorner = 0x15,  // state_15_run_into_corner
-    RunKnockoutFall = 0x16,  // state_16_run_knockout_fall
-    DrapedOverRopes = 0x17,  // state_17_on_ropes
-    SlumpedInCorner = 0x18,  // state_18_corner_slump
-    TurningInCorner = 0x19,  // state_19_run_stop_turn
-    CornerReboundStrike = 0x1A,  // state_1A_corner_rebound_strike
-    Taunt = 0x1B,  // state_1B_taunt
-    CornerTaunt = 0x1C,  // state_1C_corner_taunt
-    DuckingRunner = 0x1D,  // state_1D_l_vs_runner
-    RunnerHopOver = 0x1E,  // state_1E_run_hop_over
-    ApronStrikeIntoRing = 0x1F,  // state_1F_apron_strike
-    ApronStrikeDownToFloor = 0x20,  // state_1F_apron_strike
-    ApronStrikeAlongApron = 0x21,  // state_1F_apron_strike
-    Strike = 0x22,  // state_22_strike
-    StrongStrike = 0x23,  // state_23_strong_strike
-    StrikeAtReturningWhippedRunner = 0x24,  // state_24
-    GetUpAttack = 0x25,  // state_25_getup_attack
-    WeaponSwingLight = 0x26,  // state_26_weapon_swing
-    WeaponSwingHard = 0x27,  // state_26_weapon_swing
-    WeaponGroundAttack = 0x28,  // state_28_weapon_ground_attack
-    BreakUpPinOrHold = 0x29,  // state_29_break_up
-    RunningBreakUpPinOrHold = 0x2A,  // state_29_break_up
-    StrikeAtOpponentSlumpedInCorner = 0x2B,  // state_2B
-    StrikeAtOpponentHeldUpsideDown = 0x2C,  // state_2C
-    KnockedDown = 0x2D,  // state_2D_knocked_down
-    TechnicalKnockoutStagger = 0x2E,  // state_2E_tko_check
-    BleedingStagger = 0x2F,  // state_2F_bleeding
-    SettleAfterAnimation = 0x30,  // state_30_settle
-    LyingDown = 0x31,  // state_31_down
-    Dazed = 0x32,  // state_32_dazed
-    OffBalance = 0x33,  // state_33_off_balance
-    HeldUpsideDown = 0x34,  // state_34_held_upside_down
-    KnockedBack = 0x35,  // state_35_knocked_back
-    FlipDownedOpponentAttacker = 0x36,  // state_36_cover_approach
-    FlipDownedOpponentDefender = 0x37,  // state_37_flipped
-    PickUpDownedOpponentAttacker = 0x38,  // state_38_pickup_attacker
-    PickUpDownedOpponentDefender = 0x39,  // state_39_pickup_defender
-    CornerPullDownAttacker = 0x3A,  // state_3A_pull_down
-    CornerPullDownDefender = 0x3B,  // state_3B_pair_receiver
-    CornerPlaceOnTopAttacker = 0x3C,  // state_3C_place_up
-    CornerPlaceOnTopDefender = 0x3D,  // state_3B_pair_receiver
-    LockupCornerHangFlipAttacker = 0x3E,  // state_3E_corner_hang_flip
-    LockupCornerHangFlipDefender = 0x3F,  // state_3F_corner_reversal
-    YankDownAttacker = 0x40,  // state_40_yank_down
-    YankDownDefender = 0x41,  // state_3B_pair_receiver
-    CoverFromStanding = 0x42,  // state_42_cover_from_standing
-    PinStartDefender = 0x43,  // state_43_pin_start
-    PinAttacker = 0x44,  // state_44_pin_attacker
-    PinDefender = 0x45,  // state_45_pin_defender
-    GroundGrappleAttacker = 0x46,  // state_46_ground_grapple_approach
-    GroundGrappleDefender = 0x47,  // state_47_ground_grappled
-    GroundHoldAttacker = 0x48,  // state_48_hold
-    GroundHoldDefender = 0x49,  // state_49_held
-    PinFromMoveAttacker = 0x4A,  // state_44_pin_attacker
-    PinFromMoveDefender = 0x4B,  // state_45_pin_defender
-    Blocking = 0x4C,  // state_4C_block
-    BlockHit = 0x4D,  // state_4D_block_hit
-    CrouchAfterGetUp = 0x4E,  // state_4E
-    GetUp = 0x4F,  // state_4F_get_up
-    GrappleAttempt = 0x50,  // state_50_grapple_attempt
-    LockupAttacker = 0x51,  // state_51_grapple_attacker
-    LockupDefender = 0x52,  // state_52_grapple_defender
-    MoveAttacker = 0x55,  // state_55_move_attacker
-    MoveDefender = 0x56,  // state_56_move_defender
-    MoveFollowUpWalkAttacker = 0x59,  // state_59_move_walk_attacker
-    MoveFollowUpDefender = 0x5A,  // state_5A
-    CatchWhippedRunnerAttacker = 0x5B,  // state_5B_counter_runner
-    CatchWhippedRunnerDefender = 0x5C,  // state_5C_runner_countered
-    ChainMoveAttacker = 0x5D,  // state_5D_chain_move
-    ChainMoveDefender = 0x5E,  // state_5E_chain_move_defender
-    CarryMoveAttacker = 0x5F,  // state_5F_carry_move
-    CarryMoveDefender = 0x60,  // state_60_carry_move_defender
-    BareHandedGroundAttack = 0x61,  // state_28_weapon_ground_attack
-    RunningGroundAttack = 0x62,  // state_28_weapon_ground_attack
-    HitWhileDown = 0x63,  // state_63_hit_while_down
-    StrikeCounterAttacker = 0x64,  // state_64_counter_strike
-    StrikeCounterDefender = 0x65,  // state_65_strike_countered
-    WeaponTakeAwayAttacker = 0x66,  // state_66_counter_b
-    WeaponTakeAwayDefender = 0x67,  // state_67_counter_b_taken
-    DiveDodge = 0x68,  // state_68_dive_dodge
-    CaughtLegHolder = 0x69,  // state_69_catch_holder
-    CaughtLegHeld = 0x6A,  // state_6A_catch_held
-    GrappleEvade = 0x6B,  // state_6B_grapple_evade
-    GrappleDeflectAttacker = 0x6C,  // state_6C_grapple_deflect
-    GrappleDeflectDefender = 0x6D,  // state_6D_grapple_deflected
-    DropDown = 0x6E,  // state_6E_drop_down
-    ClimbOnto = 0x6F,  // state_6F_climb_onto
-    KnockedOverTopRope = 0x70,  // state_70_over_ropes
-    RunningMoveOffTheSide = 0x71,  // state_71_running_target_move
-    RopeTaunt = 0x72,  // state_72_rope_taunt
-    ApronMove = 0x73,  // state_73_apron_move
-    AerialAttackAtDownedOpponent = 0x74,  // state_73_apron_move
-    ApronDiveMove271 = 0x75,  // state_75_apron_dive
-    ApronDiveMove272 = 0x76,  // state_75_apron_dive
-    ApronToRingMove = 0x77,  // state_77_apron_to_ring_move
-    RunningFlyingMove = 0x78,  // state_78_running_move
-    TurnbuckleDiveMoves256And257 = 0x79,  // state_79_dive
-    TurnbuckleDiveMoves263And264 = 0x7A,  // state_79_dive
-    TurnbuckleDiveMoves261And262 = 0x7B,  // state_79_dive
-    TurnbuckleDiveMove279 = 0x7C,  // state_79_dive
-    TurnbuckleDiveMove280 = 0x7D,  // state_79_dive
-    WalkToClimb = 0x7E,  // state_7E_walk_to_climb
-    RearLiftAttacker = 0x7F,  // state_7F_rear_lift
-    RearLiftDefender = 0x80,  // state_80_carried_escape
-    CarryAttacker = 0x81,  // state_81_carry
-    CarryDefender = 0x82,  // state_82_carried
-    DoubleTeamFirstAttacker = 0x83,  // state_83_double_team_a
-    DoubleTeamPartner = 0x84,  // state_84_double_team_b
-    DoubleTeamVictim = 0x85,  // state_85_double_team_victim
-    GrappleFromFloorAttacker = 0x86,  // state_86_chain_received
-    GrappleFromFloorDefender = 0x87,  // state_87_pulled_from_above
-    CatchFlyerAttacker = 0x88,  // state_88_catch_flyer
-    CatchFlyerDefender = 0x89,  // state_89_caught_flying
-    CrowdWeaponGrab = 0x8A,  // state_8A_crowd_weapon_grab
-    BigWeaponDrop = 0x8B,  // state_8B_weapon_drop
-    LiftObject = 0x8C,  // state_8C_lift_object
-    LadderSetUp = 0x8D,  // state_8D_ladder_set_up
-    ObjectPairedMove = 0x8E,  // state_8E_object_pair_move
-    WeaponThrow = 0x8F,  // state_8F_weapon_throw
-    HitHoldingBigWeapon = 0x90,  // state_90_hit_holding_weapon
-    WeaponPickup = 0x91,  // state_91_weapon_pickup
-    IllegalManReturn = 0x92,  // state_92_illegal_return
-    TagReceived = 0x93,  // state_93_tag_received
-    TagOut = 0x94,  // state_94_tag_out
-    ApronPartnerWaiting = 0x95,  // state_95_apron_partner
-    LeaveAfterFall = 0x96,  // state_96_leave_after_fall
-    SpinDazedOpponentAttacker = 0x97,  // state_97_spin_dazed
-    SpinDazedOpponentDefender = 0x98,  // state_98_spun
-    RollToRingSide = 0x99,  // state_99_roll
-    RunOffEdge = 0x9A,  // state_9A_climb
-    RunOntoRaisedPlace = 0x9B,  // state_9A_climb
-    GrappleFromFloorToApronAttacker = 0x9C,  // state_9C_floor_to_apron_grapple
-    GrappleFromFloorToApronDefender = 0x9D,  // state_9D_floor_to_apron_grappled
-    LeapfrogRunner = 0x9E,  // state_9E_leapfrog
-    SideStepRunner = 0x9F,  // state_9F_run_dodge
-    RunningGrappleAttacker = 0xA0,  // state_A0_running_grapple_attacker
-    RunningGrappleDefender = 0xA1,  // state_A1_running_grapple_defender
-    RunIn = 0xA3,  // state_A3_run_in
-    IllegalManLeave = 0xA4,  // state_A4_illegal_leave
-    RunToSidePoint = 0xA5,  // state_A5_run_to_side
-    RefereeCount = 0xA6,  // state_A6_referee_count
-    DuckBackBreakingGrab = 0xA7,  // state_A7_stay_down_getup
-    GuestRefereeCountOut = 0xA8,  // state_A8_referee_countout
-    GuestRefereeCall = 0xA9,  // state_A9_referee_call
-    LadderGetOn = 0xAA,  // state_AA_ladder_climb
-    LadderGetOff = 0xAB,  // state_AB_ladder_off
-    LadderClimbUp = 0xAC,  // state_AC_ladder_up
-    LadderClimbDown = 0xAD,  // state_AD_ladder_down
-    OnLadder = 0xAE,  // state_AE_ladder_control
-    LadderClimbToTop = 0xAF,  // state_AF_ladder_top
-    LadderLeaveTop = 0xB0,  // state_B0_ladder_top_leave
-    OnLadderTop = 0xB1,  // state_AE_ladder_control
-    LadderHit = 0xB2,  // state_B2_ladder_knocked
-    LadderFallOff = 0xB3,  // state_B3_ladder_fall
-    LadderPulledOff = 0xB4,  // state_B4_ladder_pull_off
-    LadderFallOffAlternate = 0xB5,  // state_B3_ladder_fall
-    LadderJumpOff = 0xB6,  // state_B6_ladder_jump
-    LadderTopStrike = 0xB7,  // state_B7_ladder_strike
-    LadderClimbToDive = 0xB8,  // state_B8_ladder_climb_top
-    LadderRungStrike = 0xB9,  // state_B9_ladder_mid_strike
-    LadderTopShove = 0xBA,  // state_BA_ladder_top_shove
-    LadderTopYank = 0xBB,  // state_BB_ladder_top_yank
-    LadderThrownOff = 0xBC,  // state_BC_ladder_thrown_off
-    LadderReachForPrize = 0xBD,  // state_BD_ladder_grab_prize
-    WalkInToStart = 0xBE,  // state_BE_walk_in
-    StrikeFromRaisedPlaceAtFloor = 0xBF,  // state_BF
-    ApronDiveGenericMove75 = 0xC0,  // state_75_apron_dive
-    HitCageWall = 0xC1,  // state_C1_hit_cage_wall
-    CageWhipAttacker = 0xC2,  // state_C2_cage_whip
-    CageWhipDefender = 0xC3,  // state_C3_cage_whip_b
-    CageTopClimbOver = 0xC4,  // state_C4_cage_climb
-    CageEscape = 0xC5,  // state_C5_cage_escape
-    CageHang = 0xC6,  // state_C6_cage_hang
-    CageFallOff = 0xC7,  // state_C7_drop_down
-    CageClimbStart = 0xC8,  // state_C8_cage_climb_start
-    StrikeAtOpponentOnCageWall = 0xC9,  // state_C9_strike_turnbuckle
-    CageHangHit = 0xCA,  // state_CA_cage_hang_hit
-    RunAtCageClimber = 0xCB,  // state_CB_run_at_cage_climber
-    CageWallStrike = 0xCC,  // state_CC_cage_climb_idle
-    CageYankAttacker = 0xCD,  // state_CD_cage_yank
-    CageYankDefender = 0xCE,  // state_CE_cage_yanked
-    CageTopDive = 0xCF,  // state_CF_cage_top_attack
-    DragAttacker = 0xD0,  // state_D0_drag
-    DragDefender = 0xD1,  // state_D1_dragged
-    UnusedTestPose = 0xD2,  // state_D2_ram_strike
+    /// 0x00, state_00_pre_bell. Every wrestler before the bell.
+    PreBell = 0x00,
+    /// 0x01, state_01_stand.
+    Standing = 0x01,
+    /// 0x02, state_02_apron_corner_walk. Sliding round the apron's outer corner.
+    ApronCornerWalk = 0x02,
+    /// 0x03, state_03_run.
+    Running = 0x03,
+    /// 0x04, state_04_run_rebound.
+    RunningRopeRebound = 0x04,
+    /// 0x05, state_05_run_collide_hit. Hit by a running wrestler, or both in a run collision.
+    HitByRunner = 0x05,
+    /// 0x06, state_06_run_r_move. R while running: move 208.
+    RunningRButtonMove = 0x06,
+    /// 0x07, state_07_running_shoulder_block.
+    RunningShoulderBlock = 0x07,
+    /// 0x08, state_08_run_weapon_strike.
+    RunningWeaponStrike = 0x08,
+    /// 0x09, state_09_apron_dodge. On the apron, dodging back while holding the ropes.
+    ApronDodge = 0x09,
+    /// 0x0A, state_0A_turnbuckle_perch. Up on the turnbuckle waiting to dive, taunt or climb down.
+    TurnbucklePerch = 0x0A,
+    /// 0x0B, state_0B_whip_attacker.
+    IrishWhipAttacker = 0x0B,
+    /// 0x0C, state_0C_whip_runner. The wrestler being whipped, running; the whipper is IrishWhipAttacker.
+    IrishWhipRunner = 0x0C,
+    /// 0x0D, state_0D_shove. Shoving the opponent at a wall or over the ropes, from a lock-up.
+    ShoveAtWallAttacker = 0x0D,
+    /// 0x0E, state_0E_shoved.
+    ShoveAtWallDefender = 0x0E,
+    /// 0x0F, state_0D_shove. As ShoveAtWallAttacker, putting the opponent onto a table or the steps; shares its handler.
+    PutOntoTableOrStepsAttacker = 0x0F,
+    /// 0x10, state_0E_shoved. As ShoveAtWallDefender, being put onto a table or the steps; shares its handler.
+    PutOntoTableOrStepsDefender = 0x10,
+    /// 0x11, state_11_apron_lockup_c_down. C-down in a lock-up across the ropes, with the defender on the apron.
+    RopesLockupPushFromRingAttacker = 0x11,
+    /// 0x12, state_12_apron_lockup_pushed.
+    RopesLockupPushFromRingDefender = 0x12,
+    /// 0x13, state_11_apron_lockup_c_down. C-down in a lock-up across the ropes, with the attacker on the apron.
+    RopesLockupPushFromApronAttacker = 0x13,
+    /// 0x14, state_12_apron_lockup_pushed.
+    RopesLockupPushFromApronDefender = 0x14,
+    /// 0x15, state_15_run_into_corner.
+    RunIntoCorner = 0x15,
+    /// 0x16, state_16_run_knockout_fall. Knocked out by the run into the corner.
+    RunKnockoutFall = 0x16,
+    /// 0x17, state_17_on_ropes. Hanging over the ropes after being knocked or whipped into them.
+    DrapedOverRopes = 0x17,
+    /// 0x18, state_18_corner_slump. Slumped in the corner; opens the corner moves and strikes.
+    SlumpedInCorner = 0x18,
+    /// 0x19, state_19_run_stop_turn. Stopping at a corner and turning to face out.
+    TurningInCorner = 0x19,
+    /// 0x1A, state_1A_corner_rebound_strike.
+    CornerReboundStrike = 0x1A,
+    /// 0x1B, state_1B_taunt. The taunt state, also the wait on the apron and the corner sit-down's weapon variant.
+    Taunt = 0x1B,
+    /// 0x1C, state_1C_corner_taunt.
+    CornerTaunt = 0x1C,
+    /// 0x1D, state_1D_l_vs_runner. L at a runner: ducking, so it goes over the top (RunnerHopOver).
+    DuckingRunner = 0x1D,
+    /// 0x1E, state_1E_run_hop_over. The runner going over someone ducking (DuckingRunner), and running on.
+    RunnerHopOver = 0x1E,
+    /// 0x1F, state_1F_apron_strike.
+    ApronStrikeIntoRing = 0x1F,
+    /// 0x20, state_1F_apron_strike.
+    ApronStrikeDownToFloor = 0x20,
+    /// 0x21, state_1F_apron_strike.
+    ApronStrikeAlongApron = 0x21,
+    /// 0x22, state_22_strike. The A / B action start: becomes a grapple or a strike by input_press_kind.
+    Strike = 0x22,
+    /// 0x23, state_23_strong_strike. A / B held: moves 186, 188 or 190.
+    StrongStrike = 0x23,
+    /// 0x24, state_24. Move 205.
+    StrikeAtReturningWhippedRunner = 0x24,
+    /// 0x25, state_25_getup_attack.
+    GetUpAttack = 0x25,
+    /// 0x26, state_26_weapon_swing.
+    WeaponSwingLight = 0x26,
+    /// 0x27, state_26_weapon_swing.
+    WeaponSwingHard = 0x27,
+    /// 0x28, state_28_weapon_ground_attack. Ground attack at a downed opponent, with a weapon.
+    WeaponGroundAttack = 0x28,
+    /// 0x29, state_29_break_up. C-up at someone pinning or holding a downed opponent.
+    BreakUpPinOrHold = 0x29,
+    /// 0x2A, state_29_break_up. B while running, at someone pinning or holding a downed opponent.
+    RunningBreakUpPinOrHold = 0x2A,
+    /// 0x2B, state_2B.
+    StrikeAtOpponentSlumpedInCorner = 0x2B,
+    /// 0x2C, state_2C. At an opponent with frame_flags 0x08, set by HeldUpsideDown.
+    StrikeAtOpponentHeldUpsideDown = 0x2C,
+    /// 0x2D, state_2D_knocked_down.
+    KnockedDown = 0x2D,
+    /// 0x2E, state_2E_tko_check. Stagger when a blow makes a technical knockout possible.
+    TechnicalKnockoutStagger = 0x2E,
+    /// 0x2F, state_2F_bleeding. A cut: staggering from a blow that made the wrestler bleed; first blood ends the fall here.
+    BleedingStagger = 0x2F,
+    /// 0x30, state_30_settle. Picks what follows a move or animation from its end pose; also the short stun after one.
+    SettleAfterAnimation = 0x30,
+    /// 0x31, state_31_down. The time spent down, counted by escape; step 1 re-enters after a hit or flip.
+    LyingDown = 0x31,
+    /// 0x32, state_32_dazed. Dazed on its feet after a get-up; on the apron, hanging on the ropes.
+    Dazed = 0x32,
+    /// 0x33, state_33_off_balance. Pushed off balance, for about 50 frames.
+    OffBalance = 0x33,
+    /// 0x34, state_34_held_upside_down. Held upside down, then dropped and landing awkwardly.
+    HeldUpsideDown = 0x34,
+    /// 0x35, state_35_knocked_back.
+    KnockedBack = 0x35,
+    /// 0x36, state_36_cover_approach. Stepping to the side of a downed opponent to turn it over.
+    FlipDownedOpponentAttacker = 0x36,
+    /// 0x37, state_37_flipped.
+    FlipDownedOpponentDefender = 0x37,
+    /// 0x38, state_38_pickup_attacker.
+    PickUpDownedOpponentAttacker = 0x38,
+    /// 0x39, state_39_pickup_defender.
+    PickUpDownedOpponentDefender = 0x39,
+    /// 0x3A, state_3A_pull_down. R at an opponent slumped in the corner.
+    CornerPullDownAttacker = 0x3A,
+    /// 0x3B, state_3B_pair_receiver.
+    CornerPullDownDefender = 0x3B,
+    /// 0x3C, state_3C_place_up. L at an opponent slumped in the corner: sets it on the top turnbuckle.
+    CornerPlaceOnTopAttacker = 0x3C,
+    /// 0x3D, state_3B_pair_receiver.
+    CornerPlaceOnTopDefender = 0x3D,
+    /// 0x3E, state_3E_corner_hang_flip. L in a front lock-up.
+    LockupCornerHangFlipAttacker = 0x3E,
+    /// 0x3F, state_3F_corner_reversal.
+    LockupCornerHangFlipDefender = 0x3F,
+    /// 0x40, state_40_yank_down. L or R at an opponent up on the turnbuckle.
+    YankDownAttacker = 0x40,
+    /// 0x41, state_3B_pair_receiver.
+    YankDownDefender = 0x41,
+    /// 0x42, state_42_cover_from_standing.
+    CoverFromStanding = 0x42,
+    /// 0x43, state_43_pin_start. The downed wrestler being covered; goes to PinDefender.
+    PinStartDefender = 0x43,
+    /// 0x44, state_44_pin_attacker.
+    PinAttacker = 0x44,
+    /// 0x45, state_45_pin_defender.
+    PinDefender = 0x45,
+    /// 0x46, state_46_ground_grapple_approach.
+    GroundGrappleAttacker = 0x46,
+    /// 0x47, state_47_ground_grappled.
+    GroundGrappleDefender = 0x47,
+    /// 0x48, state_48_hold.
+    GroundHoldAttacker = 0x48,
+    /// 0x49, state_49_held.
+    GroundHoldDefender = 0x49,
+    /// 0x4A, state_44_pin_attacker. A pin a move ends in (record flag 0x200); shares its handler with PinAttacker.
+    PinFromMoveAttacker = 0x4A,
+    /// 0x4B, state_45_pin_defender. Pinned by a move's ending; shares its handler with PinDefender.
+    PinFromMoveDefender = 0x4B,
+    /// 0x4C, state_4C_block. Blocking with R; steps 5-7 are the guard at the top of a ladder.
+    Blocking = 0x4C,
+    /// 0x4D, state_4D_block_hit. A hit taken through the block.
+    BlockHit = 0x4D,
+    /// 0x4E, state_4E. The crouch after a get-up: the moment to stir, taunt or use C-left before standing.
+    CrouchAfterGetUp = 0x4E,
+    /// 0x4F, state_4F_get_up.
+    GetUp = 0x4F,
+    /// 0x50, state_50_grapple_attempt. The reach for a grapple; on a miss the whiff, on a catch the lock-up.
+    GrappleAttempt = 0x50,
+    /// 0x51, state_51_grapple_attacker. The lock-up, attacker's side; a light grapple also sits here.
+    LockupAttacker = 0x51,
+    /// 0x52, state_52_grapple_defender.
+    LockupDefender = 0x52,
+    /// 0x55, state_55_move_attacker. A grapple move in progress.
+    MoveAttacker = 0x55,
+    /// 0x56, state_56_move_defender.
+    MoveDefender = 0x56,
+    /// 0x59, state_59_move_walk_attacker. Walking while carrying the opponent in a move with a follow-up.
+    MoveFollowUpWalkAttacker = 0x59,
+    /// 0x5A, state_5A.
+    MoveFollowUpDefender = 0x5A,
+    /// 0x5B, state_5B_counter_runner. Catching a whipped runner.
+    CatchWhippedRunnerAttacker = 0x5B,
+    /// 0x5C, state_5C_runner_countered.
+    CatchWhippedRunnerDefender = 0x5C,
+    /// 0x5D, state_5D_chain_move. A grapple move that chains into another (move_chain_check).
+    ChainMoveAttacker = 0x5D,
+    /// 0x5E, state_5E_chain_move_defender.
+    ChainMoveDefender = 0x5E,
+    /// 0x5F, state_5F_carry_move. A move from a carry or pick-up.
+    CarryMoveAttacker = 0x5F,
+    /// 0x60, state_60_carry_move_defender.
+    CarryMoveDefender = 0x60,
+    /// 0x61, state_28_weapon_ground_attack.
+    BareHandedGroundAttack = 0x61,
+    /// 0x62, state_28_weapon_ground_attack. Ground attack at a downed opponent, from the run.
+    RunningGroundAttack = 0x62,
+    /// 0x63, state_63_hit_while_down.
+    HitWhileDown = 0x63,
+    /// 0x64, state_64_counter_strike. Countering a strike with a timed R.
+    StrikeCounterAttacker = 0x64,
+    /// 0x65, state_65_strike_countered.
+    StrikeCounterDefender = 0x65,
+    /// 0x66, state_66_counter_b. Taking a held weapon off a swing.
+    WeaponTakeAwayAttacker = 0x66,
+    /// 0x67, state_67_counter_b_taken.
+    WeaponTakeAwayDefender = 0x67,
+    /// 0x68, state_68_dive_dodge.
+    DiveDodge = 0x68,
+    /// 0x69, state_69_catch_holder. Holding a caught leg; A or B answers.
+    CaughtLegHolder = 0x69,
+    /// 0x6A, state_6A_catch_held. Its leg caught; the same button alone breaks out.
+    CaughtLegHeld = 0x6A,
+    /// 0x6B, state_6B_grapple_evade. L against a grapple attempt, before the deflection.
+    GrappleEvade = 0x6B,
+    /// 0x6C, state_6C_grapple_deflect.
+    GrappleDeflectAttacker = 0x6C,
+    /// 0x6D, state_6D_grapple_deflected.
+    GrappleDeflectDefender = 0x6D,
+    /// 0x6E, state_6E_drop_down. Getting down off the apron, out of the ring, or off a raised place.
+    DropDown = 0x6E,
+    /// 0x6F, state_6F_climb_onto. Climbing into the ring or up onto a raised place.
+    ClimbOnto = 0x6F,
+    /// 0x70, state_70_over_ropes. Over the top rope; also the fall on the far side of a cage escape.
+    KnockedOverTopRope = 0x70,
+    /// 0x71, state_71_running_target_move. A running move at a target off to the side.
+    RunningMoveOffTheSide = 0x71,
+    /// 0x72, state_72_rope_taunt.
+    RopeTaunt = 0x72,
+    /// 0x73, state_73_apron_move. Move 269 from the apron.
+    ApronMove = 0x73,
+    /// 0x74, state_73_apron_move. Move 270, from the apron or turnbuckle at a downed opponent.
+    AerialAttackAtDownedOpponent = 0x74,
+    /// 0x75, state_75_apron_dive. A dive from the apron or a raised place onto the floor.
+    ApronDiveMove271 = 0x75,
+    /// 0x76, state_75_apron_dive. A dive from the apron or a raised place onto the floor.
+    ApronDiveMove272 = 0x76,
+    /// 0x77, state_77_apron_to_ring_move. A with the d-pad toward an opponent in the ring.
+    ApronToRingMove = 0x77,
+    /// 0x78, state_78_running_move. Move 278, off the run to a corner.
+    RunningFlyingMove = 0x78,
+    /// 0x79, state_79_dive. A dive off the turnbuckle or a ladder (0x79-0x7D share a handler).
+    TurnbuckleDiveMoves256And257 = 0x79,
+    /// 0x7A, state_79_dive. A dive off the turnbuckle or a ladder (0x79-0x7D share a handler).
+    TurnbuckleDiveMoves263And264 = 0x7A,
+    /// 0x7B, state_79_dive. A dive off the turnbuckle or a ladder (0x79-0x7D share a handler).
+    TurnbuckleDiveMoves261And262 = 0x7B,
+    /// 0x7C, state_79_dive. A dive off the turnbuckle or a ladder (0x79-0x7D share a handler).
+    TurnbuckleDiveMove279 = 0x7C,
+    /// 0x7D, state_79_dive. A dive off the turnbuckle or a ladder (0x79-0x7D share a handler).
+    TurnbuckleDiveMove280 = 0x7D,
+    /// 0x7E, state_7E_walk_to_climb. No setter with a constant found: walks out from the centre and climbs a raised place.
+    WalkToClimb = 0x7E,
+    /// 0x7F, state_7F_rear_lift. Lifting the opponent from behind.
+    RearLiftAttacker = 0x7F,
+    /// 0x80, state_80_carried_escape.
+    RearLiftDefender = 0x80,
+    /// 0x81, state_81_carry.
+    CarryAttacker = 0x81,
+    /// 0x82, state_82_carried.
+    CarryDefender = 0x82,
+    /// 0x83, state_83_double_team_a. The first attacker of a double-team grapple (moves 163-165).
+    DoubleTeamFirstAttacker = 0x83,
+    /// 0x84, state_84_double_team_b. The partner who joined a lock-up for a double team.
+    DoubleTeamPartner = 0x84,
+    /// 0x85, state_85_double_team_victim.
+    DoubleTeamVictim = 0x85,
+    /// 0x86, state_86_chain_received. A grapple from the floor at an opponent in the ring or up on something.
+    GrappleFromFloorAttacker = 0x86,
+    /// 0x87, state_87_pulled_from_above.
+    GrappleFromFloorDefender = 0x87,
+    /// 0x88, state_88_catch_flyer. Catching an opponent in the air (a dive).
+    CatchFlyerAttacker = 0x88,
+    /// 0x89, state_89_caught_flying.
+    CatchFlyerDefender = 0x89,
+    /// 0x8A, state_8A_crowd_weapon_grab. Taking a weapon from the crowd, a table or the steps.
+    CrowdWeaponGrab = 0x8A,
+    /// 0x8B, state_8B_weapon_drop. Letting a big two-handed weapon go.
+    BigWeaponDrop = 0x8B,
+    /// 0x8C, state_8C_lift_object. Lifting a ladder, table or the steps off the ground.
+    LiftObject = 0x8C,
+    /// 0x8D, state_8D_ladder_set_up. Standing a carried ladder up.
+    LadderSetUp = 0x8D,
+    /// 0x8E, state_8E_object_pair_move. A paired move with a held object at a wall.
+    ObjectPairedMove = 0x8E,
+    /// 0x8F, state_8F_weapon_throw.
+    WeaponThrow = 0x8F,
+    /// 0x90, state_90_hit_holding_weapon. Hit while holding a two-handed weapon, or catching one thrown.
+    HitHoldingBigWeapon = 0x90,
+    /// 0x91, state_91_weapon_pickup. Picking a weapon up off the steps or a wall.
+    WeaponPickup = 0x91,
+    /// 0x92, state_92_illegal_return. The illegal man walking back to its corner.
+    IllegalManReturn = 0x92,
+    /// 0x93, state_93_tag_received. The partner coming in on a tag.
+    TagReceived = 0x93,
+    /// 0x94, state_94_tag_out. The legal man going out on a tag.
+    TagOut = 0x94,
+    /// 0x95, state_95_apron_partner. The waiting partner, crouched on the apron corner.
+    ApronPartnerWaiting = 0x95,
+    /// 0x96, state_96_leave_after_fall. Leaving after losing a fall.
+    LeaveAfterFall = 0x96,
+    /// 0x97, state_97_spin_dazed.
+    SpinDazedOpponentAttacker = 0x97,
+    /// 0x98, state_98_spun.
+    SpinDazedOpponentDefender = 0x98,
+    /// 0x99, state_99_roll.
+    RollToRingSide = 0x99,
+    /// 0x9A, state_9A_climb. A run out over the ropes or off a raised place.
+    RunOffEdge = 0x9A,
+    /// 0x9B, state_9A_climb. A run up onto a table or raised place.
+    RunOntoRaisedPlace = 0x9B,
+    /// 0x9C, state_9C_floor_to_apron_grapple.
+    GrappleFromFloorToApronAttacker = 0x9C,
+    /// 0x9D, state_9D_floor_to_apron_grappled.
+    GrappleFromFloorToApronDefender = 0x9D,
+    /// 0x9E, state_9E_leapfrog. Going over a runner.
+    LeapfrogRunner = 0x9E,
+    /// 0x9F, state_9F_run_dodge. Stepping aside from a runner.
+    SideStepRunner = 0x9F,
+    /// 0xA0, state_A0_running_grapple_attacker.
+    RunningGrappleAttacker = 0xA0,
+    /// 0xA1, state_A1_running_grapple_defender.
+    RunningGrappleDefender = 0xA1,
+    /// 0xA3, state_A3_run_in. Entering mid-match: a run-in, or the next Rumble entrant.
+    RunIn = 0xA3,
+    /// 0xA4, state_A4_illegal_leave. Leaving the ring when illegal_check says it may not stay.
+    IllegalManLeave = 0xA4,
+    /// 0xA5, state_A5_run_to_side. Running toward a point at the ring's side, then the run.
+    RunToSidePoint = 0xA5,
+    /// 0xA6, state_A6_referee_count. The referee counting a pin or a count-out.
+    RefereeCount = 0xA6,
+    /// 0xA7, state_A7_stay_down_getup. Ducking backwards out of an attacker's grab.
+    DuckBackBreakingGrab = 0xA7,
+    /// 0xA8, state_A8_referee_countout.
+    GuestRefereeCountOut = 0xA8,
+    /// 0xA9, state_A9_referee_call.
+    GuestRefereeCall = 0xA9,
+    /// 0xAA, state_AA_ladder_climb. Walking to the ladder and stepping on.
+    LadderGetOn = 0xAA,
+    /// 0xAB, state_AB_ladder_off.
+    LadderGetOff = 0xAB,
+    /// 0xAC, state_AC_ladder_up.
+    LadderClimbUp = 0xAC,
+    /// 0xAD, state_AD_ladder_down.
+    LadderClimbDown = 0xAD,
+    /// 0xAE, state_AE_ladder_control. On a rung, taking input.
+    OnLadder = 0xAE,
+    /// 0xAF, state_AF_ladder_top.
+    LadderClimbToTop = 0xAF,
+    /// 0xB0, state_B0_ladder_top_leave.
+    LadderLeaveTop = 0xB0,
+    /// 0xB1, state_AE_ladder_control. At the top, taking input; shares its handler with OnLadder.
+    OnLadderTop = 0xB1,
+    /// 0xB2, state_B2_ladder_knocked. Hit while on the ladder; may fall (LadderFallOff).
+    LadderHit = 0xB2,
+    /// 0xB3, state_B3_ladder_fall. Falling off when hit.
+    LadderFallOff = 0xB3,
+    /// 0xB4, state_B4_ladder_pull_off. Pulling a climber off the ladder by a grapple.
+    LadderPullOffAttacker = 0xB4,
+    /// 0xB5, state_B3_ladder_fall. Pulled off the ladder; shares its handler with LadderFallOff.
+    LadderPullOffDefender = 0xB5,
+    /// 0xB6, state_B6_ladder_jump.
+    LadderJumpOff = 0xB6,
+    /// 0xB7, state_B7_ladder_strike.
+    LadderTopStrike = 0xB7,
+    /// 0xB8, state_B8_ladder_climb_top. Getting ready to dive off the top (A).
+    LadderClimbToDive = 0xB8,
+    /// 0xB9, state_B9_ladder_mid_strike. A strike from a rung (B).
+    LadderRungStrike = 0xB9,
+    /// 0xBA, state_BA_ladder_top_shove.
+    LadderTopShove = 0xBA,
+    /// 0xBB, state_BB_ladder_top_yank.
+    LadderTopYank = 0xBB,
+    /// 0xBC, state_BC_ladder_thrown_off. Thrown off a ladder knocked flying.
+    LadderThrownOff = 0xBC,
+    /// 0xBD, state_BD_ladder_grab_prize. Mashing for the prize: needs the ladder within 30 of the ring's centre.
+    LadderReachForPrize = 0xBD,
+    /// 0xBE, state_BE_walk_in.
+    WalkInToStart = 0xBE,
+    /// 0xBF, state_BF. From a raised place at an opponent on the floor.
+    StrikeFromRaisedPlaceAtFloor = 0xBF,
+    /// 0xC0, state_75_apron_dive. A dive from the apron or a raised place onto the floor.
+    ApronDiveGenericMove75 = 0xC0,
+    /// 0xC1, state_C1_hit_cage_wall. Knocked back or running into the cage wall.
+    HitCageWall = 0xC1,
+    /// 0xC2, state_C2_cage_whip.
+    CageWhipAttacker = 0xC2,
+    /// 0xC3, state_C3_cage_whip_b.
+    CageWhipDefender = 0xC3,
+    /// 0xC4, state_C4_cage_climb. On top of the cage: the mash to get over, two rounds.
+    CageTopClimbOver = 0xC4,
+    /// 0xC5, state_C5_cage_escape. Over the top and out: the win.
+    CageEscape = 0xC5,
+    /// 0xC6, state_C6_cage_hang. Hanging off the wall after being shaken or knocked loose.
+    CageHang = 0xC6,
+    /// 0xC7, state_C7_drop_down.
+    CageFallOff = 0xC7,
+    /// 0xC8, state_C8_cage_climb_start. Starting the climb from the ring (C-right, or A / B at a climber).
+    CageClimbStart = 0xC8,
+    /// 0xC9, state_C9_strike_turnbuckle.
+    StrikeAtOpponentOnCageWall = 0xC9,
+    /// 0xCA, state_CA_cage_hang_hit.
+    CageHangHit = 0xCA,
+    /// 0xCB, state_CB_run_at_cage_climber. B while running at someone on the cage wall.
+    RunAtCageClimber = 0xCB,
+    /// 0xCC, state_CC_cage_climb_idle.
+    CageWallStrike = 0xCC,
+    /// 0xCD, state_CD_cage_yank. Pulling a climber off the cage.
+    CageYankAttacker = 0xCD,
+    /// 0xCE, state_CE_cage_yanked.
+    CageYankDefender = 0xCE,
+    /// 0xCF, state_CF_cage_top_attack.
+    CageTopDive = 0xCF,
+    /// 0xD0, state_D0_drag.
+    DragAttacker = 0xD0,
+    /// 0xD1, state_D1_dragged.
+    DragDefender = 0xD1,
+    /// 0xD2, state_D2_ram_strike. No setter uses it: centre of the ring, plays a pose by d-pad. Probably a leftover.
+    UnusedTestPose = 0xD2,
 };
 
 }  // namespace state

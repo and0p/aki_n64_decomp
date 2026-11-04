@@ -188,7 +188,7 @@ s32 mash_count(Wrestler *w, u16 pressed, s32 op) {
     s32 st = w->state;
     if (st == state::GroundGrappleDefender) {
         limit = 8;
-    } else if (st == state::PinDefender|| st == state::PinFromMoveDefender) {
+    } else if (st == state::PinDefender || st == state::PinFromMoveDefender) {
         s32 c = mem_s32(A_PIN_COUNTS + 12 * slot + 4);
         if (c == 0)
             limit = 2;

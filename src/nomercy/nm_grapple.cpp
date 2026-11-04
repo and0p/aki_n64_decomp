@@ -784,7 +784,7 @@ s32 grapple_attempt_slide(WrestlerCtx *ctx) {
 // copied without 0x04, its flags80 0x20 cleared).
 void grapple_start_pair(Wrestler *att, Wrestler *def) {
     if (def->location & 8) {
-        wrestler_pair_set_state_move(att, state::LadderPulledOff, def, state::LadderFallOffAlternate);
+        wrestler_pair_set_state_move(att, state::LadderPullOffAttacker, def, state::LadderPullOffDefender);
         return;
     }
     if (att->location & 2) {
@@ -954,7 +954,7 @@ checks:
             wrestler_pair_set_state_move(att, state::YankDownAttacker, def, state::YankDownDefender);
         return 0;
     }
-    if (st == state::LockupDefender&& (def->flags78 & 0x200000))
+    if (st == state::LockupDefender && (def->flags78 & 0x200000))
         return 0;
     if ((att->location & 4) && (def->location & 2) && def->state != state::LockupDefender && !(att->flags78 & 0x40)) {
         grapple_start_pair(att, def);
