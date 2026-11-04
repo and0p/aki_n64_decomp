@@ -668,7 +668,13 @@ s32 input_leapfrog(WrestlerCtx *ctx) {
             continue;
         if (!(o->flags80 & 8))
             continue;
-        NM_UNPORTED("input_leapfrog: a downed wrestler near the run (wrestler_translate_pushed)");
+        if (wrestler_translate_pushed(self, &self->step_vec, -1) == o->slot &&
+            abs_i(angle_diff(angle_to(&self->point_120, &o->point_120), self->turn_step)) < 910) {
+            self->runner_slot = o->slot;
+            wrestler_set_state_now(self, state::LeapfrogRunner);
+            weapon_release(self, 0);
+            return 1;
+        }
     }
     wrestler_set_state_now(ctx->self, state::Running);
     return 1;

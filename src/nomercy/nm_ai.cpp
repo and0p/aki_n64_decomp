@@ -8687,10 +8687,1740 @@ void ai_mode_87_walk_to_opponent_zone_axis() {
     }
 }
 
+// N64 0x8010C188: modes 127-129, standing: walks to within 180 of the middle along its own side (127) or the opponent's
+// (128), then C-up with the d-pad out of the ring (129 straight to it, d-pad up). Special mode goes to the apron wait.
+void ai_mode_127_walk_to_edge_and_climb_out() {
+    const Wrestler *s = g_ai_self;
+    s32 mode = mem_s32(blk(AI_MODE));
+    switch (ai_step()) {
+    case 0:
+        if (mode == ai_mode::WalkToEdgeAndClimbOutVariant1 || mode == ai_mode::WalkToEdgeAndClimbOutVariant2) {
+            if (s->flags_ee & 2) {
+                ai_set_mode(ai_mode::ApronWaitAndTaunt);
+                return;
+            }
+            s32 zone = mode == ai_mode::WalkToEdgeAndClimbOutVariant2 ? g_ai_opp->joint_zone : mem_s16(blk(AI_ZONE_SELF));
+            mem_w16(blk(AI_PENDING), mem_u16(0x8014D218 + 2u * (u32)zone));
+            mem_w32(blk(AI_STEP), 1);
+        } else if (mode == ai_mode::WalkToEdgeAndClimbOutVariant3) {
+            mem_w16(blk(AI_PENDING), 0x800);
+            mem_w32(blk(AI_STEP), 2);
+        }
+        return;
+    case 1: {
+        s32 zone;
+        if (mode == ai_mode::WalkToEdgeAndClimbOutVariant1) {
+            zone = mem_s8(blk(0x43));
+        } else if (mode == ai_mode::WalkToEdgeAndClimbOutVariant2) {
+            zone = (s8)g_ai_opp->joint_zone;
+        } else {
+            ai_set_mode(ai_mode::Think);
+            return;
+        }
+        if (s->state != state::Standing) {
+            ai_set_mode(ai_mode::Think);
+            return;
+        }
+        Vec3 sp = ai_self_point();
+        if (zone == 0 || zone == 2) {
+            if (180.0 < (f64)sp.x)
+                ai_hold(0x200);
+            else if ((f64)sp.x < -180.0)
+                ai_hold(0x100);
+            else
+                ai_next_step();
+        } else if (zone == 1 || zone == 3) {
+            if (180.0 < (f64)sp.z)
+                ai_hold(0x400);
+            else if ((f64)sp.z < -180.0)
+                ai_hold(0x800);
+            else
+                ai_next_step();
+        }
+        return;
+    }
+    case 2:
+        if (s->state != state::Standing) {
+            ai_set_mode(ai_mode::Think);
+            return;
+        }
+        ai_press(8);
+        ai_hold(mem_u16(blk(AI_PENDING)));
+        return;
+    default:
+        return;
+    }
+}
+
+// N64 0x80108B38: mode 91, a downed opponent (15) past the ropes: walks to its zone's side, C-down once in reach and
+// lined up; on the ropes (step 2) A with the side's d-pad within 341 of straight across, else along the ropes to it, for
+// at most 16 frames of holding.
+void ai_mode_91_walk_to() {
+    const Wrestler *s = g_ai_self;
+    switch (ai_step()) {
+    case 0: {
+        u16 b = mem_u16(0x8014D218 + 2u * (u32)(s32)mem_s16(blk(AI_ZONE_OPP)));
+        mem_w32(blk(AI_MODE_TIMER), 0);
+        mem_w16(blk(AI_PENDING), b);
+        ai_hold(b);
+        ai_next_step();
+        return;
+    }
+    case 1: {
+        s32 sit = ai_sit_self();
+        if (ai_sit_opp() != 15) {
+            ai_set_mode(ai_mode::Think);
+        } else if (sit == 42) {
+            ai_hold(mem_u16(blk(AI_PENDING)));
+        } else if (sit != 1) {
+            ai_set_mode(ai_mode::Think);
+        } else if (s->dpad_held) {
+            if (mem_u16(blk(AI_PENDING)) & s->dpad_held)
+                mem_w32(blk(AI_STEP), 2);
+            else
+                ai_set_mode(ai_mode::Think);
+        } else if (mem_f32(blk(AI_DIST)) < mem_f32(blk(AI_BODY_DIST)) && mem_u16(blk(AI_PENDING)) == (u16)ai_dir8_to_target()) {
+            ai_press(4);
+            ai_hold(mem_u16(blk(AI_PENDING)) | 4);
+        } else {
+            ai_hold(mem_u16(blk(AI_PENDING)));
+        }
+        return;
+    }
+    case 2: {
+        s32 sit = ai_sit_self();
+        if (sit == 27) {
+            mem_w32(blk(AI_STEP), 3);
+            return;
+        }
+        if (sit != 1 || ai_sit_opp() != 15) {
+            ai_set_mode(ai_mode::Think);
+            return;
+        }
+        Vec3 sp = ai_self_point(), op = ai_opp_point();
+        s32 zone = mem_s16(blk(AI_ZONE_SELF));
+        u16 side = mem_u16(0x8014D218 + 2u * (u32)zone);
+        if (abs_i(angle_diff(angle_to(&sp, &op), mem_s32(0x8014D1E8 + 4u * (u32)zone))) < 341) {
+            ai_press(0x8000);
+            ai_hold(side);
+            return;
+        }
+        if (s->dpad_held) {
+            s32 t = mem_s32(blk(AI_MODE_TIMER)) + 1;
+            mem_w32(blk(AI_MODE_TIMER), (u32)t);
+            if (t >= 16) {
+                ai_press(0x8000);
+                ai_hold(side);
+                return;
+            }
+        }
+        if (zone & 1)
+            ai_hold(op.z >= sp.z ? 0x800 : 0x400);
+        else
+            ai_hold(op.x >= sp.x ? 0x100 : 0x200);
+        return;
+    }
+    case 3:
+        if (ai_sit_self() != 27)
+            ai_set_mode(ai_mode::Think);
+        return;
+    default:
+        return;
+    }
+}
+
+// N64 0x800FF288: modes 11 / 12, side-steps off the line (turned a quarter when that points back at the ring's centre
+// from 150 out), past 185 C-down and a strike: 11 B, 12 A + B at the list's reach. On the run: L at a striker within
+// 170, the strike's button in reach + 25, or at a target in flags80 0x05 a skill roll of R, L, or running on.
+void ai_mode_11_side_step_and_run() {
+    switch (ai_step()) {
+    case 0: {
+        Vec3 sp = ai_self_point(), op = ai_opp_point();
+        s32 d = dir8_to(&op, &sp);
+        if (150.0 < (f64)vec2_len(sp.x, sp.z)) {
+            s32 c = angle_dir8(vec_xz_angle(sp.x, sp.z));
+            if (abs_i(angle_diff(mem_s32(0x8014D238 + 4u * (u32)c), mem_s32(0x8014D238 + 4u * (u32)d))) < 768)
+                d = (d + (chance_check(500) ? 2 : -2)) & 7;
+        }
+        mem_w32(blk(AI_REACH), 0);
+        mem_w16(blk(AI_PENDING), dir8_buttons(d));
+        ai_next_step();
+        return;
+    }
+    case 1: {
+        if (ai_sit_self() != 1) {
+            ai_set_mode(ai_mode::Think);
+            return;
+        }
+        if (!((f64)mem_f32(blk(AI_DIST)) < 185.0)) {
+            bool b = mem_s32(blk(AI_MODE)) == ai_mode::SideStepAndRun;
+            mem_w16(blk(AI_PENDING), b ? 0x4000 : 0xC000);
+            mem_wf32(blk(AI_REACH), mem_f32(mem_u32(blk(AI_LISTS)) + (b ? 0x18 : 0x20)));
+            ai_hold(4);
+            ai_next_step();
+        } else {
+            ai_hold(mem_u16(blk(AI_PENDING)));
+        }
+        return;
+    }
+    case 2: {
+        s32 sit = ai_sit_self();
+        if (sit == 4) {
+            ai_set_mode(ai_mode::KeepRunning);
+            return;
+        }
+        if (sit == 5 || sit == 8)
+            return;
+        if (sit != 2) {
+            ai_set_mode(ai_mode::Think);
+            return;
+        }
+        if (g_ai_self->state_step != 2)
+            return;
+        if ((f64)mem_f32(blk(AI_DIST_P)) < 170.0 && chance_check(mem_s32(blk(AI_SKILL)))) {
+            s32 so = ai_sit_opp();
+            if (so == 8 || so == 11) {
+                ai_hold(0x20);
+                return;
+            }
+        }
+        if (!((f64)mem_f32(blk(AI_DIST)) < (f64)mem_f32(blk(AI_REACH)) + 25.0))
+            return;
+        if (!(g_ai_opp->flags80 & 5)) {
+            ai_hold(mem_u16(blk(AI_PENDING)));
+            return;
+        }
+        if (chance_check(mem_s32(blk(AI_SKILL)))) {
+            s32 r = rand_pool_next();
+            if (r < 200) {
+                ai_hold(0x10);
+                return;
+            }
+            if (r < 600) {
+                ai_hold(0x20);
+                return;
+            }
+        }
+        ai_set_mode(ai_mode::KeepRunning);
+        return;
+    }
+    default:
+        return;
+    }
+}
+
+// N64 0x8010DEF0: mode 141, walks along the barrier by C-left and C-up to a crowd weapon (never under rules 0x2000),
+// away from an opponent cornering it or close on the floor. Armed, it walks back to the ring on a 32-frame heading.
+void ai_mode_141_after_crowd_weapon() {
+    if (g_match_rules & 0x2000) {
+        ai_set_mode(ai_mode::Think);
+        return;
+    }
+    const Wrestler *s = g_ai_self;
+    const Wrestler *o = g_ai_opp;
+    switch (ai_step()) {
+    case 0:
+        mem_w32(blk(AI_STEP), 1);
+        return;
+    case 1: {
+        s32 sit = ai_sit_self();
+        if (sit == 50) {
+            mem_w32(blk(AI_STEP), 2);
+            return;
+        }
+        s32 so = ai_sit_opp();
+        if (sit > 50 || (sit < 48 && sit != 1) || so == 25 || so == 26 || ((o->location & 4) && (f64)mem_f32(blk(AI_DIST_P)) < 200.0)) {
+            ai_set_mode(ai_mode::Think);
+            return;
+        }
+        Vec3 sp = ai_self_point();
+        if (560.0 < (f64)sp.z || (s->location & 0x40)) {
+            s32 q = mem_s16(blk(AI_QUAD_SELF));
+            if (q >= 0 && q < 2)
+                mem_w16(blk(AI_PENDING), 256);
+            else if (q >= 2 && q < 4)
+                mem_w16(blk(AI_PENDING), 512);
+        } else {
+            mem_w16(blk(AI_PENDING), mem_u16(0x8014D218 + 2u * (u32)(s32)mem_s16(blk(AI_ZONE_SELF))));
+        }
+        ai_press(10);
+        ai_hold(mem_u16(blk(AI_PENDING)) | 8);
+        return;
+    }
+    case 2: {
+        s32 sit = ai_sit_self();
+        if (sit == 50)
+            return;
+        if (sit == 1) {
+            if (s->flags_ef & 1) {
+                mem_w32(blk(AI_MODE_TIMER), 0);
+                ai_next_step();
+                return;
+            }
+            if (chance_check(mem_s16(0x80145FA8 + 2u * (u32)(s32)mem_s8(s->attrs + 6)))) {
+                mem_w32(blk(AI_STEP), 1);
+                return;
+            }
+        }
+        ai_set_mode(ai_mode::Think);
+        return;
+    }
+    case 3: {
+        s32 t = mem_s32(blk(AI_MODE_TIMER)) - 1;
+        mem_w32(blk(AI_MODE_TIMER), (u32)t);
+        if (t <= 0) {
+            mem_w16(blk(AI_PENDING), dir8_buttons(angle_dir8_back(vec_xz_angle(s->pos.x, s->pos.z))));
+            mem_w32(blk(AI_MODE_TIMER), 32);
+        }
+        if (ai_sit_self() != 1) {
+            ai_set_mode(ai_mode::Think);
+            return;
+        }
+        ai_press(2);
+        ai_hold(mem_u16(blk(AI_PENDING)));
+        if (!(s->flags_ef & 1)) {
+            ai_set_mode(ai_mode::Think);
+            return;
+        }
+        if ((s->location & 4) && o->opponent == s->slot) {
+            s32 so = ai_sit_opp();
+            if (so == 25 || so == 26 || ((f64)mem_f32(blk(AI_DIST_P)) < 170.0 && (o->state == 32 || ((mem_u16(blk(AI_WHERE)) & 0x101) && (so == 11 || so == 8)))))
+                ai_set_mode(ai_mode::Think);
+        }
+        return;
+    }
+    default:
+        ai_set_mode(ai_mode::Think);
+        return;
+    }
+}
+
+// N64 0x80103310: mode 36, out of the ring toward the opponent's side (never over-the-top; not near count-out or with
+// it in the ring): C-down when 180 from the ropes, else C-up at it. On the apron (49) reacts within 160 to a run or a
+// strike: a skill roll for L / R, else waits.
+void ai_mode_36_leave_ring() {
+    bool m36 = mem_s32(blk(AI_MODE)) == ai_mode::LeaveRingThroughRopes;
+    if (m36 && (g_match_rules & 0x400)) {
+        ai_set_mode(ai_mode::Think);
+        return;
+    }
+    switch (ai_step()) {
+    case 0: {
+        if (m36 && (mem_u8(A_COUNTOUT) & 1) && mem_s32(A_COUNTOUT_LEFT) < 4) {
+            ai_set_mode(ai_mode::Think);
+            return;
+        }
+        Vec3 sp = ai_self_point();
+        f32 d = ai_side_distance(mem_s16(blk(AI_ZONE_OPP)), &sp);
+        if (m36 && (g_ai_opp->location & 1))
+            d = 0.0f;
+        if (!((f64)d < 180.0)) {
+            ai_hold(4);
+            mem_w32(blk(AI_STEP), 1);
+        } else {
+            ai_press(8);
+            ai_hold(ai_dir8_to_target());
+            mem_w32(blk(AI_STEP), 2);
+        }
+        return;
+    }
+    case 1: {
+        s32 sit = ai_sit_self();
+        if (sit == 4) {
+            ai_set_mode(ai_mode::KeepRunning);
+        } else if (sit == 2) {
+            ai_hold(4);
+        } else if (sit != 49) {
+            ai_set_mode(ai_mode::Think);
+        } else {
+            s32 so = ai_sit_opp();
+            if ((f64)mem_f32(blk(AI_DIST_P)) < 160.0 && (so == 11 || so == 8))
+                mem_w32(blk(AI_STEP), chance_check(mem_s32(blk(AI_SKILL))) ? 4 : 5);
+        }
+        return;
+    }
+    case 2: {
+        ai_press(8);
+        ai_hold(ai_dir8_to_target());
+        s32 sit = ai_sit_self();
+        if (sit == 1) {
+            if (g_ai_opp->location & 1)
+                ai_set_mode(ai_mode::Think);
+        } else if (sit == 49) {
+            ai_next_step();
+        } else {
+            ai_set_mode(ai_mode::Think);
+        }
+        return;
+    }
+    case 3: {
+        if (ai_sit_self() != 49) {
+            ai_set_mode(ai_mode::Think);
+            return;
+        }
+        ai_hold(8);
+        s32 so = ai_sit_opp();
+        if ((f64)mem_f32(blk(AI_DIST_P)) < 160.0 && (so == 11 || so == 8))
+            mem_w32(blk(AI_STEP), chance_check(mem_s32(blk(AI_SKILL))) ? 4 : 5);
+        return;
+    }
+    case 4:
+        if (ai_sit_self() != 49) {
+            ai_set_mode(ai_mode::Think);
+            return;
+        }
+        if (ai_sit_opp() == 11)
+            ai_hold(0x20);
+        if (ai_sit_opp() == 8)
+            ai_hold(0x10);
+        return;
+    case 5:
+        if (ai_sit_self() != 49)
+            ai_set_mode(ai_mode::Think);
+        return;
+    default:
+        return;
+    }
+}
+
+// N64 0x8010B1C4: mode 117, the lock-up (13): the pending buttons until the whip (28); then an opponent thrown (20, 23)
+// has a timed run: corner distance x 0.2945 less its walk to that side and back, C-down that way, off the ropes, A or
+// a roll of R / L / run on.
+void ai_mode_117_lockup_react() {
+    switch (ai_step()) {
+    case 0: {
+        if (!(mem_u16(blk(AI_WHERE)) & 1)) {
+            ai_set_mode(ai_mode::Think);
+            return;
+        }
+        s32 sit = ai_sit_self();
+        if (sit == 13) {
+            ai_press(mem_u16(blk(AI_PENDING)));
+            ai_hold(mem_u16(blk(AI_PENDING)));
+        } else if (sit == 28) {
+            ai_next_step();
+        } else {
+            ai_set_mode(ai_mode::Think);
+        }
+        return;
+    }
+    case 1: {
+        s32 so = ai_sit_opp();
+        if (so == 20 || so == 23) {
+            s32 q = mem_s16(blk(AI_QUAD_OPP));
+            mem_w32(blk(0x9C), (u32)q);
+            s32 lead = (s32)((f64)mem_f32(blk(AI_CORNERS) + 4u * (u32)q) * 0.29454545454545455);
+            f32 speed = walk_speed(g_ai_self, 8);
+            Vec3 sp = ai_self_point();
+            f32 d = ai_side_distance(q, &sp);
+            ai_next_step();
+            mem_w32(blk(AI_MODE_TIMER), (u32)(lead - (s32)((d + d) / speed + 18.0f)));
+        } else if (so != 29 && so != 31) {
+            ai_set_mode(ai_mode::Think);
+        }
+        return;
+    }
+    case 2: {
+        s32 t = mem_s32(blk(AI_MODE_TIMER)) - 1;
+        mem_w32(blk(AI_MODE_TIMER), (u32)t);
+        if (t <= 0) {
+            ai_hold(mem_u16(0x8014D218 + 2u * (u32)mem_s32(blk(0x9C))) | 4);
+            ai_next_step();
+        }
+        return;
+    }
+    case 3: {
+        s32 sit = ai_sit_self();
+        if (sit == 4)
+            ai_next_step();
+        else if (sit != 2)
+            ai_set_mode(ai_mode::Think);
+        return;
+    }
+    case 4: {
+        s32 sit = ai_sit_self();
+        if (sit == 2)
+            ai_next_step();
+        else if (sit != 4)
+            ai_set_mode(ai_mode::Think);
+        return;
+    }
+    case 5: {
+        s32 sit = ai_sit_self();
+        if (sit == 4) {
+            ai_set_mode(ai_mode::KeepRunning);
+            return;
+        }
+        if (sit == 5 || sit == 11)
+            return;
+        if (sit != 2) {
+            ai_set_mode(ai_mode::Think);
+            return;
+        }
+        if (g_ai_self->state_step != 2)
+            return;
+        if ((f64)mem_f32(blk(AI_DIST_P)) < 185.0 && chance_check(mem_s32(blk(AI_SKILL)))) {
+            s32 so = ai_sit_opp();
+            if (so == 8 || so == 11) {
+                ai_hold(0x20);
+                return;
+            }
+        }
+        if (!(g_ai_opp->flags80 & 3)) {
+            ai_hold(0x8000);
+            return;
+        }
+        if (chance_check(mem_s32(blk(AI_SKILL)))) {
+            s32 r = rand_pool_next();
+            if (r < 200) {
+                ai_hold(0x10);
+                return;
+            }
+            if (r < 600) {
+                ai_hold(0x20);
+                return;
+            }
+        }
+        ai_set_mode(ai_mode::KeepRunning);
+        return;
+    }
+    default:
+        return;
+    }
+}
+
+// N64 0x8010B544: mode 118, runs around the apron toward the partner's opponent's side (the target at 265 on the side,
+// by that opponent's position), A / B near it. On the apron C-up with its side's d-pad (100 frames at most); there the
+// legal man hands to ai_press_focus_switch, the other walks on (68) unless its opponent is close.
+void ai_mode_118_apron_walk_to_tag() {
+    const Wrestler *s = g_ai_self;
+    Vec3 sp = ai_self_point();
+    Vec3 target = {mem_f32(blk(0xA4)), mem_f32(blk(0xA8)), mem_f32(blk(0xAC))};
+    switch (ai_step()) {
+    case 0: {
+        ai_hold(mem_u16(0x80145F58 + 2u * (u32)s->ring_zone) | 4);
+        mem_w16(blk(AI_PENDING), mem_u16(0x8014D220 + 2u * (u32)s->ring_zone));
+        const Wrestler *po = &g_wrestlers[(mem_u32(A_AI_PARTNER_OPP) - 0x80159990u) / 856u];
+        switch (s->ring_zone) {
+        case 0:
+            mem_wf32(blk(0xAC), 265.0f);
+            mem_wf32(blk(0xA4), (f32)((f64)po->point_120.x - 175.0));
+            break;
+        case 1:
+            mem_wf32(blk(0xA4), 265.0f);
+            mem_wf32(blk(0xAC), (f32)((f64)po->point_120.z - 175.0));
+            break;
+        case 2:
+            mem_wf32(blk(0xAC), -265.0f);
+            mem_wf32(blk(0xA4), (f32)((f64)po->point_120.x + 175.0));
+            break;
+        case 3:
+            mem_wf32(blk(0xA4), -265.0f);
+            mem_wf32(blk(0xAC), (f32)((f64)po->point_120.z + 175.0));
+            break;
+        default:
+            break;
+        }
+        mem_w32(blk(0xA8), 0);
+        ai_next_step();
+        return;
+    }
+    case 1:
+        if (ai_sit_self() != 2) {
+            ai_set_mode(ai_mode::Think);
+            return;
+        }
+        if ((f64)dist_to(&sp, &target) < 50.0)
+            ai_press(0xF00);
+        mem_w32(blk(AI_MODE_TIMER), 100);
+        ai_next_step();
+        return;
+    case 2: {
+        s32 sit = ai_sit_self();
+        if (sit == 2) {
+            if ((f64)dist_to(&sp, &target) < 50.0)
+                ai_press(0xF00);
+        } else if (sit == 48) {
+            mem_w32(blk(AI_STEP), 3);
+        } else if (sit != 1) {
+            ai_set_mode(ai_mode::Think);
+        } else {
+            s32 t = mem_s32(blk(AI_MODE_TIMER)) - 1;
+            mem_w32(blk(AI_MODE_TIMER), (u32)t);
+            if (t < 0) {
+                ai_set_mode(ai_mode::Think);
+            } else if (apron_walk_dpad(s->slot)) {
+                ai_press(8);
+                ai_hold(mem_u16(0x8014D220 + 2u * (u32)s->ring_zone));
+            }
+        }
+        return;
+    }
+    case 3: {
+        s32 sit = ai_sit_self();
+        if (sit == 48)
+            return;
+        if (sit != 1) {
+            ai_set_mode(ai_mode::Think);
+        } else if (g_ai_opp->flags_e9 & 0x10) {
+            ai_press_focus_switch();
+        } else {
+            ai_set_mode(170.0 < (f64)mem_f32(blk(AI_DIST_P)) ? ai_mode::RunInDirection : ai_mode::Think);
+        }
+        return;
+    }
+    default:
+        return;
+    }
+}
+
+// N64 0x80109BCC: mode 103, ring arenas only: in the lock-up (13) walks toward the middle, sidestepping an opponent
+// holding the d-pad; once within 230 of it, C-up at its side through the whip.
+void ai_mode_103_walk_around() {
+    if (mem_s32(A_ARENA) >= 10) {
+        ai_set_mode(ai_mode::Think);
+        return;
+    }
+    const Wrestler *s = g_ai_self;
+    s32 zone = mem_s16(blk(AI_ZONE_SELF));
+    Vec3 sp = ai_self_point();
+    switch (ai_step()) {
+    case 0:
+        mem_w16(blk(AI_PENDING), dir8_buttons(angle_dir8(angle_add(vec_xz_angle(sp.x, sp.z), 2048))));
+        ai_next_step();
+        return;
+    case 1: {
+        if (ai_sit_self() != 13) {
+            ai_set_mode(ai_mode::Think);
+            return;
+        }
+        if (s->dpad_held) {
+            mem_w32(blk(AI_STEP), 2);
+            return;
+        }
+        if (g_ai_opp->dpad_held) {
+            Vec3 op = ai_opp_point();
+            u16 side = mem_u16(0x8014D220 + 2u * (u32)zone);
+            if (zone == 0 || zone == 2)
+                mem_w16(blk(AI_PENDING), side | (op.x >= sp.x ? 0x200 : 0x100));
+            else if (zone == 1 || zone == 3)
+                mem_w16(blk(AI_PENDING), side | (op.z >= sp.z ? 0x400 : 0x800));
+        }
+        ai_hold(mem_u16(blk(AI_PENDING)));
+        return;
+    }
+    case 2:
+        if (ai_sit_self() != 13) {
+            ai_set_mode(ai_mode::Think);
+            return;
+        }
+        if (zone == 0 || zone == 2) {
+            if (230.0 < (f64)sp.x)
+                ai_hold(0x200);
+            else if ((f64)sp.x < -230.0)
+                ai_hold(0x100);
+            else
+                ai_next_step();
+        } else if (zone == 1 || zone == 3) {
+            if (230.0 < (f64)sp.z)
+                ai_hold(0x400);
+            else if ((f64)sp.z < -230.0)
+                ai_hold(0x800);
+            else
+                ai_next_step();
+        }
+        return;
+    case 3: {
+        s32 sit = ai_sit_self();
+        if (sit == 13) {
+            ai_press(8);
+            ai_hold(mem_u16(0x8014D220 + 2u * (u32)zone));
+        } else if (sit != 28) {
+            ai_set_mode(ai_mode::Think);
+        }
+        return;
+    }
+    default:
+        return;
+    }
+}
+
+// N64 0x80103690: mode 37 (and 38's check): in the ring with the opponent on the floor, unless it is the legal man near
+// count-out; both over 230 out, or past z 530, gives up. Walks to the ropes on the opponent's side, along them to
+// within 30 of it, then A at it, the leap (situation 26).
+void ai_mode_37_walk() {
+    const Wrestler *s = g_ai_self;
+    if (mem_s32(blk(AI_MODE)) == ai_mode::WalkToOpponent) {
+        if (!(s->location & 1) || !(g_ai_opp->location & 4) || ((s->flags_e9 & 0x10) && (mem_u8(A_COUNTOUT) & 1) && mem_s32(A_COUNTOUT_LEFT) < 4)) {
+            ai_set_mode(ai_mode::Think);
+            return;
+        }
+    } else if (!(s->location & 1)) {
+        ai_set_mode(ai_mode::Think);
+        return;
+    }
+    Vec3 sp = ai_self_point(), op = ai_opp_point();
+    if ((230.0 < (f64)absf(op.x) && 230.0 < (f64)absf(op.z)) || 530.0 < (f64)op.z) {
+        ai_set_mode(ai_mode::Think);
+        return;
+    }
+    switch (ai_step()) {
+    case 0:
+        if (ai_sit_self() != 1) {
+            ai_set_mode(ai_mode::Think);
+            return;
+        }
+        ai_hold(ai_dir8_to_target());
+        if (s->dpad_held & 0xF00) {
+            if (mem_u16(0x8014D218 + 2u * (u32)(s32)mem_s16(blk(AI_ZONE_OPP))) & s->dpad_held)
+                ai_next_step();
+            else
+                ai_set_mode(ai_mode::Think);
+        }
+        return;
+    case 1: {
+        s32 zone = mem_s16(blk(AI_ZONE_SELF));
+        if (ai_sit_self() != 1 || zone != mem_s16(blk(AI_ZONE_OPP)) || ai_sit_opp() == 48) {
+            ai_set_mode(ai_mode::Think);
+            return;
+        }
+        if (zone == 0 || zone == 2) {
+            if (!((f64)absf(sp.x - op.x) < 30.0))
+                ai_hold(op.x >= sp.x ? 0x100 : 0x200);
+            else
+                ai_next_step();
+        } else if (zone == 1 || zone == 3) {
+            if (!((f64)absf(sp.z - op.z) < 30.0))
+                ai_hold(op.z >= sp.z ? 0x800 : 0x400);
+            else
+                ai_next_step();
+        }
+        return;
+    }
+    case 2: {
+        s32 sit = ai_sit_self();
+        if (sit == 26) {
+            mem_w32(blk(AI_STEP), 3);
+        } else if (sit != 1) {
+            ai_set_mode(ai_mode::Think);
+        } else if (!(g_ai_opp->flags80 & 1)) {
+            ai_press(0x8000);
+            ai_hold(mem_u16(0x8014D218 + 2u * (u32)(s32)mem_s16(blk(AI_ZONE_OPP))));
+        }
+        return;
+    }
+    case 3:
+        if (ai_sit_self() != 26)
+            ai_set_mode(ai_mode::Think);
+        return;
+    default:
+        return;
+    }
+}
+
+// N64 0x8010B8F8: mode 120, in the lock-up (0x51): turns it toward the centre of the ring (the d-pad a half turn by the
+// table 0x80145F60 / 0x80145F70, alternating), past 75 out, then pushes (d-pad its way for 31+ frames, out to 130), and
+// then ai_lockup_dir_move's way with C-down, those buttons until it resolves.
+void ai_mode_120_lockup() {
+    const Wrestler *s = g_ai_self;
+    Vec3 sp = ai_self_point();
+    s32 facing_dir = angle_dir8(s->facing);
+    s32 out_dir = angle_dir8(vec_xz_angle(sp.x, sp.z));
+    f32 out = vec2_len(sp.x, sp.z);
+    if (s->state != state::LockupAttacker) {
+        ai_set_mode(ai_mode::Think);
+        return;
+    }
+    switch (ai_step()) {
+    case 0:
+        if ((f64)out < 75.0 || facing_dir == out_dir) {
+            mem_w32(blk(AI_STEP), 2);
+        } else {
+            mem_w32(blk(0x9C), (out_dir & 1) == 0);
+            mem_w32(blk(AI_STEP), 1);
+        }
+        return;
+    case 1:
+        if ((f64)out < 75.0 || facing_dir == out_dir) {
+            ai_next_step();
+            return;
+        }
+        if ((facing_dir ^ 4) == out_dir) {
+            ai_hold(mem_u16((mem_s32(blk(0x9C)) ? 0x80145F70 : 0x80145F60) + 2u * (u32)out_dir));
+            return;
+        }
+        if (mem_s16(blk(AI_ZONE_SELF)) != mem_s16(blk(AI_ZONE_OPP)) && mem_s16(blk(AI_QUAD_SELF)) != mem_s16(blk(AI_QUAD_OPP))) {
+            ai_next_step();
+            return;
+        }
+        if (abs_i(angle_diff(mem_s32(0x8014D1F8 + 4u * (u32)(s32)mem_s16(blk(AI_QUAD_SELF))), s->facing)) < 512 ||
+            abs_i(angle_diff(mem_s32(0x8014D1D8 + 4u * (u32)(s32)mem_s16(blk(AI_ZONE_SELF))), s->facing)) < 512) {
+            ai_next_step();
+            return;
+        }
+        {
+            u16 b = dir8_buttons(angle_dir8(angle_add(vec_xz_angle(sp.x, sp.z), 2048)));
+            mem_w16(blk(AI_PENDING), b);
+            ai_hold(b);
+            mem_w32(blk(AI_MODE_TIMER), 10);
+            mem_w32(blk(AI_STEP), 6);
+        }
+        return;
+    case 2:
+        mem_w16(blk(AI_PENDING), dir8_buttons(facing_dir));
+        ai_next_step();
+        return;
+    case 3:
+        if ((s16)s->count_timer < 31 || !((f64)out < 130.0))
+            ai_next_step();
+        else
+            ai_hold(mem_u16(blk(AI_PENDING)));
+        return;
+    case 4: {
+        u16 b = mem_u16(0x8014D218 + 2u * (u32)ai_lockup_dir_move()) | 4;
+        mem_w16(blk(AI_PENDING), b);
+        ai_hold(b);
+        ai_next_step();
+        return;
+    }
+    case 5:
+        if (ai_sit_self() != 13) {
+            ai_set_mode(ai_mode::Think);
+            return;
+        }
+        ai_press(mem_u16(blk(AI_PENDING)));
+        ai_hold(mem_u16(blk(AI_PENDING)));
+        return;
+    case 6: {
+        ai_hold(mem_u16(blk(AI_PENDING)));
+        s32 t = mem_s32(blk(AI_MODE_TIMER)) - 1;
+        mem_w32(blk(AI_MODE_TIMER), (u32)t);
+        if (t < 0)
+            mem_w32(blk(AI_STEP), 1);
+        return;
+    }
+    default:
+        return;
+    }
+}
+
+// N64 0x80106C7C: 1 when no other wrestler on ring side `dir` blocks a run there: not in the corner slump's early steps
+// (state 0x18, before step 5), not on the corner perch (0x0A) or held on the ropes (0x1C), not flagged (frame_flags
+// 0x08), not running with flags86 0x08.
+s32 ai_runner_target(s32 dir) {
+    for (s32 i = 0; i < 4; i++) {
+        const Wrestler *x = &g_wrestlers[i];
+        if (x->roster_id == -1 || x->slot == g_ai_self->slot || x->dir != dir)
+            continue;
+        if (x->state == state::SlumpedInCorner && x->state_step < 5)
+            return 0;
+        if (x->state == state::TurnbucklePerch || x->state == state::CornerTaunt)
+            return 0;
+        if (x->frame_flags & 8)
+            return 0;
+        if (x->state == state::Running && (x->flags86 & 8))
+            return 0;
+    }
+    return 1;
+}
+
+// N64 0x801068AC: modes 65 / 66, a run into the opponent's corner to climb and wait there: C-down to its quarter's
+// corner (a clear side; on the apron not with partner flags 0xC0). On the perch (25): R when a target is in range for the
+// aerial (list +0x60 + 50 down to 130), or a running opponent, otherwise climbs on, with a taunt at a downed opponent.
+void ai_mode_65_vs_runner() {
+    const Wrestler *s = g_ai_self;
+    switch (ai_step()) {
+    case 0: {
+        mem_w32(blk(AI_MODE_TIMER), 0);
+        if (s->location & 4) {
+            ai_set_mode(ai_mode::Think);
+            return;
+        }
+        if (s->location & 1) {
+            if (!ai_runner_target(mem_s16(blk(AI_QUAD_OPP)))) {
+                ai_set_mode(ai_mode::Think);
+                return;
+            }
+        } else {
+            if (!(s->location & 2))
+                return;
+            if ((mem_u8(blk(AI_FLAGS)) & 0x20) && (s->partner_flags80 & 0xC0)) {
+                ai_set_mode(ai_mode::Think);
+                return;
+            }
+        }
+        ai_press(4);
+        u16 b = mem_u16(0x8014D228 + 2u * (u32)(s32)mem_s16(blk(AI_QUAD_OPP))) | 4;
+        mem_w16(blk(AI_PENDING), b);
+        ai_hold(b);
+        ai_next_step();
+        return;
+    }
+    case 1: {
+        s32 sit = ai_sit_self();
+        if (sit == 2 || sit == 10) {
+            ai_next_step();
+        } else if (sit != 1) {
+            ai_set_mode(ai_mode::Think);
+        } else {
+            s32 t = mem_s32(blk(AI_MODE_TIMER)) + 1;
+            mem_w32(blk(AI_MODE_TIMER), (u32)t);
+            if (t >= 31) {
+                ai_set_mode(ai_mode::Think);
+                return;
+            }
+            ai_press(4);
+            ai_hold(mem_u16(blk(AI_PENDING)));
+        }
+        return;
+    }
+    case 2: {
+        s32 st = s->state;
+        if (st == state::TurnbucklePerch) {
+            ai_next_step();
+        } else if (st == state::Running || st == 158 || st == 159) {
+            ai_hold(mem_u16(blk(AI_PENDING)));
+        } else {
+            ai_set_mode(st == state::RunningRopeRebound ? ai_mode::KeepRunning : ai_mode::Think);
+        }
+        return;
+    }
+    case 3:
+        if (s->state != state::TurnbucklePerch) {
+            ai_set_mode(ai_mode::Think);
+            return;
+        }
+        ai_hold(4);
+        if (s->act_flags & 2)
+            ai_next_step();
+        return;
+    case 4: {
+        if (ai_sit_self() != 25) {
+            ai_set_mode(ai_mode::Think);
+            return;
+        }
+        if (s->act_flags & 8) {
+            ai_hold(4);
+            return;
+        }
+        s32 so = ai_sit_opp();
+        const Wrestler *o = g_ai_opp;
+        if (so == 15 || so == 16 || so == 19) {
+            if (so == 19)
+                ai_hold(4);
+            if (mem_s8(0x8016B9CE) != 2 && !(s->flags_ee & 2) && mem_s16(blk(AI_OPP_DOWN)) >= 31 && chance_check(200)) {
+                ai_hold(4);
+                ai_stick_taunt();
+            }
+        } else if (so == 38) {
+            if (!(o->flags80 & 0x80))
+                ai_hold(4);
+        } else if (so == 48 || so == 49) {
+            ai_hold(4);
+            ai_press(0x10);
+        } else if (o->flags80 & 1) {
+            ai_hold(4);
+        } else {
+            f32 d = mem_f32(blk(AI_DIST_P));
+            if (!((f64)d < (f64)mem_f32(mem_u32(blk(AI_LISTS)) + 0x60) + 50.0) || !(130.0 < (f64)d) || o->state == state::Running) {
+                ai_hold(4);
+                ai_press(0x10);
+            }
+        }
+        return;
+    }
+    default:
+        return;
+    }
+}
+
+// N64 0x80106D44: mode 67, at an opponent in the ring from the apron (over-the-top never): up on to the apron (C-down
+// and C-up toward it) if on the floor; on the apron (AI_FLAGS 0x20 only with partner flags, the tag ready, and a tired
+// fighter at 20%) walks the apron until straight across, then, once it is clear, A.
+void ai_mode_67_vs_carried() {
+    const Wrestler *s = g_ai_self;
+    switch (ai_step()) {
+    case 0:
+        if ((g_match_rules & 0x400) || !(s->location & 3)) {
+            ai_set_mode(ai_mode::Think);
+            return;
+        }
+        if (!(s->location & 2)) {
+            u16 b = mem_u16(0x8014D218 + 2u * (u32)(s32)mem_s16(blk(AI_ZONE_OPP))) | 0xC;
+            mem_w16(blk(AI_PENDING), b);
+            ai_hold(b);
+            ai_next_step();
+            return;
+        }
+        if (!(mem_u8(blk(AI_FLAGS)) & 0x20)) {
+            mem_w32(blk(AI_STEP), 3);
+            return;
+        }
+        if ((s->partner_flags80 & 0x80) && apron_walk_dpad(s->slot)) {
+            const Wrestler *p = &g_wrestlers[(mem_u32(A_AI_PARTNER) - 0x80159990u) / 856u];
+            const Wrestler *po = &g_wrestlers[(mem_u32(A_AI_PARTNER_OPP) - 0x80159990u) / 856u];
+            if ((p->health < 128 || po->health < 128) && chance_check(200))
+                mem_w32(blk(AI_STEP), 3);
+        }
+        return;
+    case 1: {
+        s32 sit = ai_sit_self();
+        if (sit == 1) {
+            if (s->location & 2)
+                mem_w32(blk(AI_STEP), 3);
+            else
+                ai_set_mode(ai_mode::Think);
+        } else if (sit == 2 || sit == 42) {
+            ai_hold(mem_u16(blk(AI_PENDING)));
+        } else if (sit == 4) {
+            ai_set_mode(ai_mode::KeepRunning);
+        } else if (sit != 49) {
+            ai_set_mode(ai_mode::Think);
+        }
+        return;
+    }
+    case 2:
+        if (ai_sit_self() != 1) {
+            ai_set_mode(ai_mode::Think);
+            return;
+        }
+        if (s->dpad_held & 0x400)
+            mem_w32(blk(AI_STEP), 3);
+        else
+            ai_hold(0x400);
+        return;
+    case 3: {
+        const Wrestler *o = g_ai_opp;
+        if (ai_sit_self() != 1 || !(s->location & 2) || !(o->location & 1)) {
+            ai_set_mode(ai_mode::Think);
+            return;
+        }
+        Vec3 sp = ai_self_point(), op = ai_opp_point();
+        s32 zone = mem_s16(blk(AI_ZONE_SELF));
+        if (abs_i(angle_diff(angle_to(&sp, &op), mem_s32(0x8014D1E8 + 4u * (u32)zone))) >= 341) {
+            if (zone & 1)
+                ai_hold(op.z >= sp.z ? 0x800 : 0x400);
+            else
+                ai_hold(op.x >= sp.x ? 0x100 : 0x200);
+        } else {
+            if (!(o->flags80 & 5))
+                ai_next_step();
+            if (o->state == 130 && o->state_step == 2)
+                ai_next_step();
+        }
+        return;
+    }
+    case 4:
+        ai_press(0x8000);
+        ai_next_step();
+        ai_hold(mem_u16(0x8014D220 + 2u * (u32)(s32)mem_s16(blk(AI_ZONE_SELF))));
+        return;
+    case 5:
+        if (ai_sit_self() != 26)
+            ai_set_mode(ai_mode::Think);
+        return;
+    default:
+        return;
+    }
+}
+
+// The steps modes 77-85 and 96-99 share, the C-left at a downed opponent settling (53, 47, then standing). Step `next`
+// follows.
+static void ai_ground_c_left_step1() {
+    if (ai_sit_self() == 53)
+        ai_next_step();
+    else
+        ai_set_mode(ai_mode::Think);
+}
+
+static void ai_ground_c_left_step2() {
+    s32 sit = ai_sit_self();
+    if (sit == 1)
+        ai_next_step();
+    else if (sit != 47 && sit != 53)
+        ai_set_mode(ai_mode::Think);
+}
+
+// N64 0x80107A64: modes 77-81, at a downed opponent: 78 / 80 C-left when face up, 79 / 81 when face down, (80, 81 first
+// with it set up, mode 20), then a run: away from it, a quarter off the centre from 150 out, past reach + 20 C-down,
+// and B in reach coming back. 77 only the run.
+void ai_mode_77_c_left_or_strike_at_downed_opponent() {
+    const Wrestler *o = g_ai_opp;
+    s32 mode = mem_s32(blk(AI_MODE));
+    switch (ai_step()) {
+    case 0:
+        mem_w16(blk(AI_RETURN_MODE), 0);
+        if (mode == ai_mode::CLeftOrStrikeAtDownedOpponentVariant1) {
+            mem_w32(blk(AI_STEP), 4);
+        } else if (mode == ai_mode::CLeftOrStrikeAtDownedOpponentVariant2 || mode == ai_mode::CLeftOrStrikeAtDownedOpponentVariant4) {
+            if (o->flags8a & 1) {
+                ai_hold(2);
+                ai_next_step();
+            } else {
+                mem_w32(blk(AI_STEP), 3);
+            }
+        } else if (mode == ai_mode::CLeftOrStrikeAtDownedOpponentVariant3 || mode == ai_mode::CLeftOrStrikeAtDownedOpponentVariant5) {
+            if (o->flags8a & 1) {
+                mem_w32(blk(AI_STEP), 3);
+            } else {
+                ai_hold(2);
+                ai_next_step();
+            }
+        }
+        return;
+    case 1:
+        ai_ground_c_left_step1();
+        return;
+    case 2:
+        ai_ground_c_left_step2();
+        return;
+    case 3:
+        if (!(o->flags80 & 8)) {
+            ai_set_mode(ai_mode::Think);
+        } else if (mode == ai_mode::CLeftOrStrikeAtDownedOpponentVariant2 || mode == ai_mode::CLeftOrStrikeAtDownedOpponentVariant3) {
+            ai_next_step();
+        } else if (mode == ai_mode::CLeftOrStrikeAtDownedOpponentVariant4 || mode == ai_mode::CLeftOrStrikeAtDownedOpponentVariant5) {
+            if (o->flags80 & 0x10) {
+                ai_next_step();
+            } else {
+                mem_w16(blk(AI_RETURN_MODE), (u16)mode);
+                ai_set_mode(ai_mode::PickUpDownedOpponent);
+            }
+        }
+        return;
+    case 4: {
+        Vec3 sp = ai_self_point(), op = ai_opp_point();
+        s32 d = dir8_to(&op, &sp);
+        if (150.0 < (f64)vec2_len(sp.x, sp.z)) {
+            s32 c = angle_dir8(vec_xz_angle(sp.x, sp.z));
+            if (abs_i(angle_diff(mem_s32(0x8014D238 + 4u * (u32)c), mem_s32(0x8014D238 + 4u * (u32)d))) < 768)
+                d = (d + (chance_check(500) ? 2 : -2)) & 7;
+        }
+        mem_w16(blk(AI_PENDING), dir8_buttons(d));
+        ai_next_step();
+        return;
+    }
+    case 5:
+        if (g_ai_self->state != state::Standing) {
+            ai_set_mode(ai_mode::Think);
+        } else if ((f64)mem_f32(blk(AI_DIST)) <= (f64)mem_f32(blk(AI_BODY_DIST)) + 20.0) {
+            if (g_ai_self->dpad_held)
+                ai_set_mode(ai_mode::Think);
+            else
+                ai_hold(mem_u16(blk(AI_PENDING)));
+        } else {
+            ai_next_step();
+        }
+        if (ai_sit_opp() != 15)
+            ai_set_mode(ai_mode::Think);
+        return;
+    case 6:
+        ai_hold(4);
+        ai_next_step();
+        return;
+    case 7: {
+        s32 sit = ai_sit_self();
+        if (sit == 4) {
+            ai_set_mode(ai_mode::KeepRunning);
+        } else if (sit == 2) {
+            if (mem_f32(blk(AI_DIST)) < mem_f32(blk(AI_BODY_DIST))) {
+                ai_press(0x4000);
+                ai_hold(0x4000);
+            }
+        } else if (sit != 10) {
+            ai_set_mode(ai_mode::Think);
+        }
+        return;
+    }
+    default:
+        return;
+    }
+}
+
+// The last steps of modes 82-85 and 96-99: 5 the grapple (57); 6 the run; 7 waits it out, back to step 4 standing.
+static void ai_ground_approach_tail() {
+    s32 sit = ai_sit_self();
+    switch (ai_step()) {
+    case 5:
+        if (sit != 57)
+            ai_set_mode(ai_mode::Think);
+        return;
+    case 6:
+        if (sit == 1 || sit == 2)
+            ai_hold(4);
+        else if (sit == 42)
+            ai_next_step();
+        else
+            ai_set_mode(ai_mode::Think);
+        return;
+    case 7:
+        if (sit == 1)
+            mem_w32(blk(AI_STEP), 4);
+        else if (sit != 2 && sit != 42)
+            ai_set_mode(ai_mode::Think);
+        return;
+    default:
+        return;
+    }
+}
+
+// N64 0x80107E4C: modes 82-85, approach a downed opponent (15): set up by mode 22 when it is flagged 0x10, otherwise
+// C-left by the mode and face up or down, then by the angle to its facing: 82, 85 A within 796, a run past 1764, else
+// around to its feet; 83, 84 A past 1252, a run under 284, else around to its head. 16 frames of d-pad force the A.
+void ai_mode_82_approach_downed_opponent_and_act() {
+    const Wrestler *o = g_ai_opp;
+    s32 mode = mem_s32(blk(AI_MODE));
+    switch (ai_step()) {
+    case 0:
+        mem_w32(blk(AI_MODE_TIMER), 0);
+        mem_w16(blk(AI_RETURN_MODE), 0);
+        if (ai_sit_opp() != 15) {
+            ai_set_mode(ai_mode::Think);
+        } else if (o->flags80 & 0x10) {
+            mem_w16(blk(AI_RETURN_MODE), (u16)mode);
+            ai_set_mode(ai_mode::StrikeDownedOpponent);
+        } else {
+            ai_next_step();
+        }
+        return;
+    case 1: {
+        bool up = o->flags8a & 1;
+        if (mode == ai_mode::ApproachDownedOpponentAndActVariant2 || mode == ai_mode::ApproachDownedOpponentAndActVariant4)
+            up = !up;
+        else if (mode != ai_mode::ApproachDownedOpponentAndActVariant1 && mode != ai_mode::ApproachDownedOpponentAndActVariant3)
+            return;
+        if (up) {
+            ai_hold(2);
+            mem_w32(blk(AI_STEP), 2);
+        } else {
+            mem_w32(blk(AI_STEP), 4);
+        }
+        return;
+    }
+    case 2:
+        ai_ground_c_left_step1();
+        return;
+    case 3:
+        ai_ground_c_left_step2();
+        return;
+    case 4: {
+        if (ai_sit_opp() != 15) {
+            ai_set_mode(ai_mode::Think);
+            return;
+        }
+        if (g_ai_self->dpad_held) {
+            s32 t = mem_s32(blk(AI_MODE_TIMER)) + 1;
+            mem_w32(blk(AI_MODE_TIMER), (u32)t);
+            if (t >= 16) {
+                ai_hold(0x8000);
+                ai_next_step();
+                return;
+            }
+        }
+        s32 a = abs_i(angle_diff(mem_s32(blk(AI_ANGLE)), o->facing));
+        if (mode == ai_mode::ApproachDownedOpponentAndActVariant1 || mode == ai_mode::ApproachDownedOpponentAndActVariant4) {
+            if (a < 796) {
+                ai_hold(0x8000);
+                ai_next_step();
+            } else if (a >= 1764) {
+                ai_hold(4);
+                mem_w32(blk(AI_STEP), 6);
+            } else {
+                ai_hold(dir8_buttons(angle_dir8(o->facing) ^ 4));
+            }
+        } else if (mode == ai_mode::ApproachDownedOpponentAndActVariant2 || mode == ai_mode::ApproachDownedOpponentAndActVariant3) {
+            if (a >= 1252) {
+                ai_hold(0x8000);
+                ai_next_step();
+            } else if (a < 284) {
+                ai_hold(4);
+                mem_w32(blk(AI_STEP), 6);
+            } else {
+                ai_hold(dir8_buttons(angle_dir8(o->facing)));
+            }
+        }
+        return;
+    }
+    default:
+        ai_ground_approach_tail();
+        return;
+    }
+}
+
+// N64 0x80109244: modes 96-99, as 82-85 with the opponent set up first (mode 20) and held so: 96, 99 A within 739, a
+// run past 1764; 97, 98 A past 1309, a run under 284. C-left at step 0 by the mode and face up or down.
+void ai_mode_96_approach_downed_opponent_by_angle() {
+    const Wrestler *o = g_ai_opp;
+    s32 mode = mem_s32(blk(AI_MODE));
+    switch (ai_step()) {
+    case 0: {
+        mem_w32(blk(AI_MODE_TIMER), 0);
+        mem_w16(blk(AI_RETURN_MODE), 0);
+        if (ai_sit_opp() != 15) {
+            ai_set_mode(ai_mode::Think);
+            return;
+        }
+        bool first = mode == ai_mode::ApproachDownedOpponentByAngleVariant1 || mode == ai_mode::ApproachDownedOpponentByAngleVariant3;
+        bool second = mode == ai_mode::ApproachDownedOpponentByAngleVariant2 || mode == ai_mode::ApproachDownedOpponentByAngleVariant4;
+        if ((first && (o->flags8a & 1)) || (second && !(o->flags8a & 1))) {
+            ai_hold(2);
+            ai_next_step();
+        } else {
+            mem_w32(blk(AI_STEP), 3);
+        }
+        return;
+    }
+    case 1:
+        ai_ground_c_left_step1();
+        return;
+    case 2:
+        ai_ground_c_left_step2();
+        return;
+    case 3:
+        if (!(o->flags80 & 8)) {
+            ai_set_mode(ai_mode::Think);
+        } else if (o->flags80 & 0x10) {
+            ai_next_step();
+        } else {
+            mem_w16(blk(AI_RETURN_MODE), (u16)mode);
+            ai_set_mode(ai_mode::PickUpDownedOpponent);
+        }
+        return;
+    case 4: {
+        if ((o->flags80 & 0x18) != 0x18) {
+            ai_set_mode(ai_mode::Think);
+            return;
+        }
+        if (g_ai_self->dpad_held) {
+            s32 t = mem_s32(blk(AI_MODE_TIMER)) + 1;
+            mem_w32(blk(AI_MODE_TIMER), (u32)t);
+            if (t >= 16) {
+                ai_hold(0x8000);
+                ai_next_step();
+                return;
+            }
+        }
+        s32 a = abs_i(angle_diff(mem_s32(blk(AI_ANGLE)), o->facing));
+        if (mode == ai_mode::ApproachDownedOpponentByAngleVariant1 || mode == ai_mode::ApproachDownedOpponentByAngleVariant4) {
+            if (a < 739) {
+                ai_hold(0x8000);
+                ai_next_step();
+            } else if (a >= 1764) {
+                ai_hold(4);
+                mem_w32(blk(AI_STEP), 6);
+            } else {
+                ai_hold(dir8_buttons(angle_dir8(o->facing) ^ 4));
+            }
+        } else if (mode == ai_mode::ApproachDownedOpponentByAngleVariant2 || mode == ai_mode::ApproachDownedOpponentByAngleVariant3) {
+            if (a >= 1309) {
+                ai_hold(0x8000);
+                ai_next_step();
+            } else if (a < 284) {
+                ai_hold(4);
+                mem_w32(blk(AI_STEP), 6);
+            } else {
+                ai_hold(dir8_buttons(angle_dir8(o->facing)));
+            }
+        }
+        return;
+    }
+    default:
+        ai_ground_approach_tail();
+        return;
+    }
+}
+
+// N64 0x80106438: modes 63 / 64, an opponent on the floor (not 48): lines up with it along its side to within 50, back
+// from the ropes' ends to within 100 of the middle, then C-down across and A (63) or the stick up (64) on the rebound;
+// at a leap (26) stick up.
+void ai_mode_63_walk_to_edge_and_dive() {
+    const Wrestler *o = g_ai_opp;
+    Vec3 sp = ai_self_point(), op = ai_opp_point();
+    s32 zone = mem_s16(blk(AI_ZONE_OPP));
+    switch (ai_step()) {
+    case 0: {
+        if (!(o->location & 4) || ai_sit_opp() == 48) {
+            ai_set_mode(ai_mode::Think);
+            return;
+        }
+        if (zone < 0 || zone > 3)
+            return;
+        bool x_axis = zone == 0 || zone == 2;
+        f32 d = x_axis ? sp.x - op.x : sp.z - op.z;
+        if (50.0 <= (f64)d)
+            ai_hold(x_axis ? 0x200 : 0x400);
+        if ((f64)d <= -50.0)
+            ai_hold(x_axis ? 0x100 : 0x800);
+        if ((f64)absf(d) < 50.0)
+            ai_next_step();
+        return;
+    }
+    case 1:
+        if (!(o->location & 4) || ai_sit_opp() == 48) {
+            ai_set_mode(ai_mode::Think);
+            return;
+        }
+        if (zone == 0 && (f64)sp.z < -100.0)
+            ai_hold(0x800);
+        else if (zone == 1 && (f64)sp.x < -100.0)
+            ai_hold(0x100);
+        else if (zone == 2 && 100.0 < (f64)sp.z)
+            ai_hold(0x400);
+        else if (zone == 3 && 100.0 < (f64)sp.x)
+            ai_hold(0x200);
+        else if (zone >= 0 && zone <= 3)
+            ai_next_step();
+        return;
+    case 2: {
+        s32 mode = mem_s32(blk(AI_MODE));
+        ai_hold(mem_u16(0x8014D220 + 2u * (u32)zone) | 4);
+        if (mode == ai_mode::WalkToEdgeAndDive) {
+            mem_w16(blk(AI_PENDING), 0x8000);
+            mem_w8(blk(0x14), 0);
+        }
+        if (mode == ai_mode::WalkToEdgeAndDiveAlternate) {
+            mem_w16(blk(AI_PENDING), 0);
+            mem_w8(blk(0x14), 80);
+        }
+        ai_next_step();
+        return;
+    }
+    case 3: {
+        s32 sit = ai_sit_self();
+        if (sit == 4)
+            ai_next_step();
+        else if (sit != 2)
+            ai_set_mode(ai_mode::Think);
+        return;
+    }
+    case 4: {
+        s32 sit = ai_sit_self();
+        if (sit == 4 || (sit == 2 && (o->location & 4) && ai_sit_opp() != 48)) {
+            ai_hold(mem_u16(blk(AI_PENDING)));
+            mem_w8(blk(AI_STICK_Y), mem_u8(blk(0x14)));
+        } else if (sit == 2) {
+            ai_press(0xF00);
+        } else if (sit != 26) {
+            ai_set_mode(ai_mode::Think);
+        }
+        return;
+    }
+    case 5: {
+        s32 sit = ai_sit_self();
+        if (sit == 26) {
+            mem_w8(blk(AI_STICK_X), 0);
+            mem_w8(blk(AI_STICK_Y), 80);
+        } else if (sit != 43) {
+            ai_set_mode(ai_mode::Think);
+        }
+        return;
+    }
+    case 6:
+        if (ai_sit_self() != 26)
+            ai_set_mode(ai_mode::Think);
+        return;
+    default:
+        return;
+    }
+}
+
+// Step 0 of modes 4 / 5 and 13 / 14: the ring side beyond the opponent. Under 170 from it: 15 frames walking clear, along
+// the side (table `words`) or, under 170 from the next side (table `sides`) too, the other way; 45 frames the opposite
+// way when already held that way. Otherwise on to the line-up, step 2.
+static void ai_line_up_side(u32 words, u32 sides) {
+    Vec3 sp = ai_self_point(), op = ai_opp_point();
+    s32 side = angle_to_side(angle_to(&op, &sp));
+    mem_w32(blk(0x9C), (u32)side);
+    if ((f64)ai_side_distance(side, &op) <= 170.0) {
+        mem_w32(blk(AI_MODE_TIMER), 15);
+        u32 at = words + 2u * (u32)side;
+        if ((f64)ai_side_distance(mem_s32(sides + 4u * (u32)side), &op) <= 170.0)
+            at += 8;
+        u16 b = mem_u16(at);
+        mem_w16(blk(AI_PENDING), b);
+        if (b & g_ai_self->dpad_held) {
+            mem_w32(blk(AI_MODE_TIMER), 45);
+            mem_w16(blk(AI_PENDING), mem_u16(words + 2u * (u32)(side ^ 2)));
+        }
+        mem_w32(blk(AI_STEP), 1);
+    } else {
+        mem_w32(blk(AI_MODE_TIMER), 0);
+        mem_w32(blk(AI_STEP), 2);
+    }
+}
+
+// Step 1 of the same: walks clear for the timer, then chooses again.
+static void ai_line_up_walk_clear() {
+    if (ai_sit_self() != 1) {
+        ai_set_mode(ai_mode::Think);
+        return;
+    }
+    s32 t = mem_s32(blk(AI_MODE_TIMER)) - 1;
+    mem_w32(blk(AI_MODE_TIMER), (u32)t);
+    if (t <= 0)
+        mem_w32(blk(AI_STEP), 0);
+    else
+        ai_hold(mem_u16(blk(AI_PENDING)));
+}
+
+// Step 2 of the same: the d-pad along the side to the opponent.
+static void ai_line_up_choose() {
+    if (ai_sit_self() != 1) {
+        ai_set_mode(ai_mode::Think);
+        return;
+    }
+    Vec3 sp = ai_self_point(), op = ai_opp_point();
+    s32 side = mem_s32(blk(0x9C));
+    if (side == 1 || side == 3)
+        mem_w16(blk(AI_PENDING), op.z < sp.z ? 1024 : 2048);
+    else if (side == 0 || side == 2)
+        mem_w16(blk(AI_PENDING), op.x < sp.x ? 512 : 256);
+    ai_next_step();
+}
+
+// The distance along the side to the opponent, for step 3.
+static f32 ai_line_up_offset() {
+    Vec3 sp = ai_self_point(), op = ai_opp_point();
+    s32 side = mem_s32(blk(0x9C));
+    return (side == 0 || side == 2) ? absf(sp.x - op.x) : absf(sp.z - op.z);
+}
+
+// N64 0x800FDEB8: modes 4 / 5, needs attrs +0x38 0x1800000 and an opponent not down: lines up across it on a ring side,
+// to within 15; by which way it faces 4 or 5 goes on (else mode 100, coming back), C-down at the side, off the ropes,
+// then A within 130, or at a target with flags80 0x03 a roll of R, L or running on. L at a striker within 170.
+void ai_mode_4_line_up_and_run_in() {
+    switch (ai_step()) {
+    case 0:
+        if (!(mem_u32(g_ai_self->attrs + 0x38) & 0x1800000) || ai_sit_opp() == 15) {
+            ai_set_mode(ai_mode::Think);
+            return;
+        }
+        ai_line_up_side(0x80145C54, 0x80145C64);
+        return;
+    case 1:
+        ai_line_up_walk_clear();
+        return;
+    case 2:
+        ai_line_up_choose();
+        return;
+    case 3:
+        if (ai_sit_self() != 1) {
+            ai_set_mode(ai_mode::Think);
+            return;
+        }
+        if (!((f64)ai_line_up_offset() < 15.0))
+            ai_hold(mem_u16(blk(AI_PENDING)));
+        else
+            ai_next_step();
+        return;
+    case 4: {
+        if (ai_sit_opp() == 15) {
+            ai_set_mode(ai_mode::Think);
+            return;
+        }
+        mem_w16(blk(AI_RETURN_MODE), 0);
+        s32 want = ai_faced_by(g_ai_self, g_ai_opp) ? ai_mode::LineUpAndRunIn : ai_mode::LineUpAndRunInAlternate;
+        if (mem_s32(blk(AI_MODE)) != want) {
+            mem_w16(blk(AI_RETURN_MODE), (u16)mem_s32(blk(AI_MODE)));
+            ai_set_mode(ai_mode::RopesLButtonMove);
+            return;
+        }
+        ai_hold(mem_u16(0x8014D218 + 2u * (u32)mem_s32(blk(0x9C))) | 4);
+        ai_next_step();
+        return;
+    }
+    case 5: {
+        s32 sit = ai_sit_self();
+        if (sit == 4)
+            ai_next_step();
+        else if (sit != 2)
+            ai_set_mode(ai_mode::Think);
+        return;
+    }
+    case 6: {
+        s32 sit = ai_sit_self();
+        if (sit == 2)
+            ai_next_step();
+        else if (sit != 4)
+            ai_set_mode(ai_mode::Think);
+        return;
+    }
+    case 7: {
+        s32 sit = ai_sit_self();
+        if (sit == 4) {
+            ai_set_mode(ai_mode::KeepRunning);
+            return;
+        }
+        if (sit == 5 || sit == 11)
+            return;
+        if (sit != 2) {
+            ai_set_mode(ai_mode::Think);
+            return;
+        }
+        if (g_ai_self->state_step != 2)
+            return;
+        if ((f64)mem_f32(blk(AI_DIST_P)) < 170.0 && chance_check(mem_s32(blk(AI_SKILL)))) {
+            s32 so = ai_sit_opp();
+            if (so == 8 || so == 11) {
+                ai_hold(0x20);
+                return;
+            }
+        }
+        if (!((f64)mem_f32(blk(AI_DIST)) < 130.0))
+            return;
+        if (!(g_ai_opp->flags80 & 3) && ai_sit_opp() != 15) {
+            ai_hold(0x8000);
+            return;
+        }
+        if (chance_check(mem_s32(blk(AI_SKILL)))) {
+            s32 r = rand_pool_next();
+            if (r < 200) {
+                ai_hold(0x10);
+                return;
+            }
+            if (r < 600) {
+                ai_hold(0x20);
+                return;
+            }
+        }
+        ai_set_mode(ai_mode::KeepRunning);
+        return;
+    }
+    default:
+        return;
+    }
+}
+
+// N64 0x800FF5CC: modes 13 / 14, as 4 / 5 with a strike: from the line-up C-down and B (13) or A + B (14) within its
+// list reach + 25; at a target with flags80 0x05 a roll of R, L or running on.
+void ai_mode_13_line_up_and_run_in_strike() {
+    switch (ai_step()) {
+    case 0:
+        mem_w32(blk(AI_REACH), 0);
+        ai_line_up_side(0x80145D14, 0x80145D24);
+        return;
+    case 1:
+        ai_line_up_walk_clear();
+        return;
+    case 2:
+        ai_line_up_choose();
+        return;
+    case 3:
+        if (ai_sit_self() != 1) {
+            ai_set_mode(ai_mode::Think);
+            return;
+        }
+        if (!((f64)ai_line_up_offset() < 15.0)) {
+            ai_hold(mem_u16(blk(AI_PENDING)));
+        } else {
+            bool b = mem_s32(blk(AI_MODE)) == ai_mode::LineUpAndRunInWithStrike;
+            ai_hold(mem_u16(0x8014D218 + 2u * (u32)mem_s32(blk(0x9C))) | 4);
+            mem_w16(blk(AI_PENDING), b ? 0x4000 : 0xC000);
+            mem_wf32(blk(AI_REACH), mem_f32(mem_u32(blk(AI_LISTS)) + (b ? 0x28 : 0x30)));
+            ai_next_step();
+        }
+        return;
+    case 4: {
+        s32 sit = ai_sit_self();
+        if (sit == 4)
+            ai_next_step();
+        else if (sit != 2)
+            ai_set_mode(ai_mode::Think);
+        return;
+    }
+    case 5: {
+        s32 sit = ai_sit_self();
+        if (sit == 2)
+            ai_next_step();
+        else if (sit != 4)
+            ai_set_mode(ai_mode::Think);
+        return;
+    }
+    case 6: {
+        s32 sit = ai_sit_self();
+        if (sit == 4) {
+            ai_set_mode(ai_mode::KeepRunning);
+            return;
+        }
+        if (sit == 5 || sit == 8)
+            return;
+        if (sit != 2) {
+            ai_set_mode(ai_mode::Think);
+            return;
+        }
+        if (g_ai_self->state_step != 2)
+            return;
+        if ((f64)mem_f32(blk(AI_DIST_P)) < 170.0 && chance_check(mem_s32(blk(AI_SKILL)))) {
+            s32 so = ai_sit_opp();
+            if (so == 8 || so == 11) {
+                ai_hold(0x20);
+                return;
+            }
+        }
+        if (!((f64)mem_f32(blk(AI_DIST)) < (f64)mem_f32(blk(AI_REACH)) + 25.0))
+            return;
+        if (!(g_ai_opp->flags80 & 5)) {
+            ai_hold(mem_u16(blk(AI_PENDING)));
+            return;
+        }
+        if (chance_check(mem_s32(blk(AI_SKILL)))) {
+            s32 r = rand_pool_next();
+            if (r < 200) {
+                ai_hold(0x10);
+                return;
+            }
+            if (r < 600) {
+                ai_hold(0x20);
+                return;
+            }
+        }
+        ai_set_mode(ai_mode::KeepRunning);
+        return;
+    }
+    default:
+        return;
+    }
+}
+
 // The mode table g_ai_modes (0x80145A10, 145 entries): the modes decompiled so far; any other stops a
 // replay, naming the mode.
 void ai_mode_run(s32 mode) {
     switch (mode) {
+    case ai_mode::LineUpAndRunIn: ai_mode_4_line_up_and_run_in(); return;
+    case ai_mode::LineUpAndRunInAlternate: ai_mode_4_line_up_and_run_in(); return;
+    case ai_mode::LineUpAndRunInWithStrike: ai_mode_13_line_up_and_run_in_strike(); return;
+    case ai_mode::LineUpAndRunInWithStrikeAlternate: ai_mode_13_line_up_and_run_in_strike(); return;
+    case ai_mode::CLeftOrStrikeAtDownedOpponentVariant1: ai_mode_77_c_left_or_strike_at_downed_opponent(); return;
+    case ai_mode::CLeftOrStrikeAtDownedOpponentVariant2: ai_mode_77_c_left_or_strike_at_downed_opponent(); return;
+    case ai_mode::CLeftOrStrikeAtDownedOpponentVariant3: ai_mode_77_c_left_or_strike_at_downed_opponent(); return;
+    case ai_mode::CLeftOrStrikeAtDownedOpponentVariant4: ai_mode_77_c_left_or_strike_at_downed_opponent(); return;
+    case ai_mode::CLeftOrStrikeAtDownedOpponentVariant5: ai_mode_77_c_left_or_strike_at_downed_opponent(); return;
+    case ai_mode::ApproachDownedOpponentAndActVariant1: ai_mode_82_approach_downed_opponent_and_act(); return;
+    case ai_mode::ApproachDownedOpponentAndActVariant2: ai_mode_82_approach_downed_opponent_and_act(); return;
+    case ai_mode::ApproachDownedOpponentAndActVariant3: ai_mode_82_approach_downed_opponent_and_act(); return;
+    case ai_mode::ApproachDownedOpponentAndActVariant4: ai_mode_82_approach_downed_opponent_and_act(); return;
+    case ai_mode::ApproachDownedOpponentByAngleVariant1: ai_mode_96_approach_downed_opponent_by_angle(); return;
+    case ai_mode::ApproachDownedOpponentByAngleVariant2: ai_mode_96_approach_downed_opponent_by_angle(); return;
+    case ai_mode::ApproachDownedOpponentByAngleVariant3: ai_mode_96_approach_downed_opponent_by_angle(); return;
+    case ai_mode::ApproachDownedOpponentByAngleVariant4: ai_mode_96_approach_downed_opponent_by_angle(); return;
+    case ai_mode::WalkToEdgeAndDive: ai_mode_63_walk_to_edge_and_dive(); return;
+    case ai_mode::WalkToEdgeAndDiveAlternate: ai_mode_63_walk_to_edge_and_dive(); return;
+    case ai_mode::WalkToOpponent: ai_mode_37_walk(); return;
+    case ai_mode::Lockup: ai_mode_120_lockup(); return;
+    case ai_mode::MeetRunner: ai_mode_65_vs_runner(); return;
+    case ai_mode::MeetRunnerAlternate: ai_mode_65_vs_runner(); return;
+    case ai_mode::RunAtCarriedOpponent: ai_mode_67_vs_carried(); return;
+    case ai_mode::WalkToEdgeAndClimbOutVariant1: ai_mode_127_walk_to_edge_and_climb_out(); return;
+    case ai_mode::WalkToEdgeAndClimbOutVariant2: ai_mode_127_walk_to_edge_and_climb_out(); return;
+    case ai_mode::WalkToEdgeAndClimbOutVariant3: ai_mode_127_walk_to_edge_and_climb_out(); return;
+    case ai_mode::WalkToOpponentAndGrappleAcrossRopes: ai_mode_91_walk_to(); return;
+    case ai_mode::SideStepAndRun: ai_mode_11_side_step_and_run(); return;
+    case ai_mode::SideStepAndRunAlternate: ai_mode_11_side_step_and_run(); return;
+    case ai_mode::AfterCrowdWeapon: ai_mode_141_after_crowd_weapon(); return;
+    case ai_mode::LeaveRingThroughRopes: ai_mode_36_leave_ring(); return;
+    case ai_mode::LockupReact: ai_mode_117_lockup_react(); return;
+    case ai_mode::ApronWalkToTag: ai_mode_118_apron_walk_to_tag(); return;
+    case ai_mode::CircleInRing: ai_mode_103_walk_around(); return;
     case ai_mode::CLeftAtDownedOpponentVariant1: ai_mode_73_c_left_at_downed_opponent(); return;
     case ai_mode::CLeftAtDownedOpponentVariant2: ai_mode_73_c_left_at_downed_opponent(); return;
     case ai_mode::CLeftAtDownedOpponentVariant3: ai_mode_73_c_left_at_downed_opponent(); return;

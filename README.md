@@ -18,14 +18,15 @@ As of writing, No Mercy has been roughly 65% decompiled with annotations and par
 ## How this differs from other recomp / decomp projects
 
 * [jessetbh](https://github.com/jessetbh) has made excellent recomps of all the AKI games, which use *"[N64Recomp](https://github.com/N64Recomp/N64Recomp) to **statically recompile** the [games] into a native PC port, running on the [N64ModernRuntime](https://github.com/N64Recomp/N64ModernRuntime) with [RT64](https://github.com/rt64/rt64) as the rendering engine."* These are strict ports of game bytecode, running logic natively with virtual devices emulating video and other hardware. It allows for some modding and applying ROM hacks.
-* Some decomps strive for byte-identical output. This means that each function in the decompilation should compile down to the exact sequence of bytes as the original function. I'm not doing that here, but am instead stepping through emulated versions of these games to enforce exact parity in game state. In other words, my decomp should have a CPU vs CPU match play the exact same way indefinitely (assuming RNG is managed -- see [Parity](#parity)). This decomp should be easier to mod extensively, but still difficult.
+* Some decomps (such as [fnvdecomp](https://fnvdecomp.com/)) strive for byte-identical output. This means that each function in the decompilation should compile down to the exact sequence of bytes as the original function. I'm not doing that here, but am instead stepping through emulated versions of these games to enforce exact parity in game state. In other words, my decomp should have a CPU vs CPU match play the exact same way indefinitely (assuming RNG is managed -- see [Parity](#parity)). This decomp should be easier to mod extensively, but still difficult.
 * Eventually, a port using modern game architecture can be built much easier using this annotated decomp than by comparing the original byte code. In a way this repo contains the first very large step in supporting that type of project.
 
 ## Contributing
-This approach to decompilation is WIP, so collaboration will be a little tough. Once No Mercy is closer to 100% I can solidify the project structure and open other games up to collaborates.
+This approach to decompilation is WIP. Once No Mercy is 100% I'll restructure this project and solidify the workflow so that the other games are open to AI decomp. At that point others willing to donate compute will be helpful.
 
-As of writing the annotated decomp is going well but slowly, and a $100/month Claude subscription is being churned through pretty quickly -- the weekly limit is hit in about 3 days. If you want me to churn through this a little faster throw me some money on [kofi](https://ko-fi.com/apdecomp).
+As of writing the annotated decomp is going well but slowly, and a $100/month Claude subscription is being churned through pretty quickly -- the weekly limit is hit in about 3 days. If you want me to work through this (and the port) a little faster throw me some money on [kofi](https://ko-fi.com/apdecomp).
 
+I'm also open to architectural suggestions on the upcoming port, as seen below, and feature requests.
 
 ## Future port
 The goal is to eventually create a modern reimplementation of the engine (in a separate repo) that is:
